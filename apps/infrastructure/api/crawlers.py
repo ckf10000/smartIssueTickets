@@ -100,7 +100,7 @@ class Selenium(object):
             return element_text
         except Exception as e:
             print(format_exc())
-            err_str = "通过选择器：{}，识别验证码失败，error：{}".format(selector, e)
+            err_str = "通过选择器：{}，获取元素文本信息失败，error：{}".format(selector, e)
             raise AttributeError(err_str)
     
     def quit(self) -> None:
