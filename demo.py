@@ -33,10 +33,15 @@ def get_options() -> ChromiumOptions:
     # chrome_options.add_argument('--headless')
     # 谷歌文档提到需要加上这个属性来规避bug
     chrome_options.add_argument('--disable-gpu')
+    # 隐身模式（无痕模式）
+    chrome_options.add_argument('--incognito')
     # 隐藏"Chrome正在受到自动软件的控制"
-    chrome_options.add_argument('disable-infobars')
+    # chrome_options.add_argument('disable-infobars')
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
     # 设置中文
     chrome_options.add_argument('lang=zh_CN.UTF-8')
+    # 浏览器最大化
+    chrome_options.add_argument('--start-maximized')
     # 指定浏览器分辨率
     chrome_options.add_argument('window-size=1920x1080')
     # 隐藏滚动条, 应对一些特殊页面
@@ -53,7 +58,7 @@ def get_options() -> ChromiumOptions:
     # 禁止加载图片
     # pre["profile.managed_default_content_settings.images"] = 2
     # 或者使用下面的设置, 提升速度
-    # chrome_options.add_argument('blink-settings=imagesEnabled=false')
+    chrome_options.add_argument('blink-settings=imagesEnabled=false')
     chrome_options.add_experimental_option("prefs", pre)
     # 关闭devtools工具
     chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
@@ -87,10 +92,11 @@ def get_webdriver() -> ChromiumDriver:
     # 如果selenium的版本高于4.6，则不需要配置executable_path参数
     service = webdriver.ChromeService(
         # executable_path=chrome_driver
-        service_args=['--log-level=INFO','--append-log', '--readable-timestamp'], log_output=log_file
+        service_args=['--log-level=DEBUG','--append-log', '--readable-timestamp'], log_output=log_file
     )
     # desired_capabilities = webdriver.DesiredCapabilities()
     driver = webdriver.Chrome(service=service, options=chrome_options)
+    # driver = webdriver.Chrome(service=service)
     # with open(log_file, 'r') as f:
         # assert re.match(r"\[\d\d-\d\d-\d\d\d\d", f.read())
     # 无界面浏览器
