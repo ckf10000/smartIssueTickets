@@ -9,7 +9,6 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-from selenium.webdriver.support.ui import WebDriverWait
 from apps.infrastructure.api.crawlers import SeleniumFactory
 
 class JinLvDeskService(object):
@@ -20,7 +19,6 @@ class JinLvDeskService(object):
 
     def Login(self, username: str, password: str): 
         try:
-            WebDriverWait(driver=self.driver, timeout=10)
             self.selenium.get(self.__home_page)
             self.selenium.input_text(selector="xpath", regx="/html/body/form/div/div[1]/div[1]/input[2]", value=username)
             self.selenium.input_text(selector="xpath", regx="/html/body/form/div/div[1]/div[2]/input", value=password)

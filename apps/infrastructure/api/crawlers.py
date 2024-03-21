@@ -141,9 +141,15 @@ class SeleniumFactory(object):
             err_str = "通过选择器：{}，识别验证码失败，error：{}".format(selector, e)
             raise(err_str)
     
-    def quit(self):
+    def quit(self) -> None:
         self.driver.quit()
 
     def get(self, url: str) -> None:
         print(url)
         self.driver.get(url=url)
+
+
+if __name__ == "__main__":
+    s = SeleniumFactory()
+    s.get("https://www.baidu.com")
+    s.quit()
