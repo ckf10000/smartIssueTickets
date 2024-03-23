@@ -39,11 +39,15 @@ class Selenium(object):
                 # EC.presence_of_all_elements_located 参数为元组
                 EC.presence_of_element_located((Selector.get(selector), regx))
             )
+            # 判断输入框是否有数据
+            if input.get_attribute("value"):
+                # 清除输入框数据
+                input.clear()
             input.send_keys('{}'.format(value))
             # self.browser.find_element(Selector.get(selector), regx).send_keys(value)
         except Exception as e:
             print(format_exc())
-            err_str = "通过选择器：{}，捕获输入框设置文本<{}>失败，error：{}".format(selector, value, e)
+            err_str = "通过选择器：{}，表达式: {}，捕获输入框设置文本<{}>失败，error：{}".format(selector, regx, value, e)
             raise AttributeError(err_str)
         
     def submit_click(self, selector: str, regx: str) -> None:
@@ -60,14 +64,14 @@ class Selenium(object):
             # self.browser.find_element(Selector.get(selector), regx).click()
         except Exception as e:
             print(format_exc())
-            err_str = "通过选择器：{}，捕获按钮并提交失败，error：{}".format(selector, e)
+            err_str = "通过选择器：{}，表达式: {}，捕获点击对象并点击失败，error：{}".format(selector, regx, e)
             raise AttributeError(err_str)
  
     def get_code(self, selector: str, regx: str) -> str:
         print("开始获取验证码...")
         try:
             selector = Selector.get(selector)
-            captcha = self.browser.find_element(selector, regx)
+            captcha = self.browser.find_element(Selector.get(selector), regx)
             code_image = Image.open(BytesIO(captcha.screenshot_as_png))
             #1.初始化一个实例，配置识别模式默认为OCR识别
             ocr = ddddocr.DdddOcr(show_ad=False)
@@ -76,7 +80,7 @@ class Selenium(object):
             return ocr_result
         except Exception as e:
             print(format_exc())
-            err_str = "通过选择器：{}，识别验证码失败，error：{}".format(selector, e)
+            err_str = "通过选择器：{}，表达式: {}，识别验证码失败，error：{}".format(selector, regx, e)
             raise AttributeError(err_str)
     
     def alert_accept(self) -> None:
@@ -93,14 +97,26 @@ class Selenium(object):
     def get_element_text(self, selector: str, regx: str) -> str:
         try:
             # 根据实际情况定位按钮元素
-            element = self.browser.find_element(selector, regx)
+            element = self.browser.find_element(Selector.get(selector), regx)
             # 获取按钮元素的文本信息
-            element_text = element.text.strip()
+            element_text = element.text.strip() if isinstance(element, str) else "" 
             print("获取元素的文字信息为:", element_text)
             return element_text
         except Exception as e:
             print(format_exc())
-            err_str = "通过选择器：{}，获取元素文本信息失败，error：{}".format(selector, e)
+            err_str = "通过选择器：{}，表达式: {}，获取元素文本信息失败，error：{}".format(selector, regx, e)
+            raise AttributeError(err_str)
+        
+    def get_background_color(self, selector: str, regx: str) -> str:
+        try:
+            # 根据实际情况定位按钮元素
+            element = self.browser.find_element(Selector.get(selector), regx)
+            # 获取选项的背景颜色
+            background_color = element.value_of_css_property("background-color")
+            return background_color.strip() if isinstance(background_color, str) else ""
+        except Exception as e:
+            print(format_exc())
+            err_str = "通过选择器：{}，表达式: {}，获取背景颜色失败，error：{}".format(selector, regx, e)
             raise AttributeError(err_str)
     
     def quit(self) -> None:

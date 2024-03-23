@@ -65,7 +65,7 @@ class ChromeBrowser(Browser):
         # chrome_options.add_argument('--hide-scrollbars')
         # chrome_options.add_argument('--remote-debugging-port=9222')
         # 手动指定使用的浏览器位置，如果谷歌浏览器的安装目录配置在系统的path环境变量中，那么此处可以不传路径
-        # chrome_options.binary_location = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
+        chrome_options.binary_location = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
         pre = dict()
         # 设置这两个参数就可以避免密码提示框的弹出
@@ -108,7 +108,7 @@ class ChromeBrowser(Browser):
         log_file = os.path.join(cls.PROECT_PATH, "logs", "chrome.log")
         # 如果selenium的版本高于4.6，则不需要配置executable_path参数
         service = ChromeService(
-            # executable_path=chrome_driver
+            # executable_path=chrome_driver,
             service_args=['--log-level={}'.format(cls.LOG_LEVEL),'--append-log', '--readable-timestamp'], 
             log_output=log_file
         )
@@ -141,7 +141,7 @@ class FirefoxBrowser(Browser):
         # geckodriver 驱动路径
         # gecko_driver_path = '/path/to/geckodriver'
         # 指定gecko_driver记录的日志信息
-        log_file = os.path.join(cls.PROECT_PATH, "logs", "chrome.log")
+        log_file = os.path.join(cls.PROECT_PATH, "logs", "firefox.log")
         # 如果selenium的版本高于4.6，则不需要配置executable_path参数
         service = FirefoxService(
             # executable_path=gecko_driver_path,
