@@ -9,7 +9,7 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-from apps.infrastructure.api.mobiles import Phone, DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM
+from apps.infrastructure.api.mobile_terminals import Phone, DEFAULT_PLATFORM, WINDOWS_PLATFORM
 
 class PlatformService(object):
     

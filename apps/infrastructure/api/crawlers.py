@@ -20,7 +20,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from apps.common.libs.selector import Selector
-from apps.infrastructure.api.browsers import ChromeBrowser, FirefoxBrowser
+from apps.infrastructure.api.desktop_browsers import ChromeBrowser, FirefoxBrowser
 
 class Selenium(object):
 

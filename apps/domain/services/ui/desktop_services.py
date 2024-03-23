@@ -2,7 +2,7 @@
 """
 # -----------------------------------------------------------------------------------------------------------------------
 # ProjectName:  smartIssueTickets
-# FileName:     windows.py
+# FileName:     desktop_services.py
 # Description:  TODO
 # Author:       ckf10000
 # CreateDate:   2024/03/21 11:10:58
@@ -13,9 +13,8 @@ from time import sleep
 from apps.infrastructure.api.crawlers import Selenium
 
 from apps.common.libs.calc import calc_text_equation
-from apps.infrastructure.api.browsers import ChromeBrowser, FirefoxBrowser
 
-class JinLvDeskService(object):
+class JinLvDesktopService(object):
 
     def __init__(self, home_page: str=None) -> None:
         self.__home_page = home_page or "https://pekdazhicheng.qlv88.com/Home/Login"
@@ -137,7 +136,6 @@ class JinLvDeskService(object):
         self.__switch_left_level_2_navigation(
             level_1_selector=level_1_selector, level_1_regx=level_1_regx, level_2_selector=level_2_selector, level_2_regx=level_2_regx
         )
-
 
 
 if __name__ == "__main__":

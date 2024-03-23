@@ -2,7 +2,7 @@
 """
 # -----------------------------------------------------------------------------------------------------------------------
 # ProjectName:  smartIssueTickets
-# FileName:     mobiles.py
+# FileName:     mobile_terminals.py
 # Description:  移动端接口API
 # Author:       ckf10000
 # CreateDate:   2024/03/23 11:45:14
