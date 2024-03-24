@@ -13,7 +13,8 @@ import airtest
 import typing as t
 from airtest.core.error import *
 from airtest.cli.parser import cli_setup
-from apps.common.libs.utils import get_project_path
+from airtest.utils.transform import TargetPos
+from apps.common.libs.dir import get_project_path
 from airtest.core.api import auto_setup, device, Template, ST
 
 from apps.annotation.exception import airtest_exception_format
@@ -62,7 +63,7 @@ class Phone(object):
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM):
             result = self.device.start_app(app_name)
         return result or None
-    
+
     @airtest_exception_format
     def stop_app(self, app_name: str) -> None:
         """
@@ -73,7 +74,41 @@ class Phone(object):
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM):
             result = self.device.stop_app(app_name)
         return result or None
-    
+
+    @staticmethod
+    def get_cv_template(
+        file_name: str,
+        threshold: float = None,
+        target_pos: int = None,
+        record_pos: tuple = None,
+        resolution: tuple = None,
+        rgb: bool = False,
+        scale_max: int = None,
+        scale_step: float=None,
+    ) -> Template:
+        """
+        图片为触摸/滑动/等待/存在目标和图像识别需要的额外信息
+        file_name str: 这是要匹配的图像文件的路径
+        threshold: 表示匹配程度的阈值。阈值越低，匹配的相似度要求就越高。默认值为0.7
+        target_pos: ret图片中的哪个位置，是一个二元组(10,10)
+        record_pos: 指定在屏幕的哪个区域进行图像匹配。它是一个四元组 (left, top, width, height)，表示左上角坐标和宽高。如果不指定，默认为整个屏幕, ((61, 2795), (61, 2962), (247, 2962), (247, 2795))
+        resolution: 用于在图像匹配前对图像进行缩放。它是一个 (width, height) 的二元组，表示图像的缩放比例。默认值为 (1.0, 1.0)，即不缩放,
+        rgb: 识别结果是否使用rgb三通道进行校验, 指定是否将 RGB 图像转换为灰度图像进行匹配。默认为 false，表示转换为灰度图像.
+        scale_max: 多尺度模板匹配最大范围.
+        scale_step: 多尺度模板匹配搜索步长.
+        return: Template对象
+        """
+        return Template(
+            filename=file_name,
+            threshold=threshold,
+            target_pos=target_pos,
+            record_pos=record_pos,
+            resolution=resolution,
+            rgb=rgb,
+            scale_max=scale_max,
+            scale_step=scale_step,
+        )
+
     @airtest_exception_format
     def snapshot(self, filename: str, msg: str='', quality:int=None, max_size:int=None) -> t.Dict:
         """
@@ -100,7 +135,7 @@ class Phone(object):
             # self.device.snapshot(filename="test2.png", msg="test", quality=90, max_size=1200)
             result = self.device.snapshot(filename=filename,msg=msg,quality=quality,max_size=max_size)
         return result or None
-    
+
     @airtest_exception_format
     def wake(self) -> None:
         """
@@ -111,7 +146,7 @@ class Phone(object):
         if self.platform == DEFAULT_PLATFORM:
             result = self.device.wake()
         return result or None
-    
+
     @airtest_exception_format
     def home(self) -> None:
         """
@@ -140,7 +175,7 @@ class Phone(object):
             # self.device.touch((100, 100), times=2)
             result = self.device.touch(v=v, times=times, **kwargs)
         return result or None
-    
+
     @airtest_exception_format
     def swipe(self, v1, v2: tuple=None, vector: tuple=None, **kwargs) -> None:
         """
@@ -159,7 +194,7 @@ class Phone(object):
             # self.device.swipe((100, 100), (200, 200), duration=1, steps=6)
             result = self.device.swipe(v1=v1, v2=v2, vector=vector, **kwargs)
         return result or None
-    
+
     @airtest_exception_format
     def keyevent(self, keyname: str, **kwargs) -> None:
         """
@@ -177,7 +212,7 @@ class Phone(object):
             # self.device.keyevent("KEYCODE_DEL")
             result = self.device.keyevent(keyname=keyname, **kwargs)
         return result or None
-    
+
     @airtest_exception_format
     def text(self, text: str, enter: bool=True, **kwargs) -> None:
         """
@@ -196,7 +231,7 @@ class Phone(object):
             # self.device().yosemite_ime.code("3")  # 3 = IME_ACTION_SEARCH
             result = self.device.text(text=text, enter=enter, **kwargs)
         return result or None
-    
+
     @airtest_exception_format
     def sleep(self, secs: float =1.0) -> None:
         """
@@ -209,7 +244,7 @@ class Phone(object):
             # self.device.sleep(1)
             result = self.device.sleep(secs=secs)
         return result or None
-    
+
     @airtest_exception_format
     def wait(self, v: Template, timeout: int=None, interval: float=0.5, intervalfunc: t.Callable=None) -> t.Tuple:
         """
@@ -232,7 +267,7 @@ class Phone(object):
             # self.device.wait(Template(r"tpl1607510661400.png"), intervalfunc=notfound)
             result = self.device.wait(v=v, timeout=timeout, interval=interval, intervalfunc=intervalfunc)
         return result or None
-    
+
     @airtest_exception_format
     def exists(self, v: Template) -> t.Any:
         """"
@@ -251,7 +286,7 @@ class Phone(object):
             #    self.device.touch(pos)
             result = self.device.exists(v=v)
         return result or None
-    
+
     @airtest_exception_format
     def fina_all(self, v: Template) -> t.List:
         """
@@ -266,7 +301,7 @@ class Phone(object):
             # >> [{'result': (218, 468), 'rectangle': ((149, 440), (149, 496), (288, 496), (288, 440)),'confidence': 0.9999996423721313}]
             result = self.device.fina_all(v=v)
         return result or None
-    
+
     @airtest_exception_format
     def get_clipboard(self) -> str:
         """
@@ -280,7 +315,7 @@ class Phone(object):
             # print(text)
             result = self.device.get_clipboard()
         return result or None
-    
+
     @airtest_exception_format
     def set_clipboard(self, content: str, *args, **kwargs) -> None:
         """
@@ -296,7 +331,7 @@ class Phone(object):
             # print(self.device.get_clipboard())
             result = self.device.set_clipboard(content=content, *args, **kwargs)
         return result or None
-    
+
     @airtest_exception_format
     def paste(self, *args, **kwargs) -> None:
         """

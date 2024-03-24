@@ -21,7 +21,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
-from apps.common.libs.utils import get_project_path
+from apps.common.libs.dir import get_project_path
 
 class Browser(object):
     TIMEOUT = 10
@@ -30,13 +30,16 @@ class Browser(object):
     PROECT_PATH = get_project_path()
 
     @abstractclassmethod
-    def get_browser(): pass
+    def get_browser():
+        pass
 
     @abstractclassmethod
-    def get_options(): pass
+    def get_options():
+        pass
 
     @abstractclassmethod
-    def get_service(): pass
+    def get_service():
+        pass
 
 
 class ChromeBrowser(Browser):
@@ -121,7 +124,7 @@ class ChromeBrowser(Browser):
         browser = Chrome(service=service, options=options)
         wait = WebDriverWait(driver=browser, timeout=cls.TIMEOUT)
         return browser, wait, cls.BROWSER_NAME
-    
+
 
 class FirefoxBrowser(Browser):
     BROWSER_NAME = "FireFfox"
