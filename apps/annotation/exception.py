@@ -9,7 +9,6 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-import traceback
 from functools import wraps
 from airtest.core.error import *
 
@@ -29,6 +28,8 @@ def airtest_exception_format(func):
         except (AdbError, AdbShellError) as e:
             result = (e.stdout + e.stderr).decode()
         except AirtestError as e:
+            result = e
+        except TimeoutError as e:
             result = e
         return result
 

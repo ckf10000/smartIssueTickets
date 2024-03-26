@@ -9,29 +9,61 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
+import re
+import shlex
 import airtest
+import subprocess
 import typing as t
+from pprint import pprint
 from airtest.core.error import *
+from collections import OrderedDict
 from airtest.cli.parser import cli_setup
 from airtest.utils.transform import TargetPos
 from apps.common.libs.dir import get_project_path
-from airtest.core.api import auto_setup, device, Template, ST
+from poco.drivers.android.uiautomation import AndroidUiautomationPoco
+from airtest.core.api import auto_setup, device, Template, touch, find_all
 
 from apps.annotation.exception import airtest_exception_format
 
-DEFAULT_PLATFORM = 'Andriod' # Andriod、Windows、iOS
-WINDOWS_PLATFORM = 'Windows'
-iOS_PLATFORM = 'iOS'
+DEFAULT_PLATFORM = "Andriod"  # Andriod、Windows、iOS
+WINDOWS_PLATFORM = "Windows"
+iOS_PLATFORM = "iOS"
+
+def stop_app(app_name, timeout=5):
+    # 构造ADB命令
+    adb_cmd = f"adb.exe shell am force-stop {app_name}"
+    # 将命令字符串分割成列表
+    cmd_list = shlex.split(adb_cmd)
+    try:
+        # 执行ADB命令并设置超时时间
+        subprocess.run(cmd_list, timeout=timeout, check=True)
+        print("execute cmd: ", adb_cmd)
+    except subprocess.TimeoutExpired:
+        print("Timeout occurred. Failed to stop the app.")
+    except subprocess.CalledProcessError:
+        print("Failed to stop the app.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 
 class Phone(object):
 
-    def __init__(self, device_id: str, device_conn: str, platform: str='Andriod', enable_debug: bool=False) -> None:
+    def __init__(
+        self,
+        device_id: str,
+        device_conn: str,
+        platform: str = "Andriod",
+        enable_debug: bool = False,
+    ) -> None:
         self.platform = platform
         self.device_id = device_id
         self.device_conn = device_conn
         self.enable_debug = enable_debug
         self.__init_device()
         self.device = device()
+        self.poco = AndroidUiautomationPoco(
+            use_airtest_input=True, screenshot_each_action=False
+        )
 
     def __init_device(self) -> None:
         if not cli_setup():
@@ -39,7 +71,13 @@ class Phone(object):
             airtest.utils.compat.DEFAULT_LOG_DIR = "logs"
             airtest.core.settings.Settings.DEBUG = self.enable_debug
             airtest.core.settings.Settings.LOG_FILE = "{}.log".format(self.device_id)
-            auto_setup(project_root, logdir=True, devices=[self.device_conn], project_root=project_root,compress=12)
+            auto_setup(
+                project_root,
+                logdir=True,
+                devices=[self.device_conn],
+                project_root=project_root,
+                compress=12,
+            )
 
     @airtest_exception_format
     def shell(self, cmd: str) -> None:
@@ -79,12 +117,12 @@ class Phone(object):
     def get_cv_template(
         file_name: str,
         threshold: float = None,
-        target_pos: int = None,
+        target_pos: int = TargetPos.MID,
         record_pos: tuple = None,
-        resolution: tuple = None,
+        resolution: tuple = (),
         rgb: bool = False,
-        scale_max: int = None,
-        scale_step: float=None,
+        scale_max: int = 800,
+        scale_step: float = 0.005,
     ) -> Template:
         """
         图片为触摸/滑动/等待/存在目标和图像识别需要的额外信息
@@ -110,7 +148,9 @@ class Phone(object):
         )
 
     @airtest_exception_format
-    def snapshot(self, filename: str, msg: str='', quality:int=None, max_size:int=None) -> t.Dict:
+    def snapshot(
+        self, filename: str, msg: str = "", quality: int = None, max_size: int = None
+    ) -> t.Dict:
         """
         对目标设备进行一次截图，并且保存到文件中
         filename str: 保存截图的文件名，默认保存路径为 ``ST.LOG_DIR``中
@@ -133,7 +173,9 @@ class Phone(object):
             # self.device.snapshot(filename="test.png", msg="test", quality=90)
             # The quality of the screenshot is 90, and the size does not exceed 1200*1200
             # self.device.snapshot(filename="test2.png", msg="test", quality=90, max_size=1200)
-            result = self.device.snapshot(filename=filename,msg=msg,quality=quality,max_size=max_size)
+            result = self.device.snapshot(
+                filename=filename, msg=msg, quality=quality, max_size=max_size
+            )
         return result or None
 
     @airtest_exception_format
@@ -159,12 +201,26 @@ class Phone(object):
         return result or None
 
     @airtest_exception_format
-    def touch(self, v: tuple, times: int, **kwargs) -> None:
+    def find_all(self, v: Template) -> t.List:
+        """
+        查找元素
+        v tuple: 点击位置，可以是一个 Template 图片实例，或是一个绝对坐标 (x, y)
+        return: list [{'result': (218, 468), 'rectangle': ((149, 440), (149, 496), (288, 496), (288, 440)), 'confidence': 0.9999996423721313}]
+        platform: Android, iOS, Windows
+        """
+        result = None
+        if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
+            # self.device.find_all(Template(r"tpl1607511235111.png"))
+            result = self.device.find_all(v=v)
+        return result or None
+
+    @airtest_exception_format
+    def touch(self, v: tuple, times: int = 1, **kwargs) -> None:
         """
         在当前设备画面上进行一次点击
         v tuple: 点击位置，可以是一个 Template 图片实例，或是一个绝对坐标 (x, y)
-        times int: 点击次数
-        kwargs dict: 平台相关的参数 kwargs，请参考对应的平台接口文档
+        times int: 要执行的点击次数
+        kwargs dict: 扩展参数，请参阅相应的文档
         return: finial position to be clicked, e.g. (100, 100)
         platform: Android, iOS, Windows
         """
@@ -173,11 +229,12 @@ class Phone(object):
             # temp = Template(r"tpl1606730579419.png", target_pos=5)
             # self.device.touch(temp, times=2)
             # self.device.touch((100, 100), times=2)
-            result = self.device.touch(v=v, times=times, **kwargs)
+            # result = self.device.touch(v)
+            result = touch(v=v, times=times, **kwargs)
         return result or None
 
     @airtest_exception_format
-    def swipe(self, v1, v2: tuple=None, vector: tuple=None, **kwargs) -> None:
+    def swipe(self, v1, v2: tuple = None, vector: tuple = None, **kwargs) -> None:
         """
         在当前设备画面上进行一次滑动操作
         v1 tuple or Template: 滑动的起点，可以是一个Template图片实例，或是绝对坐标 (x, y)
@@ -214,7 +271,7 @@ class Phone(object):
         return result or None
 
     @airtest_exception_format
-    def text(self, text: str, enter: bool=True, **kwargs) -> None:
+    def text(self, text: str, enter: bool = True, **kwargs) -> None:
         """
         在目标设备上输入文本，文本框需要处于激活状态
         text str: 要输入的文本
@@ -233,7 +290,7 @@ class Phone(object):
         return result or None
 
     @airtest_exception_format
-    def sleep(self, secs: float =1.0) -> None:
+    def sleep(self, secs: float = 1.0) -> None:
         """
         设置一个等待sleep时间，它将会被显示在报告中
         secs float: sleep的时长
@@ -246,7 +303,13 @@ class Phone(object):
         return result or None
 
     @airtest_exception_format
-    def wait(self, v: Template, timeout: int=None, interval: float=0.5, intervalfunc: t.Callable=None) -> t.Tuple:
+    def wait(
+        self,
+        v: Template,
+        timeout: int = None,
+        interval: float = 0.5,
+        intervalfunc: t.Callable = None,
+    ) -> t.Tuple:
         """
         等待当前画面上出现某个匹配的Template图片
         v Template: 要等待出现的目标Template实例
@@ -265,12 +328,14 @@ class Phone(object):
             # def notfound():
             #     print("No target found")
             # self.device.wait(Template(r"tpl1607510661400.png"), intervalfunc=notfound)
-            result = self.device.wait(v=v, timeout=timeout, interval=interval, intervalfunc=intervalfunc)
+            result = self.device.wait(
+                v=v, timeout=timeout, interval=interval, intervalfunc=intervalfunc
+            )
         return result or None
 
     @airtest_exception_format
     def exists(self, v: Template) -> t.Any:
-        """"
+        """ "
         检查设备上是否存在给定目标
         v Template: 要检查的目标
         return: 如果未找到目标，则返回False，否则返回目标的坐标
@@ -288,7 +353,7 @@ class Phone(object):
         return result or None
 
     @airtest_exception_format
-    def fina_all(self, v: Template) -> t.List:
+    def find_all(self, v: Template) -> t.List:
         """
         在设备屏幕上查找所有出现的目标并返回其坐标列表
         v Template: 寻找目标
@@ -299,7 +364,7 @@ class Phone(object):
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
             # self.device.find_all(Template(r"tpl1607511235111.png"))
             # >> [{'result': (218, 468), 'rectangle': ((149, 440), (149, 496), (288, 496), (288, 440)),'confidence': 0.9999996423721313}]
-            result = self.device.fina_all(v=v)
+            result = find_all(v=v)
         return result or None
 
     @airtest_exception_format
@@ -348,13 +413,91 @@ class Phone(object):
             result = self.device.paste(*args, **kwargs)
         return result or None
 
+    def get_po(self, type: str, name: str) -> t.List:
+        return self.poco(type=type, name=name)
 
-class Pad(object): 
+    def get_po_extend(
+        self,
+        type: str = "",
+        name: str = "",
+        text: str = "",
+        desc: str = "",
+        typeMatches_inner: str = "",
+        nameMatches_inner: str = "",
+        textMatches_inner: str = "",
+        textMatches_outer: str = "",
+        global_num: int = None,
+        local_num: int = None,
+        touchable: bool = True,
+    ):
+        kwargs = dict()
+        if type:
+            kwargs["type"] = type
+        if name:
+            kwargs["name"] = name
+        if text:
+            kwargs["text"] = text
+        if desc:
+            kwargs["desc"] = desc
+        if typeMatches_inner:
+            kwargs["typeMatches"] = typeMatches_inner
+        if nameMatches_inner:
+            kwargs["nameMatches"] = nameMatches_inner
+        if textMatches_inner:
+            kwargs["textMatches"] = textMatches_inner
+        po = self.poco(**kwargs)
+        po_list = list()
+        for i in po:
+            po_text = i.get_text()
+            if textMatches_outer and re.search(textMatches_outer, po_text) is None:
+                break
+            zOrders = i.attr("zOrders")
+            touchable_raw = i.attr("touchable")
+            # pprint(self.get_ui_object_proxy_attr(ui_object_proxy=i))
+            if zOrders.get("global") == global_num and zOrders.get("local") == local_num and touchable_raw == touchable:
+                pprint(self.get_ui_object_proxy_attr(ui_object_proxy=i))
+                po_list.append(i)
+        return po_list
+
+    @staticmethod
+    def get_ui_object_proxy_attr(ui_object_proxy: AndroidUiautomationPoco) -> OrderedDict:
+        ordered_dict = OrderedDict()
+        ordered_dict["type"] = ui_object_proxy.attr("type")
+        ordered_dict["name"] = ui_object_proxy.attr("name")
+        ordered_dict["text"] = ui_object_proxy.attr("text")
+        ordered_dict["desc"] = ui_object_proxy.attr("desc")
+        ordered_dict["enabled"] = ui_object_proxy.attr("enabled")
+        ordered_dict["visible"] = ui_object_proxy.attr("visible")
+        ordered_dict["resourceId"] = ui_object_proxy.attr("resourceId")
+        ordered_dict["zOrders"] = ui_object_proxy.attr("zOrders")
+        ordered_dict["package"] = ui_object_proxy.attr("package")
+        ordered_dict["anchorPoint"] = ui_object_proxy.attr("anchorPoint")
+        ordered_dict["dismissable"] = ui_object_proxy.attr("dismissable")
+        ordered_dict["checkable"] = ui_object_proxy.attr("checkable")
+        ordered_dict["scale"] = ui_object_proxy.attr("scale")
+        ordered_dict["boundsInParent"] = ui_object_proxy.attr("boundsInParent")
+        ordered_dict["focusable"] = ui_object_proxy.attr("focusable")
+        ordered_dict["touchable"] = ui_object_proxy.attr("touchable")
+        ordered_dict["longClickable"] = ui_object_proxy.attr("longClickable")
+        ordered_dict["size"] = ui_object_proxy.attr("size")
+        ordered_dict["pos"] = ui_object_proxy.attr("pos")
+        ordered_dict["focused"] = ui_object_proxy.attr("focused")
+        ordered_dict["checked"] = ui_object_proxy.attr("checked")
+        ordered_dict["editalbe"] = ui_object_proxy.attr("editalbe")
+        ordered_dict["selected"] = ui_object_proxy.attr("selected")
+        ordered_dict["scrollable"] = ui_object_proxy.attr("scrollable")
+        return ordered_dict
+
+
+class Pad(object):
     pass
 
 
 if __name__ == "__main__":
-    ph = Phone(device_id="LMG710N248c5b73", device_conn="android://127.0.0.1:5037/LMG710N248c5b73?cap_method=JAVACAP&touch_method=MAXTOUCH&")
+    ph = Phone(
+        device_id="LMG710N248c5b73",
+        device_conn="android://127.0.0.1:5037/LMG710N248c5b73?cap_method=JAVACAP&touch_method=MAXTOUCH&",
+    )
     # print(ph.shell("ls"))
     # print(ph.start_app("abc"))
     # print(ph.stop_app("abc"))
