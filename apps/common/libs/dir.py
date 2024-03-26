@@ -16,7 +16,7 @@ def get_project_path():
      return os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 def get_images_dir():
-     return os.path.join(get_project_path(), "images")
+     return os.path.join(get_project_path(), "static", "images")
 
 def is_exists(file_name: str) -> bool:
      if os.path.exists(file_name):
