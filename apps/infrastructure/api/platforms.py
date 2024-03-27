@@ -16,6 +16,7 @@ class PlatformService(object):
     def __init__(self, device_config: dict = None) -> None:
         # 暂时支持Android和Windows平台
         self.device_config = device_config or self.get_default_andriod_device()
+        # self.device_config = device_config or self.get_default_harmony_device()
         if self.device_config.get("platform") == DEFAULT_PLATFORM:
             self.device = Phone(
                 device_id=self.device_config.get("device_id"),
@@ -33,7 +34,19 @@ class PlatformService(object):
         # 公司LG G7手机
         return {
             "device_id": "LMG710N248c5b73",
-            "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method=JAVACAP&touch_method=MAXTOUCH&",
+            "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method=JAVACAP&touch_method=ADBTOUCH&",
+            # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method=JAVACAP&touch_method=MAXTOUCH&",
+            # "device_conn": "android://192.168.3.232:5073/LMG710N248c5b73?cap_method=JAVACAP&touch_method=MAXTOUCH&",
+            "platform": DEFAULT_PLATFORM,
+            "enable_debug": True
+        }
+    
+    @staticmethod
+    def get_default_harmony_device() -> dict:
+        # mate 20 pro
+        return {
+            "device_id": "LMG710N248c5b73",
+            "device_conn": "android://127.0.0.1:5037/9JB7N18A31000516?touch_method=MAXTOUCH&",
             "platform": DEFAULT_PLATFORM,
             "enable_debug": True
         }

@@ -14,18 +14,17 @@ import shlex
 import airtest
 import subprocess
 import typing as t
-from pprint import pprint
 from airtest.core.error import *
 from collections import OrderedDict
 from airtest.cli.parser import cli_setup
 from airtest.utils.transform import TargetPos
 from apps.common.libs.dir import get_project_path
 from poco.drivers.android.uiautomation import AndroidUiautomationPoco
-from airtest.core.api import auto_setup, device, Template, touch, find_all
+from airtest.core.api import auto_setup, device, Template, touch, find_all, connect_device, init_device
 
 from apps.annotation.exception import airtest_exception_format
 
-DEFAULT_PLATFORM = "Andriod"  # Andriod、Windows、iOS
+DEFAULT_PLATFORM = "Android"  # Android、Windows、iOS
 WINDOWS_PLATFORM = "Windows"
 iOS_PLATFORM = "iOS"
 
@@ -52,7 +51,7 @@ class Phone(object):
         self,
         device_id: str,
         device_conn: str,
-        platform: str = "Andriod",
+        platform: str = "Android",
         enable_debug: bool = False,
     ) -> None:
         self.platform = platform
@@ -71,6 +70,10 @@ class Phone(object):
             airtest.utils.compat.DEFAULT_LOG_DIR = "logs"
             airtest.core.settings.Settings.DEBUG = self.enable_debug
             airtest.core.settings.Settings.LOG_FILE = "{}.log".format(self.device_id)
+            # init_device(
+                # platform=self.platform, uuid=self.device_id, cap_method="JAVACAP"
+            # )
+            # connect_device(self.device_conn)
             auto_setup(
                 project_root,
                 logdir=True,
@@ -134,7 +137,7 @@ class Phone(object):
         rgb: 识别结果是否使用rgb三通道进行校验, 指定是否将 RGB 图像转换为灰度图像进行匹配。默认为 false，表示转换为灰度图像.
         scale_max: 多尺度模板匹配最大范围.
         scale_step: 多尺度模板匹配搜索步长.
-        return: Template对象
+        return: Template对象, [{'result': (517, 592), 'rectangle': ((377, 540), (377, 644), (658, 644), (658, 540)), 'confidence': 0.9967431426048279}]
         """
         return Template(
             filename=file_name,
@@ -232,6 +235,26 @@ class Phone(object):
             # result = self.device.touch(v)
             result = touch(v=v, times=times, **kwargs)
         return result or None
+
+    def adb_touch(self, v: tuple, timeout: int=10) -> None:
+        """
+        adb 模拟操作点击，规避有些UI上无法直接点击
+        """
+        adb_cmd = "adb.exe -P 5037 -s {} shell input tap {} {}".format(self.device_id, v[0], v[1])
+        # 将命令字符串分割成列表
+        cmd_list = shlex.split(adb_cmd)
+        try:
+            # 执行ADB命令并设置超时时间
+            subprocess.run(cmd_list, timeout=timeout, check=True)
+            print("execute cmd: ", adb_cmd)
+        except subprocess.TimeoutExpired:
+            print("Timeout occurred,Failed to execute adb cmd.")
+        except subprocess.CalledProcessError:
+            print("Failed to execute adb cmd.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        # touch_proxy = TouchProxy.auto_setup(self.device.adb, ori_transformer=self.device._touch_point_by_orientation)
+        # touch_proxy.touch(v)
 
     @airtest_exception_format
     def swipe(self, v1, v2: tuple = None, vector: tuple = None, **kwargs) -> None:
@@ -413,8 +436,17 @@ class Phone(object):
             result = self.device.paste(*args, **kwargs)
         return result or None
 
-    def get_po(self, type: str, name: str) -> t.List:
-        return self.poco(type=type, name=name)
+    def get_po(self, type: str, name: str='', text:str='', desc: str='') -> t.List:
+        kwargs = dict()
+        if type:
+            kwargs["type"] = type
+        if name:
+            kwargs["name"] = name
+        if text:
+            kwargs["text"] = text
+        if desc:
+            kwargs["desc"] = desc
+        return self.poco(**kwargs)
 
     def get_po_extend(
         self,
@@ -455,7 +487,7 @@ class Phone(object):
             touchable_raw = i.attr("touchable")
             # pprint(self.get_ui_object_proxy_attr(ui_object_proxy=i))
             if zOrders.get("global") == global_num and zOrders.get("local") == local_num and touchable_raw == touchable:
-                pprint(self.get_ui_object_proxy_attr(ui_object_proxy=i))
+                # pprint(self.get_ui_object_proxy_attr(ui_object_proxy=i))
                 po_list.append(i)
         return po_list
 
