@@ -223,20 +223,6 @@ class Phone(object):
         return result or None
 
     @airtest_exception_format
-    def find_all(self, v: Template) -> t.List:
-        """
-        查找元素
-        v tuple: 点击位置，可以是一个 Template 图片实例，或是一个绝对坐标 (x, y)
-        return: list [{'result': (218, 468), 'rectangle': ((149, 440), (149, 496), (288, 496), (288, 440)), 'confidence': 0.9999996423721313}]
-        platform: Android, iOS, Windows
-        """
-        result = None
-        if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
-            # self.device.find_all(Template(r"tpl1607511235111.png"))
-            result = self.device.find_all(v=v)
-        return result or None
-
-    @airtest_exception_format
     def touch(self, v: tuple, times: int = 1, **kwargs) -> None:
         """
         在当前设备画面上进行一次点击
@@ -637,6 +623,14 @@ class Phone(object):
         )
         return ordered_dict
 
+    @airtest_exception_format
+    def hide_keyword(self) -> None:
+        keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey", name="完成")
+        if keyword.exists():
+            print("目前检测到键盘已经打开，需要隐藏键盘，再做后续操作...")
+            keyword.click()
+        else:
+            print("键盘已经隐藏，无需处理键盘...")
 
 class Pad(object):
     pass
