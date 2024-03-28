@@ -433,7 +433,7 @@ class CtripAppService(PlatformService):
         )[0]
         ordinary_booking_button.click()
 
-    @SleepWait(wait_time=1)
+    @SleepWait(wait_time=3)
     def touch_more_passengers_button(self) -> None:
         """
         点击【更多乘机人】按钮
