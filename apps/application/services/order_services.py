@@ -94,6 +94,6 @@ class PhoneOrderService(object):
 
 if __name__ == "__main__":
     PhoneOrderService.booking_ctrip_special_flight_ticket(
-        departure_city="HDG", arrive_city="DSN", departure_time="2024-03-31 11:10", ac="中国联合航空", flight="KN2828",
-        lowest_price=320.00, passenger="杨春霞", age_stage="成人", card_id="152701198001070322", phone="18569520328", 
+        departure_city="CAN", arrive_city="TFU", departure_time="2024-04-01 06:40", ac="首都航空", flight="JD5161",
+        lowest_price=350.00, passenger="师焌杰", age_stage="成人", card_id="51012120041031009X", phone="18569520328", 
      )
