@@ -17,10 +17,12 @@ import typing as t
 from airtest.core.error import *
 from collections import OrderedDict
 from airtest.cli.parser import cli_setup
+from airtest.core.android import Android
 from airtest.utils.transform import TargetPos
 from apps.common.libs.dir import get_project_path
+from airtest.core.android.constant import TOUCH_METHOD, CAP_METHOD
 from poco.drivers.android.uiautomation import AndroidUiautomationPoco
-from airtest.core.api import auto_setup, device, Template, touch, find_all, connect_device, init_device
+from airtest.core.api import auto_setup, device, Template, touch, find_all, connect_device
 
 from apps.annotation.exception import airtest_exception_format
 
@@ -70,17 +72,34 @@ class Phone(object):
             airtest.utils.compat.DEFAULT_LOG_DIR = "logs"
             airtest.core.settings.Settings.DEBUG = self.enable_debug
             airtest.core.settings.Settings.LOG_FILE = "{}.log".format(self.device_id)
-            # init_device(
-                # platform=self.platform, uuid=self.device_id, cap_method="JAVACAP"
-            # )
-            # connect_device(self.device_conn)
-            auto_setup(
-                project_root,
-                logdir=True,
-                devices=[self.device_conn],
-                project_root=project_root,
-                compress=12,
-            )
+            if self.device_conn.find("127.0.0.1") != -1:
+                auto_setup(
+                    project_root,
+                    logdir=True,
+                    devices=[self.device_conn],
+                    project_root=project_root,
+                    compress=12,
+                )
+            else:
+                if self.platform == DEFAULT_PLATFORM:
+                    """
+                    device_conn_slice = self.device_conn.split("/")
+                    print(device_conn_slice)
+                    host_ip = device_conn_slice[2].split(":")[0]
+                    # 连接到 Android 设备
+                    device = Android(
+                        serialno=self.device_id,
+                        host=host_ip,
+                        cap_method=CAP_METHOD.JAVACAP,
+                        touch_method=TOUCH_METHOD.ADBTOUCH,
+                    )
+                    device.adb_server.stop()
+                    device.adb_server.start()
+                    device.adb_cmd.connect(device_conn_slice[2])
+                    """
+                    connect_device(self.device_conn)
+                else:
+                    raise ValueError("暂时还不支持非android平台的手机初始化...")
 
     @airtest_exception_format
     def shell(self, cmd: str) -> None:
@@ -492,32 +511,130 @@ class Phone(object):
         return po_list
 
     @staticmethod
-    def get_ui_object_proxy_attr(ui_object_proxy: AndroidUiautomationPoco) -> OrderedDict:
+    def get_ui_object_proxy_attr(
+        ui_object_proxy: AndroidUiautomationPoco,
+    ) -> OrderedDict:
         ordered_dict = OrderedDict()
-        ordered_dict["type"] = ui_object_proxy.attr("type")
-        ordered_dict["name"] = ui_object_proxy.attr("name")
-        ordered_dict["text"] = ui_object_proxy.attr("text")
-        ordered_dict["desc"] = ui_object_proxy.attr("desc")
-        ordered_dict["enabled"] = ui_object_proxy.attr("enabled")
-        ordered_dict["visible"] = ui_object_proxy.attr("visible")
-        ordered_dict["resourceId"] = ui_object_proxy.attr("resourceId")
-        ordered_dict["zOrders"] = ui_object_proxy.attr("zOrders")
-        ordered_dict["package"] = ui_object_proxy.attr("package")
-        ordered_dict["anchorPoint"] = ui_object_proxy.attr("anchorPoint")
-        ordered_dict["dismissable"] = ui_object_proxy.attr("dismissable")
-        ordered_dict["checkable"] = ui_object_proxy.attr("checkable")
-        ordered_dict["scale"] = ui_object_proxy.attr("scale")
-        ordered_dict["boundsInParent"] = ui_object_proxy.attr("boundsInParent")
-        ordered_dict["focusable"] = ui_object_proxy.attr("focusable")
-        ordered_dict["touchable"] = ui_object_proxy.attr("touchable")
-        ordered_dict["longClickable"] = ui_object_proxy.attr("longClickable")
-        ordered_dict["size"] = ui_object_proxy.attr("size")
-        ordered_dict["pos"] = ui_object_proxy.attr("pos")
-        ordered_dict["focused"] = ui_object_proxy.attr("focused")
-        ordered_dict["checked"] = ui_object_proxy.attr("checked")
-        ordered_dict["editalbe"] = ui_object_proxy.attr("editalbe")
-        ordered_dict["selected"] = ui_object_proxy.attr("selected")
-        ordered_dict["scrollable"] = ui_object_proxy.attr("scrollable")
+        ordered_dict["type"] = (
+            ui_object_proxy.attr("type").strip()
+            if isinstance(ui_object_proxy.attr("type"), str)
+            else ui_object_proxy.attr("type")
+        )
+        ordered_dict["name"] = (
+            ui_object_proxy.attr("name").strip()
+            if isinstance(ui_object_proxy.attr("name"), str)
+            else ui_object_proxy.attr("name")
+        )
+        ordered_dict["text"] = (
+            ui_object_proxy.attr("text").strip()
+            if isinstance(ui_object_proxy.attr("text"), str)
+            else ui_object_proxy.attr("text")
+        )
+        ordered_dict["desc"] = (
+            ui_object_proxy.attr("desc").strip()
+            if isinstance(ui_object_proxy.attr("desc"), str)
+            else ui_object_proxy.attr("desc")
+        )
+        ordered_dict["enabled"] = (
+            ui_object_proxy.attr("enabled").strip()
+            if isinstance(ui_object_proxy.attr("enabled"), str)
+            else ui_object_proxy.attr("enabled")
+        )
+        ordered_dict["visible"] = (
+            ui_object_proxy.attr("visible").strip()
+            if isinstance(ui_object_proxy.attr("visible"), str)
+            else ui_object_proxy.attr("visible")
+        )
+        ordered_dict["resourceId"] = (
+            ui_object_proxy.attr("resourceId").strip()
+            if isinstance(ui_object_proxy.attr("resourceId"), str)
+            else ui_object_proxy.attr("resourceId")
+        )
+        ordered_dict["zOrders"] = (
+            ui_object_proxy.attr("zOrders").strip()
+            if isinstance(ui_object_proxy.attr("zOrders"), str)
+            else ui_object_proxy.attr("zOrders")
+        )
+        ordered_dict["package"] = (
+            ui_object_proxy.attr("package").strip()
+            if isinstance(ui_object_proxy.attr("package"), str)
+            else ui_object_proxy.attr("package")
+        )
+        ordered_dict["anchorPoint"] = (
+            ui_object_proxy.attr("anchorPoint").strip()
+            if isinstance(ui_object_proxy.attr("anchorPoint"), str)
+            else ui_object_proxy.attr("anchorPoint")
+        )
+        ordered_dict["dismissable"] = (
+            ui_object_proxy.attr("dismissable").strip()
+            if isinstance(ui_object_proxy.attr("dismissable"), str)
+            else ui_object_proxy.attr("dismissable")
+        )
+        ordered_dict["checkable"] = (
+            ui_object_proxy.attr("checkable").strip()
+            if isinstance(ui_object_proxy.attr("checkable"), str)
+            else ui_object_proxy.attr("checkable")
+        )
+        ordered_dict["scale"] = (
+            ui_object_proxy.attr("scale").strip()
+            if isinstance(ui_object_proxy.attr("scale"), str)
+            else ui_object_proxy.attr("scale")
+        )
+        ordered_dict["boundsInParent"] = (
+            ui_object_proxy.attr("boundsInParent").strip()
+            if isinstance(ui_object_proxy.attr("boundsInParent"), str)
+            else ui_object_proxy.attr("boundsInParent")
+        )
+        ordered_dict["focusable"] = (
+            ui_object_proxy.attr("focusable").strip()
+            if isinstance(ui_object_proxy.attr("focusable"), str)
+            else ui_object_proxy.attr("focusable")
+        )
+        ordered_dict["touchable"] = (
+            ui_object_proxy.attr("touchable").strip()
+            if isinstance(ui_object_proxy.attr("touchable"), str)
+            else ui_object_proxy.attr("touchable")
+        )
+        ordered_dict["longClickable"] = (
+            ui_object_proxy.attr("longClickable").strip()
+            if isinstance(ui_object_proxy.attr("longClickable"), str)
+            else ui_object_proxy.attr("longClickable")
+        )
+        ordered_dict["size"] = (
+            ui_object_proxy.attr("size").strip()
+            if isinstance(ui_object_proxy.attr("size"), str)
+            else ui_object_proxy.attr("size")
+        )
+        ordered_dict["pos"] = (
+            ui_object_proxy.attr("pos").strip()
+            if isinstance(ui_object_proxy.attr("pos"), str)
+            else ui_object_proxy.attr("pos")
+        )
+        ordered_dict["focused"] = (
+            ui_object_proxy.attr("focused").strip()
+            if isinstance(ui_object_proxy.attr("focused"), str)
+            else ui_object_proxy.attr("focused")
+        )
+        ordered_dict["checked"] = (
+            ui_object_proxy.attr("checked").strip()
+            if isinstance(ui_object_proxy.attr("checked"), str)
+            else ui_object_proxy.attr("checked")
+        )
+        ordered_dict["editalbe"] = (
+            ui_object_proxy.attr("editalbe").strip()
+            if isinstance(ui_object_proxy.attr("editalbe"), str)
+            else ui_object_proxy.attr("editalbe")
+        )
+        ordered_dict["selected"] = (
+            ui_object_proxy.attr("selected").strip()
+            if isinstance(ui_object_proxy.attr("selected"), str)
+            else ui_object_proxy.attr("selected")
+        )
+        ordered_dict["scrollable"] = (
+            ui_object_proxy.attr("scrollable").strip()
+            if isinstance(ui_object_proxy.attr("scrollable"), str)
+            else ui_object_proxy.attr("scrollable")
+        )
         return ordered_dict
 
 

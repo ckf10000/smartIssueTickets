@@ -9,6 +9,7 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
+from airtest.core.android.constant import TOUCH_METHOD, CAP_METHOD
 from apps.infrastructure.api.mobile_terminals import Phone, DEFAULT_PLATFORM, WINDOWS_PLATFORM
 
 class PlatformService(object):
@@ -34,9 +35,9 @@ class PlatformService(object):
         # 公司LG G7手机
         return {
             "device_id": "LMG710N248c5b73",
-            "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method=JAVACAP&touch_method=ADBTOUCH&",
-            # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method=JAVACAP&touch_method=MAXTOUCH&",
-            # "device_conn": "android://192.168.3.232:5073/LMG710N248c5b73?cap_method=JAVACAP&touch_method=MAXTOUCH&",
+            "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
+            # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.MAXTOUCH),
+            # "device_conn": "android://192.168.3.232:5037/LMG710N248c5b73?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
             "platform": DEFAULT_PLATFORM,
             "enable_debug": True
         }

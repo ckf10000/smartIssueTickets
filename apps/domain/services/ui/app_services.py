@@ -404,7 +404,7 @@ class CtripAppService(PlatformService):
         录入乘客姓名
         """
         passenger_username = self.device.get_po_extend(
-            type='android.widget.TextView', 
+            type='android.widget.EditText', 
             name='新增乘机人姓名框文案', 
             text="与乘机证件一致",
             global_num=0,
