@@ -335,6 +335,7 @@ class CtripAppService(PlatformService):
         lowerest_price_po = self.device.get_po(type="android.widget.TextView", name="第2个政策成人价格金额")[0]
         ui_object_proxy_attr = self.device.get_ui_object_proxy_attr(ui_object_proxy=lowerest_price_po)
         text = ui_object_proxy_attr.get("text")
+        print("获取到的机票最低价为：", text)
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
         return float(text) if isinstance(text, str) and text.isdigit() else 9999999999.9999999999
 
