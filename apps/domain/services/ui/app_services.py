@@ -171,11 +171,7 @@ class CtripAppService(PlatformService):
                 sorted_list = sorted(find_results, key=lambda x: x['result'][0])
                 temp = sorted_list[0].get("result")
             else:
-                raise ValueError(
-                    "According to the image file <{}>, no corresponding element was found".format(
-                        file_name
-                    )
-                )
+                raise ValueError("According to the image file <{}>, no corresponding element was found".format(file_name))
         else:
             raise ValueError("<{}> file does not exist".format(file_name))
         self.device.touch(v=temp)
