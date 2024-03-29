@@ -168,7 +168,8 @@ class CtripAppService(PlatformService):
             temp = self.device.get_cv_template(file_name=file_name)
             find_results = self.device.find_all(v=temp)
             if isinstance(find_results, t.List) and len(find_results) > 0:
-                sorted_list = sorted(find_results, key=lambda x: x['result'][0])
+                print(find_results)
+                sorted_list = sorted(find_results, key=lambda x: (x['result'][1], x['result'][0]))
                 temp = sorted_list[0].get("result")
             else:
                 raise ValueError("According to the image file <{}>, no corresponding element was found".format(file_name))
@@ -761,8 +762,8 @@ if __name__ == "__main__":
 
     app = CtripAppService()
     app.start()
-    app.select_trip_expect_month(date_str="2024-04-02 21:20")
-    app.select_trip_expect_day(date_str="2024-04-02 21:20")
+    app.select_trip_expect_month(date_str="2024-04-10 21:20")
+    app.select_trip_expect_day(date_str="2024-04-10 21:20")
     # app.device.hide_keyword()
     # app.touch_bank_card_payment()
     # app.enter_payment_pass(payment_pass="123456")
