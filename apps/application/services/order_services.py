@@ -17,19 +17,21 @@ class PhoneOrderService(object):
     @classmethod
     def booking_ctrip_special_flight_ticket(
         cls,
-        departure_city: str,
-        arrive_city: str,
-        departure_time: str,
-        ac: str,
-        lowest_price: float,
-        flight: str,
-        passenger: str,
-        age_stage: str,
-        card_id: str,
-        phone: str
+        departure_city: str, # 离开城市
+        arrive_city: str, # 抵达城市
+        departure_time: str, # 起飞时间
+        ac: str, # 航司
+        lowest_price: float, # 最低票价
+        flight: str, # 航班编号
+        passenger: str, # 乘客
+        age_stage: str, # 乘客年龄阶段，儿童/成人
+        card_id: str, # 身份证号
+        phone: str, # 手机号码
+        payment_pass: str
     ) -> None:
         app = CtripAppService()
         app.device.wake()
+        app.restart()
         sleep(8)
         app.touch_home()
         app.touch_flight_ticket()
@@ -87,13 +89,14 @@ class PhoneOrderService(object):
                 app.select_more_payment()
                 app.select_point_deduction()
                 app.touch_bank_card_payment() 
+                app.enter_payment_pass(payment_pass=payment_pass)
         else:
             print("当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(special_flight_price, lowest_price))
-        
 
 
 if __name__ == "__main__":
     PhoneOrderService.booking_ctrip_special_flight_ticket(
-        departure_city="CSX", arrive_city="WUX", departure_time="2024-04-01 14:45", ac="吉祥航空", flight="HO2008",
-        lowest_price=410.00, passenger="荣强", age_stage="成人", card_id="15212619790830211X", phone="18569520328", 
+        departure_city="HGH", arrive_city="HDG", departure_time="2024-04-10 06:10", ac="长龙航空", flight="GJ8977",
+        lowest_price=355.00, passenger="李伟斌", age_stage="成人", card_id="130481198910055138", phone="18569520328", 
+        payment_pass="901127"
      )

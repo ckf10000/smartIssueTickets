@@ -27,13 +27,21 @@ class CtripAppService(PlatformService):
     """
     携程APP
     """
-
-    APP_NAME = "ctrip.android.view"
     IMAGE_DIR = get_images_dir()
 
     def __init__(self, device=None, app_name: str = None) -> None:
+        self.app_name = app_name or "ctrip.android.view"
         self.device = device or PlatformService().device
-        self.device.start_app(app_name or self.APP_NAME)
+
+    def start(self) -> None:
+        self.device.start_app(self.app_name)
+
+    def stop(self) -> None:
+        stop_app(self.app_name)
+
+    def restart(self) -> None:
+        stop_app(self.app_name)
+        self.device.start_app(self.app_name)
 
     @SleepWait(wait_time=1)
     def touch_home(self) -> None:
@@ -695,9 +703,11 @@ class CtripAppService(PlatformService):
         """
         当【同意并支付】后，特殊情况下，会出现支付小弹框，这个时候需要先判断是否存在小框，如果存在，则切换到通用支付选择界面
         """
-        more_payment = self.device.get_po(type="", name="", text="")
-        if more_payment.exists():
-            more_payment.click()
+        more_payment = self.device.get_po_extend(
+            type="android.view.ViewGroup", name="android.view.ViewGroup", global_num=0, local_num=15, touchable=True
+        )
+        if len(more_payment) > 0:
+            more_payment[0].click()
         else:
             print("没有出现支付小弹框，请在通用支付选择界面操作.")
 
@@ -724,16 +734,29 @@ class CtripAppService(PlatformService):
         point_deduction = self.device.get_po_extend(
             type="android.widget.TextView",
             name="android.widget.TextView",
-            text="银行卡支付 ",
+            text="银行卡支付",
             global_num=0,
             local_num=1,
             touchable=False,
         )[0]
         point_deduction.click()
 
+    @SleepWait(wait_time=5)
+    def enter_payment_pass(self, payment_pass: str) -> None:
+        """
+        请输入支付密码
+        """
+        for char in payment_pass:
+            file_name = join_path([get_images_dir(), "支付_{}.png".format(char)])
+            if is_exists(file_name):
+                temp = self.device.get_cv_template(file_name=file_name)
+                self.device.touch(v=temp)
+            else:
+                raise ValueError("文件<{}>缺失...",format(file_name))
+
     """
     def __del__(self) -> None:
-        stop_app(app_name=self.APP_NAME)
+        self.stop_app()
     """
 
 
@@ -741,7 +764,10 @@ if __name__ == "__main__":
     # from time import sleep
 
     app = CtripAppService()
-    app.device.hide_keyword()
+    app.start()
+    # app.device.hide_keyword()
+    # app.touch_bank_card_payment()
+    # app.enter_payment_pass(payment_pass="123456")
     # app.device.wake()
     # sleep(8)
     # app.touch_home()

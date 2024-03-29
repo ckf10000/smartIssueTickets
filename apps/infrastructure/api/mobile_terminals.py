@@ -393,7 +393,7 @@ class Phone(object):
             # self.device.find_all(Template(r"tpl1607511235111.png"))
             # >> [{'result': (218, 468), 'rectangle': ((149, 440), (149, 496), (288, 496), (288, 440)),'confidence': 0.9999996423721313}]
             result = find_all(v=v)
-        return result or None
+        return result or list()
 
     @airtest_exception_format
     def get_clipboard(self) -> str:
@@ -466,7 +466,7 @@ class Phone(object):
         global_num: int = None,
         local_num: int = None,
         touchable: bool = True,
-    ):
+    ) -> t.List:
         kwargs = dict()
         if type:
             kwargs["type"] = type
