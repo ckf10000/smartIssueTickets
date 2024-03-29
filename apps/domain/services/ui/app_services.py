@@ -210,6 +210,7 @@ class CtripAppService(PlatformService):
         """
         检索需要购买的航班是否出现在初始的屏幕中
         """
+        print("判断航班<{}>机票信息是否在初始列表当中...".format(flight))
         in_screen = self.device.get_po(type="android.widget.TextView", name="第{}航班航司信息".format(flight))
         if in_screen.exists():
             return True
