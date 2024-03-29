@@ -37,9 +37,9 @@ class PlatformService(object):
             "device_id": "66J5T19312004724",  # 华为 mate 20
             # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
             # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.MAXTOUCH),
-            # "device_conn": "android://127.0.0.1:5037/66J5T19312004724?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
+            "device_conn": "android://127.0.0.1:5037/66J5T19312004724?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
             # "device_conn": "android://127.0.0.1:5037/192.168.3.232:5555?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
-            "device_conn": "android://127.0.0.1:5037/192.168.3.189:5555?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
+            # "device_conn": "android://127.0.0.1:5037/192.168.3.189:5555?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
             "platform": DEFAULT_PLATFORM,
             "enable_debug": True
         }
