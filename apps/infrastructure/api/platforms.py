@@ -32,25 +32,14 @@ class PlatformService(object):
     
     @staticmethod
     def get_default_andriod_device() -> dict:
-        # 公司LG G7，华为 mate 20
         return {
-            # "device_id": "LMG710N248c5b73",
-            "device_id": "66J5T19312004724",
-            # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
-            # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.MAXTOUCH),
-            "device_conn": "android://127.0.0.1:5037/66J5T19312004724?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
-            # "device_conn": "android://192.168.3.232:5037/LMG710N248c5b73?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
-            # "device_conn": "android://192.168.3.189:5037/66J5T19312004724?cap_method={}&touch_method={}&".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
-            "platform": DEFAULT_PLATFORM,
-            "enable_debug": True
-        }
-    
-    @staticmethod
-    def get_default_harmony_device() -> dict:
-        # mate 20 pro
-        return {
-            "device_id": "LMG710N248c5b73",
-            "device_conn": "android://127.0.0.1:5037/9JB7N18A31000516?touch_method=MAXTOUCH&",
+            # "device_id": "LMG710N248c5b73", # LG G7
+            "device_id": "66J5T19312004724",  # 华为 mate 20
+            # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
+            # "device_conn": "android://127.0.0.1:5037/LMG710N248c5b73?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.MAXTOUCH),
+            # "device_conn": "android://127.0.0.1:5037/66J5T19312004724?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
+            # "device_conn": "android://127.0.0.1:5037/192.168.3.232:5555?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
+            "device_conn": "android://127.0.0.1:5037/192.168.3.189:5555?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
             "platform": DEFAULT_PLATFORM,
             "enable_debug": True
         }

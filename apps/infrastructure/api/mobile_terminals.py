@@ -72,7 +72,27 @@ class Phone(object):
             airtest.utils.compat.DEFAULT_LOG_DIR = "logs"
             airtest.core.settings.Settings.DEBUG = self.enable_debug
             airtest.core.settings.Settings.LOG_FILE = "{}.log".format(self.device_id)
-            if self.device_conn.find("127.0.0.1") != -1:
+            if self.device_conn.find(":5555") != -1:
+                if self.platform == DEFAULT_PLATFORM:
+                    """
+                    device_conn_slice = self.device_conn.split("/")
+                    print(device_conn_slice)
+                    host_ip_slice = device_conn_slice[3].split(":")
+                    # 连接到 Android 设备
+                    device = Android(
+                        serialno=self.device_id,
+                        host=host_ip_slice,
+                        cap_method=CAP_METHOD.JAVACAP,
+                        touch_method=TOUCH_METHOD.ADBTOUCH,
+                    )
+                    device.adb_server.stop()
+                    device.adb_server.start()
+                    device.adb_cmd.connect(device_conn_slice[3])
+                    """
+                    connect_device(self.device_conn)
+                else:
+                    raise ValueError("暂时还不支持非android平台的手机初始化...")
+            else:
                 auto_setup(
                     project_root,
                     logdir=True,
@@ -80,26 +100,6 @@ class Phone(object):
                     project_root=project_root,
                     compress=12,
                 )
-            else:
-                if self.platform == DEFAULT_PLATFORM:
-                    """
-                    device_conn_slice = self.device_conn.split("/")
-                    print(device_conn_slice)
-                    host_ip = device_conn_slice[2].split(":")[0]
-                    # 连接到 Android 设备
-                    device = Android(
-                        serialno=self.device_id,
-                        host=host_ip,
-                        cap_method=CAP_METHOD.JAVACAP,
-                        touch_method=TOUCH_METHOD.ADBTOUCH,
-                    )
-                    device.adb_server.stop()
-                    device.adb_server.start()
-                    device.adb_cmd.connect(device_conn_slice[2])
-                    """
-                    connect_device(self.device_conn)
-                else:
-                    raise ValueError("暂时还不支持非android平台的手机初始化...")
 
     @airtest_exception_format
     def shell(self, cmd: str) -> None:
