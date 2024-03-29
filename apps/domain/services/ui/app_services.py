@@ -164,8 +164,10 @@ class CtripAppService(PlatformService):
         _, _, trip_day = get_trip_year_month_day(date_str=date_str)
         day_str = "{}_red".format(trip_day) if is_public_holiday(date_str=date_str) else "{}_blue".format(trip_day)
         file_name = join_path([get_images_dir(), "{}.png".format(day_str)])
+        print("需要识别日历中的日期文件是：{}".format(file_name))
         if is_exists(file_name):
-            temp = self.device.get_cv_template(file_name=file_name)
+            # threshold 提高识别灵敏度，灵敏度太低，容易将相似的结果匹配出来
+            temp = self.device.get_cv_template(file_name=file_name, threshold=0.9)
             find_results = self.device.find_all(v=temp)
             if isinstance(find_results, t.List) and len(find_results) > 0:
                 sorted_list = sorted(find_results, key=lambda x: (x['result'][1], x['result'][0]))
@@ -762,8 +764,8 @@ if __name__ == "__main__":
 
     app = CtripAppService()
     app.start()
-    # app.select_trip_expect_month(date_str="2024-04-10 21:20")
-    # app.select_trip_expect_day(date_str="2024-04-10 21:20")
+    app.select_trip_expect_month(date_str="2024-04-12 11:45")
+    app.select_trip_expect_day(date_str="2024-04-12 11:45")
     # app.is_exist_flight_in_screen(flight="EU1933")
     # app.device.hide_keyword()
     # app.touch_bank_card_payment()
@@ -792,4 +794,4 @@ if __name__ == "__main__":
     # app.touch_filter_airline()
     # app.select_filter_airline_company("华夏航空")
     # app.touch_filter_submit_button()
-    app.submit_passenger_info()
+    # app.submit_passenger_info()
