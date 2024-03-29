@@ -11,6 +11,7 @@
 """
 from time import sleep
 from typing import Any, Callable
+from poco.exceptions import PocoNoSuchNodeException
 
 
 class SleepWait(object):
@@ -22,6 +23,26 @@ class SleepWait(object):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs) or None
             sleep(self.wait_time)
+            return result
+
+        return wrapper
+    
+class LoopFindElement(object):
+
+    def __init__(self, loop: int = 1) -> None:
+        self.loop = loop
+
+    def __call__(self, func: Callable) -> Any:
+        def wrapper(*args, **kwargs):
+            result = None
+            for i in range(self.loop):
+                # 1秒钟查找一次
+                sleep(1)
+                try:
+                    result = func(*args, **kwargs) or None
+                    break
+                except PocoNoSuchNodeException as e:
+                    print("第{}次查找失败，失败原因：".format(i, str(e)))
             return result
 
         return wrapper

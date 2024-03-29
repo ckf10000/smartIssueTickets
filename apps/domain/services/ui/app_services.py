@@ -12,9 +12,9 @@
 import typing as t
 from pandas import DataFrame
 
-from apps.annotation.delay_wait import SleepWait
 from apps.infrastructure.api.platforms import PlatformService
 from apps.infrastructure.api.mobile_terminals import stop_app
+from apps.annotation.delay_wait import SleepWait, LoopFindElement
 from apps.common.libs.dir import get_images_dir, is_exists, join_path
 from apps.common.libs.date_extend import (
     get_trip_year_month_day,
@@ -433,7 +433,8 @@ class CtripAppService(PlatformService):
         )[0]
         ordinary_booking_button.click()
 
-    @SleepWait(wait_time=3)
+    @LoopFindElement(loop=5)
+    # @SleepWait(wait_time=3)
     def touch_more_passengers_button(self) -> None:
         """
         点击【更多乘机人】按钮
