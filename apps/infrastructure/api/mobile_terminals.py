@@ -625,10 +625,14 @@ class Phone(object):
 
     @airtest_exception_format
     def hide_keyword(self) -> None:
-        keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey", name="完成")
-        if keyword.exists():
-            print("目前检测到键盘已经打开，需要隐藏键盘，再做后续操作...")
-            keyword.click()
+        lg_keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey", name="完成")
+        hw_keyword = self.poco(type="android.widget.ImageView", name="com.android.systemui:id/back", desc="返回")
+        if lg_keyword.exists():
+            print("目前检测到LG键盘已经打开，需要隐藏键盘，再做后续操作...")
+            lg_keyword.click()
+        elif hw_keyword.exists():
+            print("目前检测到HW键盘已经打开，需要隐藏键盘，再做后续操作...")
+            hw_keyword.click()
         else:
             print("键盘已经隐藏，无需处理键盘...")
 
@@ -645,4 +649,5 @@ if __name__ == "__main__":
     # print(ph.start_app("abc"))
     # print(ph.stop_app("abc"))
     # print(ph.wake())
-    print(ph.home())
+    # print(ph.home())
+    ph.hide_keyword()
