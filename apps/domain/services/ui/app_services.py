@@ -168,7 +168,6 @@ class CtripAppService(PlatformService):
             temp = self.device.get_cv_template(file_name=file_name)
             find_results = self.device.find_all(v=temp)
             if isinstance(find_results, t.List) and len(find_results) > 0:
-                print(find_results)
                 sorted_list = sorted(find_results, key=lambda x: (x['result'][1], x['result'][0]))
                 temp = sorted_list[0].get("result")
             else:
