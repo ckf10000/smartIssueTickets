@@ -388,7 +388,6 @@ class Phone(object):
         return list:  [{‘result’: (x, y), ‘rectangle’: ( (left_top, left_bottom, right_bottom, right_top) ), ‘confidence’: 0.9}, …]
         platform: Android, iOS, Windows
         """
-        result = None
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
             # self.device.find_all(Template(r"tpl1607511235111.png"))
             # >> [{'result': (218, 468), 'rectangle': ((149, 440), (149, 496), (288, 496), (288, 440)),'confidence': 0.9999996423721313}]
