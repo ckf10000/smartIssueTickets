@@ -623,17 +623,24 @@ class Phone(object):
         return ordered_dict
 
     @airtest_exception_format
-    def hide_keyword(self) -> None:
-        lg_keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey", name="完成")
-        hw_keyword = self.poco(type="android.widget.ImageView", name="com.android.systemui:id/back", desc="返回")
-        if lg_keyword.exists():
-            print("目前检测到LG键盘已经打开，需要隐藏键盘，再做后续操作...")
-            lg_keyword.click()
-        elif hw_keyword.exists():
-            print("目前检测到HW键盘已经打开，需要隐藏键盘，再做后续操作...")
-            hw_keyword.click()
+    def hide_keyword(self, file_name: str) -> None:
+        temp = self.get_cv_template(file_name=file_name)
+        hide_icon = self.find_all(v=temp)
+        if len(hide_icon) > 0:
+            print("目前检测到键盘已打开，需要隐藏键盘，再做后续操作...")
+            self.touch(v=temp)
         else:
-            print("键盘已经隐藏，无需处理键盘...")
+            hw_keyword = self.poco(type="android.widget.ImageView", name="com.android.systemui:id/back", desc="返回")
+            if hw_keyword.exists():
+                print("目前检测到HW键盘已经打开，需要隐藏键盘，再做后续操作...")
+                hw_keyword.click()
+            else:
+                lg_keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey", name="完成")
+                if lg_keyword.exists():
+                    print("目前检测到LG键盘已经打开，需要隐藏键盘，再做后续操作...")
+                    lg_keyword.click()
+                else:
+                    print("键盘已经隐藏，无需处理键盘...")
 
 class Pad(object):
     pass

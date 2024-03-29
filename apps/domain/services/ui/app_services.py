@@ -519,7 +519,8 @@ class CtripAppService(PlatformService):
         """
         点击【完成】按钮，提交乘客信息
         """
-        self.device.hide_keyword()
+        file_name = join_path([get_images_dir(), "键盘隐藏.png"])
+        self.device.hide_keyword(file_name=file_name)
         passenger_info = self.device.get_po_extend(
             type="android.widget.TextView",
             name="新增乘机人完成按钮",
@@ -763,7 +764,7 @@ if __name__ == "__main__":
     app.start()
     # app.select_trip_expect_month(date_str="2024-04-10 21:20")
     # app.select_trip_expect_day(date_str="2024-04-10 21:20")
-    app.is_exist_flight_in_screen(flight="EU1933")
+    # app.is_exist_flight_in_screen(flight="EU1933")
     # app.device.hide_keyword()
     # app.touch_bank_card_payment()
     # app.enter_payment_pass(payment_pass="123456")
@@ -791,3 +792,4 @@ if __name__ == "__main__":
     # app.touch_filter_airline()
     # app.select_filter_airline_company("华夏航空")
     # app.touch_filter_submit_button()
+    app.submit_passenger_info()
