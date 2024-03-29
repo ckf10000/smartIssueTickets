@@ -162,7 +162,7 @@ class CtripAppService(PlatformService):
     @SleepWait(wait_time=2)
     def select_trip_expect_day(self, date_str: str) -> None:
         _, _, trip_day = get_trip_year_month_day(date_str=date_str)
-        day_str = "{}_red".format(trip_day) if is_public_holiday(date_str=date_str) else trip_day
+        day_str = "{}_red".format(trip_day) if is_public_holiday(date_str=date_str) else "{}_blue".format(trip_day)
         file_name = join_path([get_images_dir(), "{}.png".format(day_str)])
         if is_exists(file_name):
             temp = self.device.get_cv_template(file_name=file_name)
@@ -761,6 +761,8 @@ if __name__ == "__main__":
 
     app = CtripAppService()
     app.start()
+    app.select_trip_expect_month(date_str="2024-04-02 21:20")
+    app.select_trip_expect_day(date_str="2024-04-02 21:20")
     # app.device.hide_keyword()
     # app.touch_bank_card_payment()
     # app.enter_payment_pass(payment_pass="123456")
