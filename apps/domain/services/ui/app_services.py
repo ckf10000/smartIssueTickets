@@ -205,7 +205,6 @@ class CtripAppService(PlatformService):
         )[0]
         query_special_flight.click()
 
-    @SleepWait(wait_time=1)
     def is_exist_flight_in_screen(self, flight: str) -> bool:
         """
         检索需要购买的航班是否出现在初始的屏幕中

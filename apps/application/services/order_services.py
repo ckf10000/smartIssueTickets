@@ -50,7 +50,6 @@ class PhoneOrderService(object):
         app.touch_only_query_some_day()
         app.touch_query_special()
         is_exist_flight = app.is_exist_flight_in_screen(flight=flight)
-        print(is_exist_flight)
         if is_exist_flight is False:
             app.touch_flight_inland_single_list_filter()
             app.touch_clear_filter()
