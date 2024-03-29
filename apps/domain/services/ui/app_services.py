@@ -349,7 +349,7 @@ class CtripAppService(PlatformService):
         )[0]
         submit_button.click()
 
-    @SleepWait(wait_time=3)
+    @SleepWait(wait_time=5)
     def select_special_flight(self, flight: str) -> None:
         """
         从特价机票列表中选择本次订单的航班
