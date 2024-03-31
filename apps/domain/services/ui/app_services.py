@@ -764,8 +764,10 @@ if __name__ == "__main__":
 
     app = CtripAppService()
     app.start()
-    app.select_trip_expect_month(date_str="2024-04-12 11:45")
-    app.select_trip_expect_day(date_str="2024-04-12 11:45")
+    # app.select_trip_expect_month(date_str="2024-04-12 11:45")
+    # app.select_trip_expect_day(date_str="2024-04-12 11:45")
+    app.select_trip_expect_month(date_str="2024-05-01 22:05")
+    app.select_trip_expect_day(date_str="2024-05-01 22:05")
     # app.is_exist_flight_in_screen(flight="EU1933")
     # app.device.hide_keyword()
     # app.touch_bank_card_payment()
