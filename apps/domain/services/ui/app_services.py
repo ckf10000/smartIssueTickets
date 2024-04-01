@@ -360,10 +360,17 @@ class CtripAppService(PlatformService):
         """
         从特价机票列表中选择本次订单的航班
         """
-        desc = "第{}航班航司信息".format(flight)
-        special_flight = self.device.get_po(type="android.widget.TextView", name=desc)
-        special_flight.click()
-        print("选择：", desc)
+        desc_1 = "第{}航班航司信息".format(flight)
+        desc_2 = "第{}航班".format(flight)
+        special_flight_1 = self.device.get_po(type="android.widget.TextView", name=desc_1)
+        special_flight_2 = self.device.get_po(type="android.widget.TextView", name=desc_2)
+        if special_flight_1.exists():
+            special_flight_1.click()
+        elif special_flight_2.exists():
+            special_flight_2.click()
+        else:
+            raise ValueError("当前页面没有找到", desc_2)
+        print("选择：", desc_2)
 
     @SleepWait(wait_time=1)
     def get_special_flight_price(self) -> float:
