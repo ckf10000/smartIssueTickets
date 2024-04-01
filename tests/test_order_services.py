@@ -26,3 +26,6 @@ def test_booking_ctrip_special_flight_ticket():
         phone="18569520328",
         payment_pass="901127",
     )
+
+if __name__ == "__main__":
+    test_booking_ctrip_special_flight_ticket()
