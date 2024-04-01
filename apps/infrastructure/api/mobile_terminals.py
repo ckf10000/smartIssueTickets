@@ -274,7 +274,7 @@ class Phone(object):
         # touch_proxy.touch(v)
 
     @airtest_exception_format
-    def swipe(self, v1, v2: tuple = None, vector: tuple = None, **kwargs) -> None:
+    def swipe(self, v1, v2: tuple = None, vector: tuple = None, duration: float=None, **kwargs) -> None:
         """
         在当前设备画面上进行一次滑动操作
         v1 tuple or Template: 滑动的起点，可以是一个Template图片实例，或是绝对坐标 (x, y)
@@ -289,7 +289,8 @@ class Phone(object):
             # self.device.swipe(Template(r"tpl1606814865574.png"), vector=[-0.0316, -0.3311])
             # self.device.swipe((100, 100), (200, 200))
             # self.device.swipe((100, 100), (200, 200), duration=1, steps=6)
-            result = self.device.swipe(v1=v1, v2=v2, vector=vector, **kwargs)
+            # result = self.device.swipe(v1=v1, v2=v2, vector=vector, duration=duration,**kwargs)
+            result = self.poco.swipe(p1=v1, p2=v2, duration=duration, direction=vector)
         return result or None
 
     @airtest_exception_format
@@ -653,7 +654,7 @@ class Phone(object):
                     lg_keyword.click()
                 else:
                     print("键盘已经隐藏，无需处理键盘...")
-    
+
     # 获取元素在屏幕上的绝对坐标
     @staticmethod
     def get_abs_position(element: AndroidUiautomationPoco) -> t.Tuple:
@@ -662,6 +663,18 @@ class Phone(object):
         absolute_x = int(relative_position[0] * screen_width)
         absolute_y = int(relative_position[1] * screen_height)
         return absolute_x, absolute_y
+
+    # 快捷滑屏
+    def quick_slide_screen(self, duration: float=0.5):
+        # 获取屏幕尺寸
+        screen_width, screen_height = get_screen_size_via_adb()
+        # 定义起始点和终止点坐标
+        start_x = screen_width // 2  # 屏幕中心点的横坐标
+        start_y = screen_height // 2  # 屏幕中心点的纵坐标
+        end_x = start_x  # 横坐标保持不变
+        end_y = screen_height // 4  # 终止点纵坐标为屏幕顶部 1/4 处
+        # 执行滑动操作
+        self.swipe((start_x, start_y), (end_x, end_y), duration=duration)
 
 class Pad(object):
     pass

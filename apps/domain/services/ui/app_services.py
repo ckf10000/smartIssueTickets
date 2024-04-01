@@ -585,6 +585,8 @@ class CtripAppService(PlatformService):
         """
         选择【无保障】航意航延组合险
         """
+        # 先滑屏
+        self.device.quick_slide_screen(duration=0.5)
         insecure = self.device.get_po_extend(
             type="android.widget.TextView",
             name="航意航延组合险无保障标题",
