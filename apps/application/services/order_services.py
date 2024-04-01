@@ -12,22 +12,23 @@
 from time import sleep
 from apps.domain.services.ui.app_services import CtripAppService
 
+
 class PhoneOrderService(object):
 
     @classmethod
     def booking_ctrip_special_flight_ticket(
         cls,
-        departure_city: str, # 离开城市
-        arrive_city: str, # 抵达城市
-        departure_time: str, # 起飞时间
-        ac: str, # 航司
-        lowest_price: float, # 最低票价
-        flight: str, # 航班编号
-        passenger: str, # 乘客
-        age_stage: str, # 乘客年龄阶段，儿童/成人
-        card_id: str, # 身份证号
-        phone: str, # 手机号码
-        payment_pass: str
+        departure_city: str,  # 离开城市
+        arrive_city: str,  # 抵达城市
+        departure_time: str,  # 起飞时间
+        ac: str,  # 航司
+        lowest_price: float,  # 最低票价
+        flight: str,  # 航班编号
+        passenger: str,  # 乘客
+        age_stage: str,  # 乘客年龄阶段，儿童/成人
+        card_id: str,  # 身份证号
+        phone: str,  # 手机号码
+        payment_pass: str,
     ) -> None:
         app = CtripAppService()
         app.device.wake()
@@ -81,22 +82,18 @@ class PhoneOrderService(object):
             if is_duplicate_order:
                 print(is_duplicate_order)
             else:
-                app.touch_select_service_no_need() # 保障不需要
+                app.touch_select_service_no_need()  # 保障不需要
                 app.touch_select_service_no_need()  # 预约不需要
                 app.touch_to_payment()
                 app.touch_insure_no()
                 app.touch_read_agree()
                 app.select_more_payment()
                 app.select_point_deduction()
-                app.touch_bank_card_payment() 
+                app.touch_bank_card_payment()
                 app.enter_payment_pass(payment_pass=payment_pass)
         else:
-            print("当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(special_flight_price, lowest_price))
-
-
-if __name__ == "__main__":
-    PhoneOrderService.booking_ctrip_special_flight_ticket(
-        departure_city="CGQ", arrive_city="XUZ", departure_time="2024-04-04 19:35", ac="长龙航空", flight="GJ8060",
-        lowest_price=495.00, passenger="刘铁", age_stage="成人", card_id="220221199005106811", phone="18569520328", 
-        payment_pass="901127"
-     )
+            print(
+                "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(
+                    special_flight_price, lowest_price
+                )
+            )

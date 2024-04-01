@@ -14,16 +14,16 @@ from apps.application.services.order_services import PhoneOrderService
 
 def test_booking_ctrip_special_flight_ticket():
     PhoneOrderService.booking_ctrip_special_flight_ticket(
-        departure_city="CGQ",
-        arrive_city="XUZ",
-        departure_time="2024-04-04 19:35",
-        ac="长龙航空",
-        flight="GJ8060",
-        lowest_price=495.00,
-        passenger="刘铁",
+        ac="厦门航空",
+        departure_time="2024-04-03 21:25",
+        flight="MF8266",
+        departure_city="CKG",
+        arrive_city="JJN",
+        passenger="杨小芸",
         age_stage="成人",
-        card_id="220221199005106811",
+        card_id="350521200101053562",
         phone="18569520328",
+        lowest_price=737.00,
         payment_pass="901127",
     )
 
