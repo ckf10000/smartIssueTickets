@@ -10,6 +10,7 @@
 # -----------------------------------------------------------------------------------------------------------------------
 """
 from time import sleep
+from apps.common.config.airlines import airline_map
 from apps.domain.services.ui.app_services import CtripAppService
 
 
@@ -21,7 +22,6 @@ class PhoneOrderService(object):
         departure_city: str,  # 离开城市
         arrive_city: str,  # 抵达城市
         departure_time: str,  # 起飞时间
-        ac: str,  # 航司
         lowest_price: float,  # 最低票价
         flight: str,  # 航班编号
         passenger: str,  # 乘客
@@ -30,6 +30,8 @@ class PhoneOrderService(object):
         phone: str,  # 手机号码
         payment_pass: str,
     ) -> None:
+        ac = airline_map.get(flight[:2].upper())
+        print("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))
         app = CtripAppService()
         app.device.wake()
         app.restart()
