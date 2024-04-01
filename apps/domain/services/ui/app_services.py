@@ -363,6 +363,7 @@ class CtripAppService(PlatformService):
         desc = "第{}航班航司信息".format(flight)
         special_flight = self.device.get_po(type="android.widget.TextView", name=desc)
         special_flight.click()
+        print("选择：", desc)
 
     @SleepWait(wait_time=1)
     def get_special_flight_price(self) -> float:
