@@ -366,11 +366,13 @@ class CtripAppService(PlatformService):
         special_flight_2 = self.device.get_po(type="android.widget.TextView", name=desc_2)
         if special_flight_1.exists():
             special_flight_1.click()
+            desc = special_flight_1.get_text()
         elif special_flight_2.exists():
             special_flight_2.click()
+            desc = special_flight_1.get_text()
         else:
             raise ValueError("当前页面没有找到", desc_2)
-        print("选择：", desc_2)
+        print("选择：", desc)
 
     @SleepWait(wait_time=1)
     def get_special_flight_price(self) -> float:
