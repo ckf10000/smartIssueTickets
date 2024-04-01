@@ -139,6 +139,6 @@ class JinLvDesktopService(object):
 
 
 if __name__ == "__main__":
-    JimLv = JinLvDeskService() 
+    JimLv = JinLvDesktopService() 
     JimLv.login(username="周汗林", password="ca123456", is_logout=False)
     JimLv.show_internal_unissue_tickets()
