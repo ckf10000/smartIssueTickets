@@ -454,7 +454,8 @@ class CtripAppService(PlatformService):
         )[0]
         add_passenger_button.click()
 
-    @SleepWait(wait_time=1)
+    @LoopFindElement(loop=5)
+    # @SleepWait(wait_time=1)
     def touch_add_passengers_button(self) -> None:
         """
         点击【新增乘机人】按钮
@@ -538,6 +539,7 @@ class CtripAppService(PlatformService):
         """
         点击【确认无误】按钮，提交乘客信息
         """
+        """
         passenger_info_confirm = self.device.get_po_extend(
             type="android.view.ViewGroup",
             name="android.view.ViewGroup",
@@ -546,9 +548,18 @@ class CtripAppService(PlatformService):
             touchable=True,
         )[0]
         passenger_info_confirm.click()
+        """
+        file_name = join_path([get_images_dir(), "乘机人信息_确认无误.png"])
+        if is_exists(file_name):
+            temp = self.device.get_cv_template(file_name=file_name)
+        else:
+            temp = (723, 1413) # LG g7手机上对应的坐标位置，其他型号手机可能不是这个值
+        self.device.touch(v=temp)
 
-    @SleepWait(wait_time=1)
+    @LoopFindElement(loop=5)
+    # @SleepWait(wait_time=1)
     def add_passenger(self, passenger: str) -> None:
+        
         """
         点击【确定】按钮，添加乘客
         """
@@ -764,10 +775,10 @@ if __name__ == "__main__":
 
     app = CtripAppService()
     app.start()
-    # app.select_trip_expect_month(date_str="2024-04-12 11:45")
-    # app.select_trip_expect_day(date_str="2024-04-12 11:45")
-    app.select_trip_expect_month(date_str="2024-05-01 22:05")
-    app.select_trip_expect_day(date_str="2024-05-01 22:05")
+    # app.select_trip_expect_month(date_str="2024-04-28 11:45")
+    # app.select_trip_expect_day(date_str="2024-04-28 11:45")
+    # app.select_trip_expect_month(date_str="2024-05-19 22:05")
+    # app.select_trip_expect_day(date_str="2024-05-19 22:05")
     # app.is_exist_flight_in_screen(flight="EU1933")
     # app.device.hide_keyword()
     # app.touch_bank_card_payment()
@@ -797,3 +808,4 @@ if __name__ == "__main__":
     # app.select_filter_airline_company("华夏航空")
     # app.touch_filter_submit_button()
     # app.submit_passenger_info()
+    app.submit_passenger_info_confirm()
