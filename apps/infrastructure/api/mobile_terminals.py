@@ -46,6 +46,18 @@ def stop_app(app_name, timeout=5):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def get_screen_size_via_adb():
+    # 使用ADB命令获取设备屏幕大小
+    try:
+        output = subprocess.check_output(['adb', 'shell', 'wm', 'size']).decode('utf-8')
+        match = re.search(r'Physical size: (\d+)x(\d+)', output)
+        if match:
+            width = int(match.group(1))
+            height = int(match.group(2))
+            return width, height
+    except subprocess.CalledProcessError as e:
+        print("Error: ADB command failed:", e)
+    return None
 
 class Phone(object):
 
@@ -440,7 +452,7 @@ class Phone(object):
             result = self.device.paste(*args, **kwargs)
         return result or None
 
-    def get_po(self, type: str, name: str='', text:str='', desc: str='') -> t.List:
+    def get_po(self, type: str, name: str='', text:str='', desc: str='') -> AndroidUiautomationPoco:
         kwargs = dict()
         if type:
             kwargs["type"] = type
@@ -641,6 +653,15 @@ class Phone(object):
                     lg_keyword.click()
                 else:
                     print("键盘已经隐藏，无需处理键盘...")
+    
+    # 获取元素在屏幕上的绝对坐标
+    @staticmethod
+    def get_abs_position(element: AndroidUiautomationPoco) -> t.Tuple:
+        screen_width, screen_height = get_screen_size_via_adb()
+        relative_position = element.get_position()
+        absolute_x = int(relative_position[0] * screen_width)
+        absolute_y = int(relative_position[1] * screen_height)
+        return absolute_x, absolute_y
 
 class Pad(object):
     pass
