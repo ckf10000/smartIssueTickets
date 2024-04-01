@@ -274,12 +274,11 @@ class Phone(object):
         # touch_proxy.touch(v)
 
     @airtest_exception_format
-    def swipe(self, v1, v2: tuple = None, vector: tuple = None, duration: float=None, **kwargs) -> None:
+    def swipe(self, v1, v2: tuple = None, duration: float=None, **kwargs) -> None:
         """
         在当前设备画面上进行一次滑动操作
         v1 tuple or Template: 滑动的起点，可以是一个Template图片实例，或是绝对坐标 (x, y)
         v2 tuple or Template: 滑动的终点，可以是一个Template图片实例，或是绝对坐标 (x, y)
-        vector tuple: 滑动动作的矢量坐标，可以是绝对坐标 (x,y) 或是屏幕百分比，例如 (0.5, 0.5)
         kwargs dict: 平台相关的参数 kwargs，请参考对应的平台接口文档
         return: 原点位置和目标位置
         platform: Android, iOS, Windows
@@ -290,7 +289,7 @@ class Phone(object):
             # self.device.swipe((100, 100), (200, 200))
             # self.device.swipe((100, 100), (200, 200), duration=1, steps=6)
             # result = self.device.swipe(v1=v1, v2=v2, vector=vector, duration=duration,**kwargs)
-            result = self.poco.swipe(p1=v1, p2=v2, duration=duration, direction=vector)
+            result = self.device.swipe(p1=v1, p2=v2, duration=duration, **kwargs)
         return result or None
 
     @airtest_exception_format

@@ -16,6 +16,12 @@ def test_select_special_flight():
     app.start()
     app.select_special_flight(flight="MF8266")
 
+def test_select_insecure():
+    app = CtripAppService()
+    app.start()
+    app.select_insecure()
+
 
 if __name__ == "__main__":
-    test_select_special_flight()
+    # test_select_special_flight()
+    test_select_insecure()
