@@ -1,46 +1,171 @@
 swagger: "2.0"
 info:
-  description: "This is a Pagoda-OS server. For this sample, you can use the api key `special-key` to test the authorization   filters.\nAuthorization exp:\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/internal/api`------Cookie Authentication\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/api/internal`------No Authentication, In use within the cluster\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/rest/api`-----------Token Authentication\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/open/api`-----------OpenAPI, No Authentication"
+  description: "This is a smartIssueTickets server. For this sample, you can use the api key `special-key` to test the authorization   filters.\nAuthorization exp:\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/internal/api`------Cookie Authentication\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/rest/api`-----------Token Authentication\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/open/api`-----------OpenAPI, No Authentication"
   version: "1.0.0"
   title: "Swagger smartIssueTickets"
-  termsOfService: "https://pagoda.xsyxsc.com/terms/"
+  termsOfService: "https://www.baidu.com"
   contact:
-    email: "zhouhanlin@hn.xsyxsc.com"
+    email: "ckf10000@sina.com"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 tags:
-  - name: "collect"
-    description: "    数据采集相关接口"
+  - name: "booking"
+    description: "    预订相关接口"
     externalDocs:
       description: "Find out more"
-      url: "https://pagoda.xsyxsc.com"
+      url: "https://www.baidu.com"
+  - name: "maintain"
+    description: "    系统管理，维护的相关接口"
+    externalDocs:
+      description: "Find out more"
+      url: "https://www.baidu.com"
 schemes:
-  - "https"
   - "http"
+  - "https"
+paths:
+  /open/api/main/health/getStatus:
+    get:
+      tags:
+        - "maintain"
+      summary: "获取服务健康状态"
+      description: "获取服务健康状态"
+      operationId: "HealthStatusController"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为实际需要的数据"
+          schema:
+            $ref: "#/definitions/NormalResponse"
+        400:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为空"
+          schema:
+            $ref: "#/definitions/ExceptionResponse"
+  /open/api/main/url/getAll:
+    get:
+      tags:
+        - "maintain"
+      summary: "获取当前服务的所有url路径"
+      description: "获取当前服务的所有url路径"
+      operationId: "UrlsController"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为实际需要的数据"
+          schema:
+            $ref: "#/definitions/GetUrlsResponse"
+        400:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为空"
+          schema:
+            $ref: "#/definitions/ExceptionResponse"
+  /open/api/main/url/getBrief:
+    get:
+      tags:
+        - "maintain"
+      summary: "获取当前服务的所有url路径摘要信息"
+      description: "获取当前服务的所有url路径摘要信息"
+      operationId: "UrlMapController"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为实际需要的数据"
+          schema:
+            $ref: "#/definitions/GetBriefUrlMapResponse"
+        400:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为空"
+          schema:
+            $ref: "#/definitions/ExceptionResponse"
+  /open/api/booking/ctrip/specialFlight:
+    get:
+      tags:
+        - "booking"
+      summary: "执行携程app自动化下单特价机票"
+      description: "执行携程app自动化下单特价机票"
+      operationId: "BookingCtripAppSpecialFlightController"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "执行携程app自动化下单特价机票时所需要的参数"
+          required: true
+          schema:
+            $ref: "#/requestModels/BookingCtripAppSpecialFlightControllerRequest"
+      responses:
+        200:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为实际需要的数据"
+          schema:
+            $ref: "#/definitions/NormalResponse"
+        400:
+          description: "返回的是一个字典(map)，第一位是状态200xxx成功，400xxx参数错误，500xxx运行异常，第三个data为空"
+          schema:
+            $ref: "#/definitions/ExceptionResponse"
 securityDefinitions:
-  session:
+  pagoda_session:
     type: "apiKey"
     in: "cookie"
     name: "Cookie"
-  token:
+  pagoda_auth_token:
     type: "apiKey"
     in: "header"
     name: "Authorization"
     scheme: "bearer"
     bearerFormat: "JWT"
 definitions:
+  GetUrlsResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+        description: "200xxx成功，400xxx参数错误，500xxx运行异常"
+        default: 200
+      data:
+        $ref: "#/responseModels/listData"
+      message:
+        type: "string"
+        description: "请求事件记录的消息"
+      requestId:
+        type: "string"
+        description: "请求ID"
+  GetBriefUrlMapResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+        description: "200xxx成功，400xxx参数错误，500xxx运行异常"
+        default: 200
+      data:
+        $ref: "#/responseModels/GetBriefUrlMapData"
+      message:
+        type: "string"
+        description: "请求事件记录的消息"
+      requestId:
+        type: "string"
+        description: "请求ID"
   CreateResponse:
     type: "object"
     properties:
       code:
         type: "integer"
         format: "int32"
-        default: 201101
+        default: 201
         description: "201xxx成功，400xxx参数错误，500xxx运行异常"
       data:
         type: "string"
-        default: 201101
+        default: 201
       message:
         type: "string"
         description: "请求事件记录的消息"
@@ -54,11 +179,11 @@ definitions:
       code:
         type: "integer"
         format: "int32"
-        default: 201101
+        default: 201
         description: "201xxx成功，400xxx参数错误，500xxx运行异常"
       data:
         type: "string"
-        default: 201101
+        default: 201
       message:
         type: "string"
         description: "请求事件记录的消息"
@@ -72,11 +197,11 @@ definitions:
       code:
         type: "integer"
         format: "int32"
-        default: 201102
+        default: 201
         description: "201xxx成功，400xxx参数错误，500xxx运行异常"
       data:
         type: "string"
-        default: 201104
+        default: 201
       message:
         type: "string"
         description: "请求事件记录的消息"
@@ -90,11 +215,11 @@ definitions:
       code:
         type: "integer"
         format: "int32"
-        default: 200101
+        default: 200
         description: "200xxx成功，400xxx参数错误，500xxx运行异常"
       data:
         type: "string"
-        default: 200100
+        default: 200
       message:
         type: "string"
         description: "请求事件记录的消息"
@@ -108,17 +233,109 @@ definitions:
       code:
         type: "integer"
         format: "int32"
-        default: 400101
+        default: 400
         description: "200xxx成功，400xxx参数错误，500xxx运行异常"
       data:
         type: "string"
-        default: 400100
+        default: 400
       message:
         type: "string"
         description: "请求事件记录的消息"
       requestId:
         type: "string"
         description: "请求ID"
+requestModels:
+  BookingCtripAppSpecialFlightControllerRequest:
+    type: "object"
+    required:
+      - "departure_time"
+      - "flight"
+      - "departure_city"
+      - "arrive_city"
+      - "passenger"
+      - "age_stage"
+      - "card_id"
+      - "phone"
+      - "lowest_price"
+      - "payment_pass"
+    properties:
+      departure_time:
+        type: "string"
+        description: "起飞时间"
+        required: true
+        format: "date"
+      flight:
+        type: "string"
+        description: "航班"
+        required: true
+      departure_city:
+        type: "string"
+        description: "起飞城市"
+        required: true
+      arrive_city:
+        type: "string"
+        description: "抵达城市"
+        required: true
+      passenger:
+        type: "string"
+        description: "乘客姓名"
+        required: true
+      age_stage:
+        default: "成人"
+        description: "年龄阶段"
+        required: true
+        enum:
+          - "成人"
+          - "儿童"
+      card_id:
+        type: "string"
+        description: "乘客身份证号"
+        required: true
+      phone:
+        type: "string"
+        description: "手机号码"
+        required: true
+      lowest_price:
+        type: "string"
+        description: "最低售价"
+        required: true
+      payment_pass:
+        type: "string"
+        description: "支付密码"
+        required: true
+responseModels:
+  listData:
+    type: "array"
+    items:
+      type: "string"
+      description: "url路径"
+  GetBriefUrlMap:
+    type: "object"
+    properties:
+      url_suffix:
+        type: "string"
+        description: "url路径"
+      is_leaf:
+        type: "boolean"
+        description: "是否为子路径"
+      endpoint:
+        type: "string"
+        description: "模块接入端点"
+      arguments:
+        type: "string"
+        description: "url路径参数，如果存在的话"
+      methods:
+        type: "array"
+        items:
+          type: "string"
+          description: "该接口支持的请求方法"
+      websocket:
+        type: "boolean"
+        description: "是否包含websocket"
+  GetBriefUrlMapData:
+    type: "array"
+    items:
+      $ref: "#/responseModels/GetBriefUrlMap"
 externalDocs:
   description: "Find out more about Swagger"
   url: "https://www.baidu.com"
