@@ -1,0 +1,7 @@
+# json格式化输出
+JSONIFY_PRETTYPRINT_REGULAR: True
+# 支持中文输出
+JSON_AS_ASCII: True
+# json消息类型
+JSONIFY_MIMETYPE: "application/json; charset=UTF-8"
+BABEL_DEFAULT_LOCALE: "zh_Hans_CN"

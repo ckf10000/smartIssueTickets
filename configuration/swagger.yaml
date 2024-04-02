@@ -1,0 +1,124 @@
+swagger: "2.0"
+info:
+  description: "This is a Pagoda-OS server. For this sample, you can use the api key `special-key` to test the authorization   filters.\nAuthorization exp:\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/internal/api`------Cookie Authentication\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/api/internal`------No Authentication, In use within the cluster\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/rest/api`-----------Token Authentication\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`/open/api`-----------OpenAPI, No Authentication"
+  version: "1.0.0"
+  title: "Swagger smartIssueTickets"
+  termsOfService: "https://pagoda.xsyxsc.com/terms/"
+  contact:
+    email: "zhouhanlin@hn.xsyxsc.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+tags:
+  - name: "collect"
+    description: "    数据采集相关接口"
+    externalDocs:
+      description: "Find out more"
+      url: "https://pagoda.xsyxsc.com"
+schemes:
+  - "https"
+  - "http"
+securityDefinitions:
+  session:
+    type: "apiKey"
+    in: "cookie"
+    name: "Cookie"
+  token:
+    type: "apiKey"
+    in: "header"
+    name: "Authorization"
+    scheme: "bearer"
+    bearerFormat: "JWT"
+definitions:
+  CreateResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+        default: 201101
+        description: "201xxx成功，400xxx参数错误，500xxx运行异常"
+      data:
+        type: "string"
+        default: 201101
+      message:
+        type: "string"
+        description: "请求事件记录的消息"
+        default: "表单提交成功/数据更新成功"
+      requestId:
+        type: "string"
+        description: "请求ID"
+  UpdateResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+        default: 201101
+        description: "201xxx成功，400xxx参数错误，500xxx运行异常"
+      data:
+        type: "string"
+        default: 201101
+      message:
+        type: "string"
+        description: "请求事件记录的消息"
+        default: "表单提交成功/数据更新成功"
+      requestId:
+        type: "string"
+        description: "请求ID"
+  DelResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+        default: 201102
+        description: "201xxx成功，400xxx参数错误，500xxx运行异常"
+      data:
+        type: "string"
+        default: 201104
+      message:
+        type: "string"
+        description: "请求事件记录的消息"
+        default: "数据删除成功"
+      requestId:
+        type: "string"
+        description: "请求ID"
+  NormalResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+        default: 200101
+        description: "200xxx成功，400xxx参数错误，500xxx运行异常"
+      data:
+        type: "string"
+        default: 200100
+      message:
+        type: "string"
+        description: "请求事件记录的消息"
+        default: "查询操作执行成功"
+      requestId:
+        type: "string"
+        description: "请求ID"
+  ExceptionResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+        default: 400101
+        description: "200xxx成功，400xxx参数错误，500xxx运行异常"
+      data:
+        type: "string"
+        default: 400100
+      message:
+        type: "string"
+        description: "请求事件记录的消息"
+      requestId:
+        type: "string"
+        description: "请求ID"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "https://www.baidu.com"
