@@ -2,22 +2,25 @@
 """
 # -----------------------------------------------------------------------------------------------------------------------
 # ProjectName:  smartIssueTickets
-# FileName:     order_services.py
-# Description:  订单服务
+# FileName:     booking_services.py
+# Description:  预订服务
 # Author:       ckf10000
 # CreateDate:   2024/03/23 13:09:38
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-from time import sleep
+import asyncio
+from apps.annotation.log_service import logger
 from apps.common.config.airlines import airline_map
 from apps.domain.services.ui.app_services import CtripAppService
 
+__all__ = ["booking_flight_ser"]
 
-class PhoneOrderService(object):
+
+class BookingFlightService(object):
 
     @classmethod
-    def booking_ctrip_special_flight_ticket(
+    async def booking_ctrip_app_special_flight_ticket(
         cls,
         departure_city: str,  # 离开城市
         arrive_city: str,  # 抵达城市
@@ -30,12 +33,13 @@ class PhoneOrderService(object):
         phone: str,  # 手机号码
         payment_pass: str,
     ) -> None:
+        await asyncio.sleep(1)
         ac = airline_map.get(flight[:2].upper())
-        print("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))
+        logger.info("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))
         app = CtripAppService()
         app.device.wake()
         app.restart()
-        sleep(8)
+        await asyncio.sleep(8)
         app.touch_home()
         app.touch_flight_ticket()
         app.touch_special_flight_ticket()
@@ -82,7 +86,7 @@ class PhoneOrderService(object):
             app.touch_fill_order_next_step()
             is_duplicate_order = app.is_duplicate_order()
             if is_duplicate_order:
-                print(is_duplicate_order)
+                logger.info(is_duplicate_order)
             else:
                 app.touch_select_service_no_need()  # 保障不需要
                 app.touch_select_service_no_need()  # 预约不需要
@@ -94,8 +98,11 @@ class PhoneOrderService(object):
                 app.touch_bank_card_payment()
                 app.enter_payment_pass(payment_pass=payment_pass)
         else:
-            print(
+            logger.warning(
                 "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(
                     special_flight_price, lowest_price
                 )
             )
+
+
+booking_flight_ser = BookingFlightService()

@@ -14,7 +14,7 @@ from flask import request, g
 from flask_restful import Resource, reqparse
 
 
-class BaseResource(Resource):
+class BaseController(Resource):
 
     def __init__(self):
         super().__init__()
@@ -78,7 +78,7 @@ class BaseResource(Resource):
                 )
 
 
-class BaseArgumentResource(BaseResource):
+class BaseArgumentController(BaseController):
 
     def __init__(self):
         super().__init__()

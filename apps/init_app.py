@@ -62,7 +62,10 @@ def register_extensions(app: Flask):
 
 
 def register_blueprints(app: Flask):
-    pass
+    from apps.application.bluesprints.maintain_bluesprints import main_bp
+    from apps.application.bluesprints.booking_bluesprints import booking_bp
+    app.register_blueprint(main_bp, url_prefix='/' + main_bp.name)
+    app.register_blueprint(booking_bp, url_prefix="/" + booking_bp.name)
 
 
 def register_request_handlers(app: Flask):
