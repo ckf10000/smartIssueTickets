@@ -107,10 +107,11 @@ class Phone(object):
             else:
                 auto_setup(
                     project_root,
-                    logdir=True,
+                    # logdir=True,
+                    logdir=False,
                     devices=[self.device_conn],
                     project_root=project_root,
-                    compress=12,
+                    compress=12
                 )
 
     @airtest_exception_format
