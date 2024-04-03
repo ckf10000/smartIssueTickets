@@ -23,7 +23,7 @@ class MaintainService(object):
     
     @classmethod
     def get_instances_brief(cls):
-        data = [dict(url_suffix=x.rule, is_leaf=x.is_leaf, endpoint=x.endpoint,
+        data = [dict(url_suffix=x.rule[1:], is_leaf=x.is_leaf, endpoint=x.endpoint,
                      arguments=list(x.arguments) if x.arguments else None,
                      methods=list(x.methods), websocket=x.websocket) for x in
                 current_app.url_map.iter_rules()] if current_app.url_map.iter_rules() else list()
@@ -32,9 +32,9 @@ class MaintainService(object):
 
     @classmethod
     def get_urls(cls):
-        data = [x.rule for x in current_app.url_map.iter_rules()] if current_app.url_map.iter_rules() else list()
+        data = [x.rule[1:] for x in current_app.url_map.iter_rules()] if current_app.url_map.iter_rules() else list()
         data.sort()
-        return True, dict(code=200101, message='Query success.', data=data)
+        return dict(code=200, message='查询成功.', data=data)
 
 
 main_ser = MaintainService()

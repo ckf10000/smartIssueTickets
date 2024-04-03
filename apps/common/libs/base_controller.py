@@ -38,7 +38,7 @@ class BaseController(Resource):
         self.method = self.__env.get("REQUEST_METHOD")
         self.url = request.url
         self.access_user = request.remote_user
-        self.current_login_user = getattr(g, "user_key")
+        self.current_login_user = getattr(g, "user_key", None)
 
         if self.access_user:
             if self.origin:

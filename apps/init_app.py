@@ -23,7 +23,7 @@ from apps.common.libs.extensions import swagger
 from apps.common.http.flask_plus import FlaskPlus
 from apps.common.libs.dir import get_project_path
 from apps.common.libs.service_environ import config
-from apps.common.http.restfulApi import front_api_namespace_prefix, end_api_namespace_prefix, anonymous_namespace_prefix
+from apps.common.http.restfulApi import front_api_namespace_prefix
 
 __all__ = ["flask_app"]
 
@@ -69,26 +69,17 @@ def register_blueprints(app: Flask):
 
 
 def register_request_handlers(app: Flask):
+
     @app.before_request
     def http_request():
-        setattr(g, "request", dict(start_time=datetime.now()))
+        start_time=datetime.now()
         request_method = request.headers.environ.get("REQUEST_METHOD")
-        print(request.headers)
         req_kwargs = dict()
         if request.args:
             req_kwargs.update(dict(request.args))
-        elif request.json:
+        elif request.get_json(silent=True):
             req_kwargs.update(request.json)
-        setattr(
-            g,
-            "request",
-            dict(
-                url=request.url,
-                method=request_method,
-                start_time=datetime.now(),
-                req_kwargs=req_kwargs,
-            ),
-        )
+        setattr(g,"request",dict(url=request.url,method=request_method,start_time=start_time,req_kwargs=req_kwargs))
         remote_port = request.headers.environ.get("REMOTE_PORT")
         # 前端调用服务端
         origin = (
@@ -128,9 +119,6 @@ def register_response_handlers(app: Flask):
         :param response response: http响应对象
         :return: response对象
         """
-        end_route = f"/{end_api_namespace_prefix}"
-        none_route = f"/{anonymous_namespace_prefix}"
-        front_route = f"/{front_api_namespace_prefix}"
         request_id = getattr(g, "request_id", None)
         if request_id:
             data_json = response.get_json()
@@ -138,18 +126,6 @@ def register_response_handlers(app: Flask):
                 data_json.update(dict(requestId=request_id))
                 response.set_data(dumps(data_json))
             response.headers["U-Request-Id"] = request_id
-        if request.path.startswith(end_route):
-            """
-            先不做处理，后续需要做限速逻辑
-            """
-            pass
-        elif request.path.startswith(none_route):
-            """
-            先不做处理，后续需要做限速逻辑
-            """
-            pass
-        elif request.path.startswith(front_route):
-            response.headers["Access-Control-Allow-Headers"] = "Set-Cookie"
         logger.info(
             f"当前[{g.request.get('method')}]请求: {g.request.get('url')} "
             f"的响应状态(status_code)：{response.status_code}"
