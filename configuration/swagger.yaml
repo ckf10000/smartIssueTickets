@@ -85,7 +85,7 @@ paths:
           schema:
             $ref: "#/definitions/ExceptionResponse"
   /open/api/booking/ctrip/specialFlight:
-    get:
+    post:
       tags:
         - "booking"
       summary: "执行携程app自动化下单特价机票"
