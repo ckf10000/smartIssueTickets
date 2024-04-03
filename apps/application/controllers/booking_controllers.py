@@ -9,7 +9,6 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-import asyncio
 from apps.common.libs.base_controller import BaseArgumentController
 from apps.application.services.booking_services import booking_flight_ser
 
@@ -17,7 +16,7 @@ from apps.application.services.booking_services import booking_flight_ser
 class BookingCtripAppSpecialFlightController(BaseArgumentController):
     """携程特价机票预订"""
 
-    async def post(self):
+    def post(self):
         # location表示获取args中的关键字段进行校验，required表示必填不传报错，type表示字段类型
         self.parse.add_argument("departure_time", type=str, help="起飞时间参数<departure_time>校验错误，参数格式为：2024-04-07 12:10",required=True, 
                                 location='json', trim=True)
@@ -40,5 +39,5 @@ class BookingCtripAppSpecialFlightController(BaseArgumentController):
                                 location='json', trim=True)
         # 获取传输的值/strict=True代表设置如果传以上未指定的参数主动报错
         kwargs = self.parse.parse_args(strict=True)
-        asyncio.create_task(booking_flight_ser.booking_ctrip_app_special_flight_ticket(**kwargs)) 
+        booking_flight_ser.booking_ctrip_app_special_flight_ticket(**kwargs)
         return dict(code=200, message="执行成功", data=None), 200

@@ -281,6 +281,7 @@ requestModels:
         description: "乘客姓名"
         required: true
       age_stage:
+        type: "string"
         default: "成人"
         description: "年龄阶段"
         required: true

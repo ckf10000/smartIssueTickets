@@ -9,9 +9,10 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-import asyncio
+import time
 from apps.annotation.log_service import logger
 from apps.common.config.airlines import airline_map
+from apps.annotation.asynchronous import async_threading
 from apps.domain.services.ui.app_services import CtripAppService
 
 __all__ = ["booking_flight_ser"]
@@ -20,7 +21,8 @@ __all__ = ["booking_flight_ser"]
 class BookingFlightService(object):
 
     @classmethod
-    async def booking_ctrip_app_special_flight_ticket(
+    @async_threading
+    def booking_ctrip_app_special_flight_ticket(
         cls,
         departure_city: str,  # 离开城市
         arrive_city: str,  # 抵达城市
@@ -33,13 +35,12 @@ class BookingFlightService(object):
         phone: str,  # 手机号码
         payment_pass: str,
     ) -> None:
-        await asyncio.sleep(1)
         ac = airline_map.get(flight[:2].upper())
         logger.info("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))
         app = CtripAppService()
         app.device.wake()
         app.restart()
-        await asyncio.sleep(8)
+        time.sleep(8)
         app.touch_home()
         app.touch_flight_ticket()
         app.touch_special_flight_ticket()

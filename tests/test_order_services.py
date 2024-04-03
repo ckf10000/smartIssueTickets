@@ -9,25 +9,23 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-import asyncio
 from apps.application.services.booking_services import booking_flight_ser
 
 
-async def test_booking_ctrip_app_special_flight_ticket():
-    asyncio.create_task(
-        booking_flight_ser.booking_ctrip_app_special_flight_ticket(
-            departure_time="2024-04-07 12:10",
-            flight="MF8358",
-            departure_city="WUH",
-            arrive_city="XMN",
-            passenger="罗杨",
-            age_stage="成人",
-            card_id="420684198710130016",
-            phone="18569520328",
-            lowest_price=647.00,
-            payment_pass="901127",
-        )
+def test_booking_ctrip_app_special_flight_ticket():
+    booking_flight_ser.booking_ctrip_app_special_flight_ticket(
+        departure_time="2024-04-07 12:10",
+        flight="MF8358",
+        departure_city="WUH",
+        arrive_city="XMN",
+        passenger="罗杨",
+        age_stage="成人",
+        card_id="420684198710130016",
+        phone="18569520328",
+        lowest_price=647.00,
+        payment_pass="901127",
     )
+
 
 if __name__ == "__main__":
     test_booking_ctrip_app_special_flight_ticket()
