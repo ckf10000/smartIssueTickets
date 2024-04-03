@@ -14,6 +14,19 @@ from flask import request, g
 from flask_restful import Resource, reqparse
 
 
+class CustomRequestParser(reqparse.RequestParser):
+
+    def parse_args(self, *args, **kwargs):
+        # 检查请求参数类型是否为 'params'、'json',为了兼容，不传递参数时，报错：
+        # werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'
+        if request.args or request.get_json(silent=True):
+            # 如果请求中存在 'params'、'json'参数，则解析请求参数
+            return super().parse_args(*args, **kwargs)
+        else:
+            # 如果请求中不存在任何参数，则返回空字典
+            return {}
+
+
 class BaseController(Resource):
 
     def __init__(self):
@@ -71,11 +84,8 @@ class BaseController(Resource):
                 )
             else:
                 self.logger_formatter = (
-                    "来自主机IP：<{}>".format(self.remote_ip)
-                    + "的端口：[{}]".format(self.remote_port)
-                    + "通过 {} ".format(self.method)
-                    + "方法访问url：{}".format(self.url)
-                )
+                    "来自主机IP：<{}>".format(self.remote_ip) + "的端口：[{}]".format(self.remote_port) + "通过 {} ".format(self.method) + "方法访问url：{}".format(self.url)
+                    )
 
 
 class BaseArgumentController(BaseController):
@@ -83,4 +93,4 @@ class BaseArgumentController(BaseController):
     def __init__(self):
         super().__init__()
         # 获取请求参数, bundle_errors: 错误捆绑在一起并立即发送回客户端
-        self.parse = reqparse.RequestParser(bundle_errors=True)
+        self.parse = CustomRequestParser(bundle_errors=True)

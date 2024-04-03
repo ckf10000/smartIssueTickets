@@ -52,7 +52,7 @@ class DevelopmentConfig(BaseConfig):
         super().__init__(env, *args, **kwargs)
 
         # 是否开启Debug模式
-        self.DEBUG = False
+        self.DEBUG = True
 
 
 class SitConfig(BaseConfig):
