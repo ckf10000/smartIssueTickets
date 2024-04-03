@@ -226,6 +226,44 @@ development:
 #      formatter: standard
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://df9f913c92454402a60275fdd455c0de@pagoda-sentry.xsyxsc.com/4'
+    airtest.log:
+      level: DEBUG
+      formatter: standard
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.log    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
+    airtest.json:
+      level: DEBUG
+      formatter: json
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.json    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
   loggers:
     root:
       handlers:
@@ -236,6 +274,15 @@ development:
 #        - syslog
       level: INFO
       propagate: false
+    airtest:
+      handlers:
+        - stream
+        - airtest.log
+        - airtest.json
+#        - sentry
+#        - syslog
+      level: DEBUG
+      propagate: false
     pagoda_apollo:
       handlers:
         - stream
@@ -244,15 +291,6 @@ development:
 #        - sentry
 #        - syslog
       level: INFO
-      propagate: false
-    sqlalchemy:
-      handlers:
-        - stream
-        - web.log
-        - web.json
-#        - sentry
-#        - syslog
-      level: WARNING
       propagate: false
     werkzeug:
       handlers:
@@ -525,6 +563,44 @@ sit:
 #      formatter: standard
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://df9f913c92454402a60275fdd455c0de@pagoda-sentry.xsyxsc.com/4'
+    airtest.log:
+      level: DEBUG
+      formatter: standard
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.log    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
+    airtest.json:
+      level: DEBUG
+      formatter: json
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.json    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
   loggers:
     root:
       handlers:
@@ -535,6 +611,15 @@ sit:
 #        - syslog
       level: INFO
       propagate: false
+    airtest:
+      handlers:
+        - stream
+        - airtest.log
+        - airtest.json
+#        - sentry
+#        - syslog
+      level: DEBUG
+      propagate: false
     pagoda_apollo:
       handlers:
         - stream
@@ -543,15 +628,6 @@ sit:
 #        - sentry
 #        - syslog
       level: INFO
-      propagate: false
-    sqlalchemy:
-      handlers:
-        - stream
-        - web.log
-        - web.json
-#        - sentry
-#        - syslog
-      level: WARNING
       propagate: false
     werkzeug:
       handlers:
@@ -824,6 +900,44 @@ production:
 #      formatter: standard
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://dd76781ee3f340818fc5c02fc98b06c4@pagoda-sentry.xsyxsc.com/2'
+    airtest.log:
+      level: DEBUG
+      formatter: standard
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.log    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
+    airtest.json:
+      level: DEBUG
+      formatter: json
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.json    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
   loggers:
     root:
       handlers:
@@ -834,6 +948,15 @@ production:
 #        - syslog
       level: INFO
       propagate: false
+    airtest:
+      handlers:
+        - stream
+        - airtest.log
+        - airtest.json
+#        - sentry
+#        - syslog
+      level: DEBUG
+      propagate: false
     pagoda_apollo:
       handlers:
         - stream
@@ -842,15 +965,6 @@ production:
 #        - sentry
 #        - syslog
       level: INFO
-      propagate: false
-    sqlalchemy:
-      handlers:
-        - stream
-        - web.log
-        - web.json
-#        - sentry
-#        - syslog
-      level: WARNING
       propagate: false
     werkzeug:
       handlers:
@@ -1123,6 +1237,44 @@ uat:
 #      formatter: standard
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://df9f913c92454402a60275fdd455c0de@pagoda-sentry.xsyxsc.com/4'
+    airtest.log:
+      level: DEBUG
+      formatter: standard
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.log    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
+    airtest.json:
+      level: DEBUG
+      formatter: json
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.json    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
   loggers:
     root:
       handlers:
@@ -1133,6 +1285,15 @@ uat:
 #        - syslog
       level: INFO
       propagate: false
+    airtest:
+      handlers:
+        - stream
+        - airtest.log
+        - airtest.json
+#        - sentry
+#        - syslog
+      level: DEBUG
+      propagate: false
     pagoda_apollo:
       handlers:
         - stream
@@ -1141,15 +1302,6 @@ uat:
 #        - sentry
 #        - syslog
       level: INFO
-      propagate: false
-    sqlalchemy:
-      handlers:
-        - stream
-        - web.log
-        - web.json
-#        - sentry
-#        - syslog
-      level: WARNING
       propagate: false
     werkzeug:
       handlers:
@@ -1422,6 +1574,44 @@ pre:
 #      formatter: standard
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://df9f913c92454402a60275fdd455c0de@pagoda-sentry.xsyxsc.com/4'
+    airtest.log:
+      level: DEBUG
+      formatter: standard
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.log    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
+    airtest.json:
+      level: DEBUG
+      formatter: json
+      filters: ['request_id']
+      class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
+      filename: ~~abspath ./logs/airtest.json    # 日志文件路径，请使用相对路径
+      max_bytes: 10485760    #  以10M为单位按此大小分切文件
+      mode: a           # 日志文件写入模式
+      debug: false  # 向此class添加额外的调试语句（用于开发）
+      delay: ~   # 已弃用，请忽略
+      use_gzip: false  # 启用后，自动以gzip格式打包分切的日志文件
+      owner: ~  # 默认为None， 日志文件的元素序列（用户所有者、组所有者）(仅限Unix)
+      chmod: ~  # 默认为None， 日志文件的权限(仅限Unix)
+      umask: ~   # 默认为None， 创建日志文件时要临时进行的umask设置，这是chmod的替代方法。它主要用于Unix系统，但是也可以在Windows上使用。Windows安全模型更为复杂这与更改访问控制条目不同。
+      newline: ~  #  默认为None， 在Windows上使用CRLF，在Unix上使用LF。设置为""的无翻译，在这种情况下，"terminator"参数决定行的结尾。
+      terminator: "\n"  #  设置为\r\n并加上换行符=，以强制Windows样式不考虑操作系统平台的newline。
+      backup_count: 9   # 删除日志文件前要保留的分切文件数
+      encoding: utf-8  # 日志文件的文本编码
+      unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
   loggers:
     root:
       handlers:
@@ -1432,6 +1622,15 @@ pre:
 #        - syslog
       level: INFO
       propagate: false
+    airtest:
+      handlers:
+        - stream
+        - airtest.log
+        - airtest.json
+#        - sentry
+#        - syslog
+      level: DEBUG
+      propagate: false
     pagoda_apollo:
       handlers:
         - stream
@@ -1440,15 +1639,6 @@ pre:
 #        - sentry
 #        - syslog
       level: INFO
-      propagate: false
-    sqlalchemy:
-      handlers:
-        - stream
-        - web.log
-        - web.json
-#        - sentry
-#        - syslog
-      level: WARNING
       propagate: false
     werkzeug:
       handlers:
