@@ -21,7 +21,6 @@ __all__ = ["booking_flight_ser"]
 class BookingFlightService(object):
 
     @classmethod
-    @async_threading
     def booking_ctrip_app_special_flight_ticket(
         cls,
         departure_city: str,  # 离开城市
@@ -105,5 +104,9 @@ class BookingFlightService(object):
                 )
             )
 
+    @classmethod
+    @async_threading
+    def asymc_booking_ctrip_app_special_flight_ticket(cls, **kwargs) -> None:
+        cls.booking_ctrip_app_special_flight_ticket(**kwargs)
 
 booking_flight_ser = BookingFlightService()
