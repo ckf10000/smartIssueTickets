@@ -9,6 +9,7 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
+from apps.common.annotation.log_service import logger
 from apps.common.libs.base_controller import BaseArgumentController
 from apps.application.services.booking_services import booking_flight_ser
 
@@ -40,4 +41,5 @@ class BookingCtripAppSpecialFlightController(BaseArgumentController):
         # 获取传输的值/strict=True代表设置如果传以上未指定的参数主动报错
         kwargs = self.parse.parse_args(strict=True)
         booking_flight_ser.asymc_booking_ctrip_app_special_flight_ticket(**kwargs)
+        logger.info(self.logger_formatter + " 成功...")
         return dict(code=200, message="执行成功", data=None), 200

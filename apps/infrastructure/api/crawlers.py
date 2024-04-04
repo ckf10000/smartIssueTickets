@@ -9,18 +9,17 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-import os
 import ddddocr
 from PIL import Image
 from io import BytesIO
 from traceback import format_exc
 from selenium.common.exceptions import *
-from selenium.webdriver.support.ui import WebDriverWait
 # expected_conditions 类负责条件
 from selenium.webdriver.support import expected_conditions as EC
 
 from apps.common.libs.selector import Selector
-from apps.infrastructure.api.desktop_browsers import ChromeBrowser, FirefoxBrowser
+from apps.common.annotation.log_service import logger
+from apps.infrastructure.api.desktop_browsers import FirefoxBrowser
 
 class Selenium(object):
 
@@ -46,7 +45,7 @@ class Selenium(object):
             input.send_keys('{}'.format(value))
             # self.browser.find_element(Selector.get(selector), regx).send_keys(value)
         except Exception as e:
-            print(format_exc())
+            logger.error(format_exc())
             err_str = "通过选择器：{}，表达式: {}，捕获输入框设置文本<{}>失败，error：{}".format(selector, regx, value, e)
             raise AttributeError(err_str)
         
@@ -63,12 +62,12 @@ class Selenium(object):
             submit.click()
             # self.browser.find_element(Selector.get(selector), regx).click()
         except Exception as e:
-            print(format_exc())
+            logger.error(format_exc())
             err_str = "通过选择器：{}，表达式: {}，捕获点击对象并点击失败，error：{}".format(selector, regx, e)
             raise AttributeError(err_str)
  
     def get_code(self, selector: str, regx: str) -> str:
-        print("开始获取验证码...")
+        logger.info("开始获取验证码...")
         try:
             selector = Selector.get(selector)
             captcha = self.browser.find_element(Selector.get(selector), regx)
@@ -76,10 +75,10 @@ class Selenium(object):
             #1.初始化一个实例，配置识别模式默认为OCR识别
             ocr = ddddocr.DdddOcr(show_ad=False)
             ocr_result = ocr.classification(code_image)
-            print("识别到的验证码为：", ocr_result)
+            logger.info("识别到的验证码为：", ocr_result)
             return ocr_result
         except Exception as e:
-            print(format_exc())
+            logger.error(format_exc())
             err_str = "通过选择器：{}，表达式: {}，识别验证码失败，error：{}".format(selector, regx, e)
             raise AttributeError(err_str)
     
@@ -87,12 +86,12 @@ class Selenium(object):
         # 等待弹框出现
         try:
             alert = self.wait.until(EC.alert_is_present())
-            print("弹框已出现")
+            logger.info("弹框已出现")
             # 处理弹框，点击确定按钮
             alert.accept()
         except Exception as e:
             del e
-            print("未出现弹框，无需处理。")
+            logger.warning("未出现弹框，无需处理。")
 
     def get_element_text(self, selector: str, regx: str) -> str:
         try:
@@ -100,10 +99,10 @@ class Selenium(object):
             element = self.browser.find_element(Selector.get(selector), regx)
             # 获取按钮元素的文本信息
             element_text = element.text.strip() if isinstance(element, str) else "" 
-            print("获取元素的文字信息为:", element_text)
+            logger.info("获取元素的文字信息为:", element_text)
             return element_text
         except Exception as e:
-            print(format_exc())
+            logger.error(format_exc())
             err_str = "通过选择器：{}，表达式: {}，获取元素文本信息失败，error：{}".format(selector, regx, e)
             raise AttributeError(err_str)
         
@@ -115,7 +114,7 @@ class Selenium(object):
             background_color = element.value_of_css_property("background-color")
             return background_color.strip() if isinstance(background_color, str) else ""
         except Exception as e:
-            print(format_exc())
+            logger.error(format_exc())
             err_str = "通过选择器：{}，表达式: {}，获取背景颜色失败，error：{}".format(selector, regx, e)
             raise AttributeError(err_str)
     
@@ -123,7 +122,6 @@ class Selenium(object):
         self.browser.quit()
 
     def get(self, url: str) -> None:
-        print(url)
         self.browser.get(url)
 
 

@@ -12,6 +12,7 @@
 from time import sleep
 from typing import Any, Callable
 from poco.exceptions import PocoNoSuchNodeException
+from apps.common.annotation.log_service import logger
 
 
 class SleepWait(object):
@@ -42,7 +43,7 @@ class LoopFindElement(object):
                     result = func(*args, **kwargs) or None
                     break
                 except PocoNoSuchNodeException as e:
-                    print("第{}次查找失败，失败原因：".format(i, str(e)))
+                    logger.error("第{}次查找失败，失败原因：{}".format(i, str(e)))
             return result
 
         return wrapper

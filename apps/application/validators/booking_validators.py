@@ -10,7 +10,7 @@
 # -----------------------------------------------------------------------------------------------------------------------
 """
 from decimal import Decimal
-from apps.annotation.log_service import logger
+from apps.common.annotation.log_service import logger
 from apps.common.config.flight_ticket import ticket_fee
 
 __all__ = ["FlightTicketValidator"]

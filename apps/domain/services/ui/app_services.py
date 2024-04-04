@@ -12,15 +12,12 @@
 import typing as t
 from decimal import Decimal
 
+from apps.common.annotation.log_service import logger
 from apps.infrastructure.api.platforms import PlatformService
 from apps.infrastructure.api.mobile_terminals import stop_app
-from apps.annotation.delay_wait import SleepWait, LoopFindElement
 from apps.common.libs.dir import get_images_dir, is_exists, join_path
-from apps.common.libs.date_extend import (
-    get_trip_year_month_day,
-    get_datetime_area,
-    is_public_holiday,
-)
+from apps.common.annotation.delay_wait import SleepWait, LoopFindElement
+from apps.common.libs.date_extend import get_trip_year_month_day, get_datetime_area, is_public_holiday
 
 
 class CtripAppService(PlatformService):
@@ -164,7 +161,7 @@ class CtripAppService(PlatformService):
         _, _, trip_day = get_trip_year_month_day(date_str=date_str)
         day_str = "{}_red".format(trip_day) if is_public_holiday(date_str=date_str) else "{}_blue".format(trip_day)
         file_name = join_path([get_images_dir(), "{}.png".format(day_str)])
-        print("需要识别日历中的日期文件是：{}".format(file_name))
+        logger.info("需要识别日历中的日期文件是：{}".format(file_name))
         if is_exists(file_name):
             # threshold 提高识别灵敏度，灵敏度太低，容易将相似的结果匹配出来
             temp = self.device.get_cv_template(file_name=file_name, threshold=0.9)
@@ -211,7 +208,7 @@ class CtripAppService(PlatformService):
         """
         检索需要购买的航班是否出现在初始的屏幕中
         """
-        print("判断航班<{}>机票信息是否在初始列表当中...".format(flight))
+        logger.info("判断航班<{}>机票信息是否在初始列表当中...".format(flight))
         in_screen = self.device.get_po(type="android.widget.TextView", name="第{}航班航司信息".format(flight))
         if in_screen.exists():
             return True
@@ -222,7 +219,7 @@ class CtripAppService(PlatformService):
         po = self.device.get_po(type="android.widget.TextView", name="筛选")
         if po.exists():
             # 说明筛选入口在底部
-            print("查询到的航班数量不多，筛选的按钮在UI的底部。")
+            logger.info("查询到的航班数量不多，筛选的按钮在UI的底部。")
             self.__touch_flight_inland_single_list_bottom_filter()
         else:
             self.__touch_flight_inland_single_list_top_filter()
@@ -365,7 +362,7 @@ class CtripAppService(PlatformService):
         if special_flight.exists():
             abs_position = self.device.get_abs_position(element=special_flight)
             # special_flight.click()
-            print("选择：", desc)
+            logger.info("选择：", desc)
             self.device.touch((abs_position[0], abs_position[1] - 200))
         else:
             raise ValueError("当前页面没有找到", desc)
@@ -382,7 +379,7 @@ class CtripAppService(PlatformService):
             ui_object_proxy=lowerest_price_po
         )
         text = ui_object_proxy_attr.get("text")
-        print("获取到的机票最低价为：", text)
+        logger.info("获取到的机票最低价为：", text)
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
         return Decimal(text) if isinstance(text, str) and text.isdigit() else 9999999999.9999999999
         
@@ -575,7 +572,7 @@ class CtripAppService(PlatformService):
             touchable=False,
         )[0]
         passenger_po.click()
-        print("预定特价机票，已添加乘客: <{}>".format(passenger))
+        logger.info("预定特价机票，已添加乘客: <{}>".format(passenger))
 
     @SleepWait(wait_time=1)
     def select_insecure(self) -> None:
@@ -724,7 +721,7 @@ class CtripAppService(PlatformService):
         if len(more_payment) > 0:
             more_payment[0].click()
         else:
-            print("没有出现支付小弹框，请在通用支付选择界面操作.")
+            logger.info("没有出现支付小弹框，请在通用支付选择界面操作.")
 
     @SleepWait(wait_time=1)
     def select_point_deduction(self) -> None:

@@ -12,7 +12,7 @@
 import os
 import typing as t
 from selenium import webdriver
-from abc import abstractclassmethod
+from abc import abstractmethod
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chromium.options import ChromiumOptions
 from selenium.webdriver.chrome.webdriver import WebDriver as Chrome
@@ -29,15 +29,15 @@ class Browser(object):
     BROWSER_NAME = None
     PROECT_PATH = get_project_path()
 
-    @abstractclassmethod
+    @abstractmethod
     def get_browser():
         pass
 
-    @abstractclassmethod
+    @abstractmethod
     def get_options():
         pass
 
-    @abstractclassmethod
+    @abstractmethod
     def get_service():
         pass
 

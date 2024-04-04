@@ -11,9 +11,9 @@
 """
 import time
 from decimal import Decimal
-from apps.annotation.log_service import logger
+from apps.common.annotation.log_service import logger
 from apps.common.config.flight_ticket import airline_map
-from apps.annotation.asynchronous import async_threading
+from apps.common.annotation.asynchronous import async_threading
 from apps.domain.services.ui.app_services import CtripAppService
 from apps.application.validators.booking_validators import FlightTicketValidator
 
@@ -88,7 +88,7 @@ class BookingFlightService(object):
             app.touch_fill_order_next_step()
             is_duplicate_order = app.is_duplicate_order()
             if is_duplicate_order:
-                logger.info(is_duplicate_order)
+                logger.warning(is_duplicate_order)
             else:
                 app.touch_select_service_no_need()  # 保障不需要
                 app.touch_select_service_no_need()  # 预约不需要

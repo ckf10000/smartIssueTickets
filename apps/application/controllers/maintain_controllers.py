@@ -9,6 +9,7 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
+from apps.common.annotation.log_service import logger
 from apps.application.services.maintain_services import main_ser
 from apps.common.libs.base_controller import BaseArgumentController
 
@@ -23,6 +24,7 @@ class HealthStatusController(BaseArgumentController):
         kwargs = self.parse.parse_args(strict=True)
         kwargs.clear()
         result = main_ser.test_service_status()
+        logger.info(self.logger_formatter + " 成功...")
         return result, 200
 
 
@@ -36,6 +38,7 @@ class UrlMapController(BaseArgumentController):
         kwargs = self.parse.parse_args(strict=True)
         kwargs.clear()
         result = main_ser.get_instances_brief()
+        logger.info(self.logger_formatter + " 成功...")
         return result, 200
 
 
@@ -49,4 +52,5 @@ class UrlsController(BaseArgumentController):
         kwargs = self.parse.parse_args(strict=True)
         kwargs.clear()
         result = main_ser.get_urls()
+        logger.info(self.logger_formatter + " 成功...")
         return result, 200

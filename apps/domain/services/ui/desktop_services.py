@@ -13,6 +13,7 @@ from time import sleep
 from apps.infrastructure.api.crawlers import Selenium
 
 from apps.common.libs.calc import calc_text_equation
+from apps.common.annotation.log_service import logger
 
 class JinLvDesktopService(object):
 
@@ -39,7 +40,7 @@ class JinLvDesktopService(object):
             return ""
 
     def login(self, username: str, password: str, is_logout: bool = True) -> None:
-        print("准备登录...")
+        logger.info("准备登录...")
         self.selenium.get(self.__home_page)
         # 设置最大尝试次数 5次
         for i in range(5):
@@ -47,14 +48,10 @@ class JinLvDesktopService(object):
             sleep(5)
             # element_text = self.get_login_username()
             alert_msg = self.get_force_offline_alert_msg()
-            print("************************************")
-            # print(element_text)
-            print(alert_msg)
-            print("####################################")
             # if alert_msg == "确 定" or element_text == username:
             if alert_msg == "确 定":
                 self.online_flag = True
-                print("劲旅系统登录成功。")
+                logger.info("劲旅系统登录成功。")
                 if alert_msg == "确 定":
                     # 判断如果有强制下线提示框，则需要消除提示框
                     # self.selenium.alert_accept()
@@ -78,8 +75,8 @@ class JinLvDesktopService(object):
             # 点击登录
             self.selenium.submit_click(selector="xpath", regx="/html/body/form/div/div[2]/input")
         except Exception as e:
-            print("登录劲旅系统失败，详细日志请关注下面异常...")
-            print(e)
+            logger.error("登录劲旅系统失败，详细日志请关注下面异常...")
+            logger.error(e)
 
     def __retry_login(self) -> None:
         try:
@@ -92,8 +89,8 @@ class JinLvDesktopService(object):
             # 点击登录
             self.selenium.submit_click(selector="xpath", regx="/html/body/form/div/div[2]/input")
         except Exception as e:
-            print("登录劲旅系统失败，详细日志请关注下面异常...")
-            print(e)
+            logger.error("登录劲旅系统失败，详细日志请关注下面异常...")
+            logger.error(e)
 
     def logout(self): 
         if self.online_flag is True:
@@ -105,19 +102,19 @@ class JinLvDesktopService(object):
                 self.selenium.submit_click(selector="xpath", regx="/html/body/div[5]/a[1]/cite")
                 # self.selenium.submit_click(selector="xpath", regx="/html/body/div[6]/a[1]")
                 sleep(3)
-                print("劲旅系统退出成功。")
+                logger.info("劲旅系统退出成功。")
             except Exception as e:
-                print("退出劲旅系统失败，详细日志请关注下面异常...")
-                print(e)
+                logger.error("退出劲旅系统失败，详细日志请关注下面异常...")
+                logger.info(e)
         self.selenium.quit()
 
     def __switch_left_level_1_navigation(self, selector: str, regx: str) -> None:
         # 先判断左侧一级导航栏是否已展开，可以根据导航栏的背景颜色区分
         background_color = self.selenium.get_background_color(selector=selector, regx=regx)
         if background_color == "rgb(37, 110, 188)":  # 展开时的背景颜色
-            print("导航栏已展开，无需切换。")
+            logger.info("导航栏已展开，无需切换。")
         else:
-            print("导航栏还未展开，需要进行展开操作")
+            logger.info("导航栏还未展开，需要进行展开操作")
             self.selenium.submit_click(selector=selector, regx=str)
 
     def __switch_left_level_2_navigation(self, level_1_selector: str, level_1_regx: str, level_2_selector: str, level_2_regx: str) -> None:

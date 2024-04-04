@@ -17,14 +17,13 @@ import typing as t
 from airtest.core.error import *
 from collections import OrderedDict
 from airtest.cli.parser import cli_setup
-from airtest.core.android import Android
 from airtest.utils.transform import TargetPos
 from apps.common.libs.dir import get_project_path
-from airtest.core.android.constant import TOUCH_METHOD, CAP_METHOD
 from poco.drivers.android.uiautomation import AndroidUiautomationPoco
 from airtest.core.api import auto_setup, device, Template, touch, find_all, connect_device
 
-from apps.annotation.exception import airtest_exception_format
+from apps.common.annotation.log_service import logger
+from apps.common.annotation.exception import airtest_exception_format
 
 DEFAULT_PLATFORM = "Android"  # Android、Windows、iOS
 WINDOWS_PLATFORM = "Windows"
@@ -38,13 +37,13 @@ def stop_app(app_name, timeout=5):
     try:
         # 执行ADB命令并设置超时时间
         subprocess.run(cmd_list, timeout=timeout, check=True)
-        print("execute cmd: ", adb_cmd)
+        logger.info("execute cmd: ", adb_cmd)
     except subprocess.TimeoutExpired:
-        print("Timeout occurred. Failed to stop the app.")
+        logger.error("Timeout occurred. Failed to stop the app.")
     except subprocess.CalledProcessError:
-        print("Failed to stop the app.")
+        logger.error("Failed to stop the app.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error("An error occurred: {}".format(e))
 
 def get_screen_size_via_adb():
     # 使用ADB命令获取设备屏幕大小
@@ -56,7 +55,7 @@ def get_screen_size_via_adb():
             height = int(match.group(2))
             return width, height
     except subprocess.CalledProcessError as e:
-        print("Error: ADB command failed:", e)
+        logger.error("Error: ADB command failed: {}".format(e))
     return None
 
 class Phone(object):
@@ -264,13 +263,13 @@ class Phone(object):
         try:
             # 执行ADB命令并设置超时时间
             subprocess.run(cmd_list, timeout=timeout, check=True)
-            print("execute cmd: ", adb_cmd)
+            logger.info("execute cmd: ", adb_cmd)
         except subprocess.TimeoutExpired:
-            print("Timeout occurred,Failed to execute adb cmd.")
+            logger.error("Timeout occurred,Failed to execute adb cmd.")
         except subprocess.CalledProcessError:
-            print("Failed to execute adb cmd.")
+            logger.error("Failed to execute adb cmd.")
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.error("An error occurred: {}".format(e))
         # touch_proxy = TouchProxy.auto_setup(self.device.adb, ori_transformer=self.device._touch_point_by_orientation)
         # touch_proxy.touch(v)
 
@@ -640,20 +639,20 @@ class Phone(object):
         temp = self.get_cv_template(file_name=file_name)
         hide_icon = self.find_all(v=temp)
         if len(hide_icon) > 0:
-            print("目前检测到键盘已打开，需要隐藏键盘，再做后续操作...")
+            logger.info("目前检测到键盘已打开，需要隐藏键盘，再做后续操作...")
             self.touch(v=temp)
         else:
             hw_keyword = self.poco(type="android.widget.ImageView", name="com.android.systemui:id/back", desc="返回")
             if hw_keyword.exists():
-                print("目前检测到HW键盘已经打开，需要隐藏键盘，再做后续操作...")
+                logger.info("目前检测到HW键盘已经打开，需要隐藏键盘，再做后续操作...")
                 hw_keyword.click()
             else:
                 lg_keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey", name="完成")
                 if lg_keyword.exists():
-                    print("目前检测到LG键盘已经打开，需要隐藏键盘，再做后续操作...")
+                    logger.info("目前检测到LG键盘已经打开，需要隐藏键盘，再做后续操作...")
                     lg_keyword.click()
                 else:
-                    print("键盘已经隐藏，无需处理键盘...")
+                    logger.info("键盘已经隐藏，无需处理键盘...")
 
     # 获取元素在屏幕上的绝对坐标
     @staticmethod
