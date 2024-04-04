@@ -22,6 +22,21 @@ def test_select_insecure():
     app.select_insecure()
 
 
+def test_get_tickect_actual_amount():
+    app = CtripAppService()
+    app.start()
+    app.get_tickect_actual_amount()
+
+
+def test_get_tickect_deduction_amount():
+    app = CtripAppService()
+    app.start()
+    app.get_tickect_deduction_amount()
+
+
 if __name__ == "__main__":
     # test_select_special_flight()
-    test_select_insecure()
+    # test_select_insecure()  
+    # test_get_tickect_actual_amount()
+    test_get_tickect_deduction_amount()
+    

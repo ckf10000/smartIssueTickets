@@ -10,10 +10,12 @@
 # -----------------------------------------------------------------------------------------------------------------------
 """
 import time
+from decimal import Decimal
 from apps.annotation.log_service import logger
-from apps.common.config.airlines import airline_map
+from apps.common.config.flight_ticket import airline_map
 from apps.annotation.asynchronous import async_threading
 from apps.domain.services.ui.app_services import CtripAppService
+from apps.application.validators.booking_validators import FlightTicketValidator
 
 __all__ = ["booking_flight_ser"]
 
@@ -26,7 +28,7 @@ class BookingFlightService(object):
         departure_city: str,  # 离开城市
         arrive_city: str,  # 抵达城市
         departure_time: str,  # 起飞时间
-        lowest_price: float,  # 最低票价
+        lowest_price: Decimal,  # 最低票价
         flight: str,  # 航班编号
         passenger: str,  # 乘客
         age_stage: str,  # 乘客年龄阶段，儿童/成人
@@ -95,8 +97,16 @@ class BookingFlightService(object):
                 app.touch_read_agree()
                 app.select_more_payment()
                 app.select_point_deduction()
-                app.touch_bank_card_payment()
-                app.enter_payment_pass(payment_pass=payment_pass)
+                tickect_actual_amount = app.get_tickect_actual_amount()
+                tickect_deduction_amount = app.get_tickect_deduction_amount()
+                do_validator = FlightTicketValidator.validator_payment_with_deduction(
+                    pre_sale_amount=lowest_price,
+                    actual_amount=tickect_actual_amount,
+                    deduction_amount=tickect_deduction_amount,
+                )
+                if  do_validator is True:
+                    app.touch_bank_card_payment()
+                    app.enter_payment_pass(payment_pass=payment_pass)
         else:
             logger.warning(
                 "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(

@@ -48,3 +48,8 @@ airline_map = {
     "Y8": "海航旗下金鹏航空",
     "ZH": "深圳航空",
 }
+
+ticket_fee = {
+    "fuel_fee": 70.00,  # 燃油费
+    "airport_fee": 50.00 # 机建费
+}

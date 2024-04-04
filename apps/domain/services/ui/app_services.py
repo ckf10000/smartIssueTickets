@@ -10,7 +10,7 @@
 # -----------------------------------------------------------------------------------------------------------------------
 """
 import typing as t
-from pandas import DataFrame
+from decimal import Decimal
 
 from apps.infrastructure.api.platforms import PlatformService
 from apps.infrastructure.api.mobile_terminals import stop_app
@@ -371,7 +371,7 @@ class CtripAppService(PlatformService):
             raise ValueError("当前页面没有找到", desc)
 
     @SleepWait(wait_time=1)
-    def get_special_flight_price(self) -> float:
+    def get_special_flight_price(self) -> Decimal:
         """
         检索航班经济舱的第二条数据的票价
         """
@@ -384,11 +384,8 @@ class CtripAppService(PlatformService):
         text = ui_object_proxy_attr.get("text")
         print("获取到的机票最低价为：", text)
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
-        return (
-            float(text)
-            if isinstance(text, str) and text.isdigit()
-            else 9999999999.9999999999
-        )
+        return Decimal(text) if isinstance(text, str) and text.isdigit() else 9999999999.9999999999
+        
 
     def is_direct_booking(self) -> True:
         """
@@ -758,6 +755,39 @@ class CtripAppService(PlatformService):
             touchable=False,
         )[0]
         point_deduction.click()
+
+    def get_tickect_actual_amount(self) -> Decimal:
+        """
+        确定使用积分抵扣后，票据的实际支付金额
+        """
+        tickect_actual_amount = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            textMatches_inner="^¥\d+.\d*",
+            global_num=0,
+            local_num=2,
+            touchable=False,
+        )[0]
+        actual_amount = tickect_actual_amount.get_text()
+        actual_amount = Decimal(actual_amount[1:]) if isinstance(actual_amount, str) else 9999999999.9999999999
+        return actual_amount
+    
+    def get_tickect_deduction_amount(self) -> Decimal:
+        """
+        使用积分抵扣的金额
+        """
+        tickect_deduction_amount = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            textMatches_inner="^-¥\d+.\d*",
+            global_num=0,
+            local_num=4,
+            touchable=False,
+        )[0]
+        deduction_amount = tickect_deduction_amount.get_text()
+        deduction_amount = Decimal(deduction_amount[2:]) if isinstance(deduction_amount, str) else -9999999999.9999999999
+        return deduction_amount
+
 
     @SleepWait(wait_time=5)
     def enter_payment_pass(self, payment_pass: str) -> None:
