@@ -107,6 +107,9 @@ class BookingFlightService(object):
                 if  do_validator is True:
                     app.touch_bank_card_payment()
                     app.enter_payment_pass(payment_pass=payment_pass)
+                    payment_amount = app.get_order_with_payment_amount()
+                    payment_method = app.get_order_with_payment_method()
+                    ctrip_order_critical_id = app.get_flight_ticket_order_with_critical_id(departure_time=departure_time, flight=flight)
         else:
             logger.warning(
                 "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(

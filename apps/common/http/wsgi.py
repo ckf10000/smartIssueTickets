@@ -17,7 +17,7 @@ from pathlib import Path
 from gunicorn.app.base import BaseApplication
 
 from apps.common.libs.dir import get_project_path
-from apps.annotation.log_service import auto_log, logger
+from apps.common.annotation.log_service import auto_log, logger
 from apps.common.libs.parse_yaml import DictObject, ProjectConfig
 
 

@@ -37,7 +37,7 @@ def stop_app(app_name, timeout=5):
     try:
         # 执行ADB命令并设置超时时间
         subprocess.run(cmd_list, timeout=timeout, check=True)
-        logger.info("execute cmd: ", adb_cmd)
+        logger.info("execute cmd: {}".format(adb_cmd))
     except subprocess.TimeoutExpired:
         logger.error("Timeout occurred. Failed to stop the app.")
     except subprocess.CalledProcessError:

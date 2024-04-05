@@ -382,7 +382,6 @@ class CtripAppService(PlatformService):
         logger.info("获取到的机票最低价为：", text)
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
         return Decimal(text) if isinstance(text, str) and text.isdigit() else 9999999999.9999999999
-        
 
     def is_direct_booking(self) -> True:
         """
@@ -559,7 +558,7 @@ class CtripAppService(PlatformService):
     @LoopFindElement(loop=5)
     # @SleepWait(wait_time=1)
     def add_passenger(self, passenger: str) -> None:
-        
+
         """
         点击【确定】按钮，添加乘客
         """
@@ -768,7 +767,7 @@ class CtripAppService(PlatformService):
         actual_amount = tickect_actual_amount.get_text()
         actual_amount = Decimal(actual_amount[1:]) if isinstance(actual_amount, str) else 9999999999.9999999999
         return actual_amount
-    
+
     def get_tickect_deduction_amount(self) -> Decimal:
         """
         使用积分抵扣的金额
@@ -785,7 +784,6 @@ class CtripAppService(PlatformService):
         deduction_amount = Decimal(deduction_amount[2:]) if isinstance(deduction_amount, str) else -9999999999.9999999999
         return deduction_amount
 
-
     @SleepWait(wait_time=5)
     def enter_payment_pass(self, payment_pass: str) -> None:
         """
@@ -798,6 +796,76 @@ class CtripAppService(PlatformService):
                 self.device.touch(v=temp)
             else:
                 raise ValueError("文件<{}>缺失...",format(file_name))
+
+    @SleepWait(wait_time=1)
+    def get_order_with_payment_amount(self) -> Decimal:
+        """获取支付成功后的订单金额"""
+        payment_amount = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            textMatches_inner="^\d+.\d*",
+            global_num=0,
+            local_num=5,
+            touchable=False,
+        )[0]
+        payment_amount = payment_amount.get_text()
+        logger.info("从支付成功界面获取到的实际支付金额是: {}".format(payment_amount))
+        payment_amount = Decimal(payment_amount) if isinstance(payment_amount, str) else -9999999999.9999999999
+        return payment_amount
+
+    @SleepWait(wait_time=1)
+    def get_order_with_payment_method(self) -> t.Dict:
+        """获取支持成功后的支付方式"""
+        payment_method = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            textMatches_inner=".+(?:储蓄卡|信用卡).*",
+            global_num=0,
+            local_num=2,
+            touchable=False,
+        )[0]
+        payment_method = payment_method.get_text()
+        logger.info("从支付成功界面获取到的支付方式是: {}".format(payment_method))
+        payment_method_slice = payment_method.split(" ")
+        return dict(
+            bank_name=payment_method_slice[0],  # 银行名称
+            card_type=payment_method_slice[1],  # 银行卡类型，这里支持储蓄卡，信用卡
+            last_four_digits=payment_method_slice[1:-1] # 银行卡末四位数字
+        )
+
+    @SleepWait(wait_time=1)
+    def touch_order_with_finish_button(self) -> None:
+        """点击支付成功界面的【完成】按钮"""
+        finish_button = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            text="完成",
+            global_num=0,
+            local_num=1,
+            touchable=False,
+        )[0]
+        logger.info("点击【完成】按钮, 关闭流程.")
+        finish_button.click()
+
+    @SleepWait(wait_time=5)
+    def touch_my(self) -> None:
+        """进入app后，点击【我的】"""
+        my = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            text="我的",
+            global_num=0,
+            local_num=2,
+            touchable=False,
+        )[0]
+        logger.info("点击【我的】按钮, 进入我的主页.")
+        my.click()
+
+
+    @SleepWait(wait_time=1)
+    def get_flight_ticket_order_with_critical_id(self, departure_time: str, flight: str) -> t.Dict:
+        """获取机票订单中的重要ID信息"""
+        pass
 
     """
     def __del__(self) -> None:
