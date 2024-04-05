@@ -863,7 +863,7 @@ class CtripAppService(PlatformService):
 
 
     @SleepWait(wait_time=1)
-    def get_flight_ticket_order_with_critical_id(self, departure_time: str, flight: str) -> t.Dict:
+    def get_flight_ticket_order(self, departure_time: str, flight: str) -> t.Dict:
         """获取机票订单中的重要ID信息"""
         pass
 
