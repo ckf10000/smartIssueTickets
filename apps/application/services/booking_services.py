@@ -109,7 +109,10 @@ class BookingFlightService(object):
                     app.enter_payment_pass(payment_pass=payment_pass)
                     payment_amount = app.get_order_with_payment_amount()
                     payment_method = app.get_order_with_payment_method()
-                    ctrip_order_critical_id = app.get_flight_ticket_order_with_critical_id(departure_time=departure_time, flight=flight)
+                    app.touch_payment_complete()
+                    app.close_important_trip_guidelines()
+                    order_id = app.get_flight_ticket_with_order_id()
+                    itinerary_id = app.get_flight_ticket_with_itinerary_id()
         else:
             logger.warning(
                 "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(

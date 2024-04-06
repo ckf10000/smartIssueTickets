@@ -15,7 +15,6 @@ import airtest
 import subprocess
 import typing as t
 from airtest.core.error import *
-from collections import OrderedDict
 from airtest.cli.parser import cli_setup
 from airtest.utils.transform import TargetPos
 from apps.common.libs.dir import get_project_path
@@ -23,6 +22,7 @@ from poco.drivers.android.uiautomation import AndroidUiautomationPoco
 from airtest.core.api import auto_setup, device, Template, touch, find_all, connect_device
 
 from apps.common.annotation.log_service import logger
+# from apps.common.libs.utils import get_ui_object_proxy_attr
 from apps.common.annotation.exception import airtest_exception_format
 
 DEFAULT_PLATFORM = "Android"  # Android、Windows、iOS
@@ -472,6 +472,7 @@ class Phone(object):
         desc: str = "",
         typeMatches_inner: str = "",
         nameMatches_inner: str = "",
+        nameMatches_outer: str = "",
         textMatches_inner: str = "",
         textMatches_outer: str = "",
         global_num: int = None,
@@ -497,142 +498,18 @@ class Phone(object):
         po_list = list()
         for i in po:
             po_text = i.get_text()
+            po_name = i.get_name()
             if textMatches_outer and re.search(textMatches_outer, po_text) is None:
+                break
+            if nameMatches_outer and re.search(nameMatches_outer, po_name) is None:
                 break
             zOrders = i.attr("zOrders")
             touchable_raw = i.attr("touchable")
-            # pprint(self.get_ui_object_proxy_attr(ui_object_proxy=i))
+            # pprint(get_ui_object_proxy_attr(ui_object_proxy=i))
             if zOrders.get("global") == global_num and zOrders.get("local") == local_num and touchable_raw == touchable:
-                # pprint(self.get_ui_object_proxy_attr(ui_object_proxy=i))
+                # pprint(get_ui_object_proxy_attr(ui_object_proxy=i))
                 po_list.append(i)
         return po_list
-
-    @staticmethod
-    def get_ui_object_proxy_attr(
-        ui_object_proxy: AndroidUiautomationPoco,
-    ) -> OrderedDict:
-        ordered_dict = OrderedDict()
-        ordered_dict["type"] = (
-            ui_object_proxy.attr("type").strip()
-            if isinstance(ui_object_proxy.attr("type"), str)
-            else ui_object_proxy.attr("type")
-        )
-        ordered_dict["name"] = (
-            ui_object_proxy.attr("name").strip()
-            if isinstance(ui_object_proxy.attr("name"), str)
-            else ui_object_proxy.attr("name")
-        )
-        ordered_dict["text"] = (
-            ui_object_proxy.attr("text").strip()
-            if isinstance(ui_object_proxy.attr("text"), str)
-            else ui_object_proxy.attr("text")
-        )
-        ordered_dict["desc"] = (
-            ui_object_proxy.attr("desc").strip()
-            if isinstance(ui_object_proxy.attr("desc"), str)
-            else ui_object_proxy.attr("desc")
-        )
-        ordered_dict["enabled"] = (
-            ui_object_proxy.attr("enabled").strip()
-            if isinstance(ui_object_proxy.attr("enabled"), str)
-            else ui_object_proxy.attr("enabled")
-        )
-        ordered_dict["visible"] = (
-            ui_object_proxy.attr("visible").strip()
-            if isinstance(ui_object_proxy.attr("visible"), str)
-            else ui_object_proxy.attr("visible")
-        )
-        ordered_dict["resourceId"] = (
-            ui_object_proxy.attr("resourceId").strip()
-            if isinstance(ui_object_proxy.attr("resourceId"), str)
-            else ui_object_proxy.attr("resourceId")
-        )
-        ordered_dict["zOrders"] = (
-            ui_object_proxy.attr("zOrders").strip()
-            if isinstance(ui_object_proxy.attr("zOrders"), str)
-            else ui_object_proxy.attr("zOrders")
-        )
-        ordered_dict["package"] = (
-            ui_object_proxy.attr("package").strip()
-            if isinstance(ui_object_proxy.attr("package"), str)
-            else ui_object_proxy.attr("package")
-        )
-        ordered_dict["anchorPoint"] = (
-            ui_object_proxy.attr("anchorPoint").strip()
-            if isinstance(ui_object_proxy.attr("anchorPoint"), str)
-            else ui_object_proxy.attr("anchorPoint")
-        )
-        ordered_dict["dismissable"] = (
-            ui_object_proxy.attr("dismissable").strip()
-            if isinstance(ui_object_proxy.attr("dismissable"), str)
-            else ui_object_proxy.attr("dismissable")
-        )
-        ordered_dict["checkable"] = (
-            ui_object_proxy.attr("checkable").strip()
-            if isinstance(ui_object_proxy.attr("checkable"), str)
-            else ui_object_proxy.attr("checkable")
-        )
-        ordered_dict["scale"] = (
-            ui_object_proxy.attr("scale").strip()
-            if isinstance(ui_object_proxy.attr("scale"), str)
-            else ui_object_proxy.attr("scale")
-        )
-        ordered_dict["boundsInParent"] = (
-            ui_object_proxy.attr("boundsInParent").strip()
-            if isinstance(ui_object_proxy.attr("boundsInParent"), str)
-            else ui_object_proxy.attr("boundsInParent")
-        )
-        ordered_dict["focusable"] = (
-            ui_object_proxy.attr("focusable").strip()
-            if isinstance(ui_object_proxy.attr("focusable"), str)
-            else ui_object_proxy.attr("focusable")
-        )
-        ordered_dict["touchable"] = (
-            ui_object_proxy.attr("touchable").strip()
-            if isinstance(ui_object_proxy.attr("touchable"), str)
-            else ui_object_proxy.attr("touchable")
-        )
-        ordered_dict["longClickable"] = (
-            ui_object_proxy.attr("longClickable").strip()
-            if isinstance(ui_object_proxy.attr("longClickable"), str)
-            else ui_object_proxy.attr("longClickable")
-        )
-        ordered_dict["size"] = (
-            ui_object_proxy.attr("size").strip()
-            if isinstance(ui_object_proxy.attr("size"), str)
-            else ui_object_proxy.attr("size")
-        )
-        ordered_dict["pos"] = (
-            ui_object_proxy.attr("pos").strip()
-            if isinstance(ui_object_proxy.attr("pos"), str)
-            else ui_object_proxy.attr("pos")
-        )
-        ordered_dict["focused"] = (
-            ui_object_proxy.attr("focused").strip()
-            if isinstance(ui_object_proxy.attr("focused"), str)
-            else ui_object_proxy.attr("focused")
-        )
-        ordered_dict["checked"] = (
-            ui_object_proxy.attr("checked").strip()
-            if isinstance(ui_object_proxy.attr("checked"), str)
-            else ui_object_proxy.attr("checked")
-        )
-        ordered_dict["editalbe"] = (
-            ui_object_proxy.attr("editalbe").strip()
-            if isinstance(ui_object_proxy.attr("editalbe"), str)
-            else ui_object_proxy.attr("editalbe")
-        )
-        ordered_dict["selected"] = (
-            ui_object_proxy.attr("selected").strip()
-            if isinstance(ui_object_proxy.attr("selected"), str)
-            else ui_object_proxy.attr("selected")
-        )
-        ordered_dict["scrollable"] = (
-            ui_object_proxy.attr("scrollable").strip()
-            if isinstance(ui_object_proxy.attr("scrollable"), str)
-            else ui_object_proxy.attr("scrollable")
-        )
-        return ordered_dict
 
     @airtest_exception_format
     def hide_keyword(self, file_name: str) -> None:

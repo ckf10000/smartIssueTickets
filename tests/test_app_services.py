@@ -33,10 +33,33 @@ def test_get_tickect_deduction_amount():
     app.start()
     app.get_tickect_deduction_amount()
 
+def test_get_pending_trip_order():
+    app = CtripAppService()
+    app.start()
+    app.get_pending_trip_order()
+
+def test_close_important_trip_guidelines():
+    app = CtripAppService()
+    app.start()
+    app.close_important_trip_guidelines()
+
+def test_get_flight_ticket_with_order_id():
+    app = CtripAppService()
+    app.start()
+    print(app.get_flight_ticket_with_order_id())
+
+def test_get_flight_ticket_with_itinerary_id():
+    app = CtripAppService()
+    app.start()
+    print(app.get_flight_ticket_with_itinerary_id())
+
 
 if __name__ == "__main__":
     # test_select_special_flight()
     # test_select_insecure()  
     # test_get_tickect_actual_amount()
-    test_get_tickect_deduction_amount()
-    
+    # test_get_tickect_deduction_amount()
+    # test_get_pending_trip_order()
+    test_close_important_trip_guidelines()
+    test_get_flight_ticket_with_order_id()
+    test_get_flight_ticket_with_itinerary_id()

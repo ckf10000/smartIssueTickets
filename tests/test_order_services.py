@@ -11,12 +11,12 @@
 """
 from apps.application.services.order_services import flight_ticket_order_ser
 
-def test_get_crtip_flight_ticket_order():
-    flight_ticket_order_ser.get_crtip_flight_ticket_order(
-        departure_time="2024-04-13 09:15",
-        flight="EU1805"
+def test_get_crtip_pending_trip_order():
+    flight_ticket_order_ser.get_crtip_pending_trip_order(
+        departure_time="2024-04-08 19:20",
+        flight="G54489"
     )
 
 
 if __name__ == "__main__":
-    test_get_crtip_flight_ticket_order()
+    test_get_crtip_pending_trip_order()

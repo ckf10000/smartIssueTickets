@@ -18,13 +18,13 @@ development:
       class: distributed_logging.JSONFormatter
   handlers:
     stream:
-      level: INFO
+      level: DEBUG
       stream: ~~sys_module sys.stdout
       formatter: console
       filters: ['request_id']
       class: logging.StreamHandler
     web.log:
-      level: INFO
+      level: DEBUG
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -43,7 +43,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     web.json:
-      level: INFO
+      level: DEBUG
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -62,7 +62,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     producer.log:
-      level: INFO
+      level: DEBUG
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -81,7 +81,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     producer.json:
-      level: INFO
+      level: DEBUG
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -100,7 +100,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     consumer.log:
-      level: INFO
+      level: DEBUG
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -119,7 +119,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     consumer.json:
-      level: INFO
+      level: DEBUG
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -138,7 +138,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     flask_pika.log:
-      level: INFO
+      level: DEBUG
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -157,7 +157,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     flask_pika.json:
-      level: INFO
+      level: DEBUG
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -176,7 +176,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     pika.log:
-      level: INFO
+      level: DEBUG
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -195,7 +195,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     pika.json:
-      level: INFO
+      level: DEBUG
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -214,7 +214,7 @@ development:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
 #    syslog:
-#      level: INFO
+#      level: DEBUG
 #      formatter: json
 #      class: logging.handlers.SysLogHandler
 #      socktype: ~~sys_module socket.SOCK_STREAM   # socket.SOCK_STREAM  为TCP，socket.SOCK_DGRAM 为UDP
@@ -272,7 +272,7 @@ development:
         - web.json
 #        - sentry
 #        - syslog
-      level: INFO
+      level: DEBUG
       propagate: false
     airtest:
       handlers:
@@ -290,7 +290,7 @@ development:
         - web.json
 #        - sentry
 #        - syslog
-      level: INFO
+      level: DEBUG
       propagate: false
     werkzeug:
       handlers:
@@ -299,7 +299,7 @@ development:
         - web.json
 #        - sentry
 #        - syslog
-      level: INFO
+      level: DEBUG
       propagate: false
     gunicorn.error:
       handlers:
@@ -308,7 +308,7 @@ development:
         - web.json
 #        - sentry
 #        - syslog
-      level: INFO
+      level: DEBUG
       propagate: false
     pika.producer:
       handlers:
@@ -317,7 +317,7 @@ development:
         - producer.json
 #        - sentry
 #        - syslog
-      level: INFO
+      level: DEBUG
       propagate: false
     flask.pika:
       handlers:
@@ -326,7 +326,7 @@ development:
         - flask_pika.json
 #        - sentry
 #        - syslog
-      level: INFO
+      level: DEBUG
       propagate: false
     pika:
       handlers:
@@ -335,7 +335,7 @@ development:
         - pika.json
 #        - sentry
 #        - syslog
-      level: INFO
+      level: DEBUG
       propagate: false
 sit:
   version: 1
@@ -564,7 +564,7 @@ sit:
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://df9f913c92454402a60275fdd455c0de@pagoda-sentry.xsyxsc.com/4'
     airtest.log:
-      level: DEBUG
+      level: INFO
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -583,7 +583,7 @@ sit:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     airtest.json:
-      level: DEBUG
+      level: INFO
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -618,7 +618,7 @@ sit:
         - airtest.json
 #        - sentry
 #        - syslog
-      level: DEBUG
+      level: INFO
       propagate: false
     pagoda_apollo:
       handlers:
@@ -901,7 +901,7 @@ production:
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://dd76781ee3f340818fc5c02fc98b06c4@pagoda-sentry.xsyxsc.com/2'
     airtest.log:
-      level: DEBUG
+      level: INFO
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -920,7 +920,7 @@ production:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     airtest.json:
-      level: DEBUG
+      level: INFO
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -955,7 +955,7 @@ production:
         - airtest.json
 #        - sentry
 #        - syslog
-      level: DEBUG
+      level: INFO
       propagate: false
     pagoda_apollo:
       handlers:
@@ -1238,7 +1238,7 @@ uat:
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://df9f913c92454402a60275fdd455c0de@pagoda-sentry.xsyxsc.com/4'
     airtest.log:
-      level: DEBUG
+      level: INFO
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -1257,7 +1257,7 @@ uat:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     airtest.json:
-      level: DEBUG
+      level: INFO
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -1292,7 +1292,7 @@ uat:
         - airtest.json
 #        - sentry
 #        - syslog
-      level: DEBUG
+      level: INFO
       propagate: false
     pagoda_apollo:
       handlers:
@@ -1575,7 +1575,7 @@ pre:
 #      class: raven.handlers.logging.SentryHandler
 #      dsn: 'https://df9f913c92454402a60275fdd455c0de@pagoda-sentry.xsyxsc.com/4'
     airtest.log:
-      level: DEBUG
+      level: INFO
       formatter: standard
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -1594,7 +1594,7 @@ pre:
       encoding: utf-8  # 日志文件的文本编码
       unicode_error_policy: ignore  #  应为'ignore'、'replace'、'strict'之一确定将消息写入流编码所在的日志时发生的情况不支持。默认设置为忽略，即删除不可用的字符。
     airtest.json:
-      level: DEBUG
+      level: INFO
       formatter: json
       filters: ['request_id']
       class: distributed_logging.ConcurrentRotatingFileHandler  # 日志类，当前类支持多进程模式的日志记录
@@ -1629,7 +1629,7 @@ pre:
         - airtest.json
 #        - sentry
 #        - syslog
-      level: DEBUG
+      level: INFO
       propagate: false
     pagoda_apollo:
       handlers:

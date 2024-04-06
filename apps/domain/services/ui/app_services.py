@@ -11,12 +11,15 @@
 """
 import typing as t
 from decimal import Decimal
+from poco.exceptions import PocoNoSuchNodeException
 
 from apps.common.annotation.log_service import logger
 from apps.infrastructure.api.platforms import PlatformService
 from apps.infrastructure.api.mobile_terminals import stop_app
 from apps.common.libs.dir import get_images_dir, is_exists, join_path
 from apps.common.annotation.delay_wait import SleepWait, LoopFindElement
+from apps.domain.converter.order_converter import CtripAppOrderElementConverter
+from apps.common.libs.utils import get_ui_object_proxy_attr, update_nested_dict
 from apps.common.libs.date_extend import get_trip_year_month_day, get_datetime_area, is_public_holiday
 
 
@@ -232,9 +235,7 @@ class CtripAppService(PlatformService):
         clear_button = self.device.get_po(
             type="android.view.ViewGroup", name="筛选清空按钮"
         )[0]
-        clear_button_attr = self.device.get_ui_object_proxy_attr(
-            ui_object_proxy=clear_button
-        )
+        clear_button_attr = get_ui_object_proxy_attr(ui_object_proxy=clear_button)
         is_enabled = clear_button_attr.get("enabled")
         if is_enabled is True:
             clear_text = self.device.get_po_extend(
@@ -375,9 +376,7 @@ class CtripAppService(PlatformService):
         lowerest_price_po = self.device.get_po(
             type="android.widget.TextView", name="第2个政策成人价格金额"
         )[0]
-        ui_object_proxy_attr = self.device.get_ui_object_proxy_attr(
-            ui_object_proxy=lowerest_price_po
-        )
+        ui_object_proxy_attr = get_ui_object_proxy_attr(ui_object_proxy=lowerest_price_po)
         text = ui_object_proxy_attr.get("text")
         logger.info("获取到的机票最低价为：", text)
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
@@ -621,7 +620,7 @@ class CtripAppService(PlatformService):
                 local_num=2,
                 touchable=False,
             )[0]
-            conflict_prompt_str = self.device.get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
+            conflict_prompt_str = get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
             duplicate_order_1.click()
             return conflict_prompt_str
         elif duplicate_order_2.exists():
@@ -632,7 +631,7 @@ class CtripAppService(PlatformService):
                 local_num=1,
                 touchable=False,
             )[0]
-            conflict_prompt_str = self.device.get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
+            conflict_prompt_str = get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
             duplicate_order_2.click()
             return conflict_prompt_str
         elif duplicate_order_3.exists():
@@ -643,7 +642,7 @@ class CtripAppService(PlatformService):
                 local_num=3,
                 touchable=False,
             )[0]
-            conflict_prompt_str = self.device.get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
+            conflict_prompt_str = get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
             self.device.touch((400, 500)) # 点击一个随机坐标，尽量靠近上半屏，相当于点击空白处，隐藏掉提示框
             return conflict_prompt_str
         else:
@@ -833,6 +832,37 @@ class CtripAppService(PlatformService):
             last_four_digits=payment_method_slice[1:-1] # 银行卡末四位数字
         )
 
+    @SleepWait(wait_time=5)
+    def touch_payment_complete(self) -> None:
+        """在支付成功界面，点击【完成】"""
+        payment_complete_button = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            text="完成",
+            global_num=0,
+            local_num=1,
+            touchable=False,
+        )[0]
+        payment_complete_button.click()
+        logger.info("点击支付成功界面的【完成】按钮.")
+
+    @SleepWait(wait_time=1)
+    def close_important_trip_guidelines(self) -> None:
+        """关闭出行前必读"""
+        try:
+            poco = (
+                self.device.poco("android.widget.FrameLayout")
+                .child("android.view.ViewGroup")
+                .offspring("@FlyInModal")
+                .child("android.view.ViewGroup")
+                .child("android.view.ViewGroup")[1]
+                .child("android.widget.TextView")
+            )
+            if poco.exists() is True:
+                poco.click()
+        except (PocoNoSuchNodeException, Exception):
+            pass
+
     @SleepWait(wait_time=1)
     def touch_order_with_finish_button(self) -> None:
         """点击支付成功界面的【完成】按钮"""
@@ -846,6 +876,48 @@ class CtripAppService(PlatformService):
         )[0]
         logger.info("点击【完成】按钮, 关闭流程.")
         finish_button.click()
+
+    @SleepWait(wait_time=1)
+    def get_flight_ticket_with_order_id(self) -> str:
+        """获取机票订单的id"""
+        poco = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="pricePolicy_Text_订单号",
+            global_num=0,
+            local_num=3,
+            touchable=False
+        )[0]
+        return poco.get_text().split("：")[-1].strip()
+
+    @SleepWait(wait_time=1)
+    def get_flight_ticket_with_itinerary_id(self):
+        """获取机票中乘客的行程单号"""
+        # 滑动屏幕三次
+        for i in range(3):
+            self.device.quick_slide_screen()
+        poco = (
+            self.device.poco("android.widget.FrameLayout")
+            .offspring("android:id/content")
+            .child("ctrip.android.view:id/a")
+            .child("ctrip.android.view:id/a")
+            .offspring("android.widget.LinearLayout")
+            .offspring("android.widget.FrameLayout")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")[1]
+            .offspring("PullRefreshScrollView_ScrollView")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .offspring("@contactInfo")
+            .offspring("contactInfo_Text_票号")[0]
+        )
+        if poco.exists() is True:
+            itinerary_id = poco.get_text().split("：")[-1].strip()
+        else:
+            itinerary_id = None
+        return itinerary_id
 
     @SleepWait(wait_time=5)
     def touch_my(self) -> None:
@@ -861,11 +933,51 @@ class CtripAppService(PlatformService):
         logger.info("点击【我的】按钮, 进入我的主页.")
         my.click()
 
+    @SleepWait(wait_time=3)
+    def touch_pending_trip_order(self) -> None:
+        """进入【我的】主页后，点击【待出行】订单"""
+        pending_trip_order = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="ctrip.android.view:id/a",
+            text="待出行",
+            global_num=0,
+            local_num=2,
+            touchable=False,
+        )[0]
+        logger.info("点击【待出行】按钮, 进入待出行订单列表.")
+        pending_trip_order.click()
 
     @SleepWait(wait_time=1)
-    def get_flight_ticket_order(self, departure_time: str, flight: str) -> t.Dict:
-        """获取机票订单中的重要ID信息"""
-        pass
+    def get_pending_trip_order(self) -> t.Dict:
+        """获取待出行的订单"""
+        order_page_poco = (
+            self.device.poco("android.widget.FrameLayout")
+            .offspring("android:id/content")
+            .child("ctrip.android.view:id/a")
+            .child("ctrip.android.view:id/a")
+            .offspring("android.widget.LinearLayout")
+            .offspring("android.widget.FrameLayout")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")[1]
+            .child("android.view.ViewGroup")[1]
+            .child("android.view.ViewGroup")
+            .child("android.widget.ScrollView")
+            .child("android.view.ViewGroup")
+        )
+        pending_trip_order = dict()
+        while True:
+            current = len(pending_trip_order)
+            trip_order_list = CtripAppOrderElementConverter.extract_ctrip_order_page_poco_as_list(poco=order_page_poco)
+            page_order = CtripAppOrderElementConverter.ctrip_order_element_as_dict(poco_list=trip_order_list)
+            update_nested_dict(original_dict=pending_trip_order, update_dict=page_order)
+            next = len(pending_trip_order)
+            if current == next:
+                break
+            self.device.quick_slide_screen()
+        return pending_trip_order
 
     """
     def __del__(self) -> None:
