@@ -16,6 +16,7 @@ from poco.exceptions import PocoNoSuchNodeException
 from apps.common.annotation.log_service import logger
 from apps.infrastructure.api.platforms import PlatformService
 from apps.infrastructure.api.mobile_terminals import stop_app
+from apps.infrastructure.middleware.mq import push_message_to_mq
 from apps.common.libs.dir import get_images_dir, is_exists, join_path
 from apps.common.annotation.delay_wait import SleepWait, LoopFindElement
 from apps.domain.converter.order_converter import CtripAppOrderElementConverter
@@ -369,14 +370,14 @@ class CtripAppService(PlatformService):
             raise ValueError("当前页面没有找到", desc)
 
     @SleepWait(wait_time=1)
-    def get_special_flight_price(self) -> Decimal:
+    def get_special_flight_amount(self) -> Decimal:
         """
-        检索航班经济舱的第二条数据的票价
+        检索航班经济舱的第二条数据的金额
         """
-        lowerest_price_po = self.device.get_po(
+        lowerest_amount_po = self.device.get_po(
             type="android.widget.TextView", name="第2个政策成人价格金额"
         )[0]
-        ui_object_proxy_attr = get_ui_object_proxy_attr(ui_object_proxy=lowerest_price_po)
+        ui_object_proxy_attr = get_ui_object_proxy_attr(ui_object_proxy=lowerest_amount_po)
         text = ui_object_proxy_attr.get("text")
         logger.info("获取到的机票最低价为：", text)
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
@@ -918,6 +919,11 @@ class CtripAppService(PlatformService):
         else:
             itinerary_id = None
         return itinerary_id
+
+    @classmethod
+    def push_flight_ticket_order(cls, message: t.Dict) -> None:
+        logger.info("开始往MQ推送携程机票订单信息.")
+        push_message_to_mq(message=message)
 
     @SleepWait(wait_time=5)
     def touch_my(self) -> None:

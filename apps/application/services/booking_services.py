@@ -25,10 +25,11 @@ class BookingFlightService(object):
     @classmethod
     def booking_ctrip_app_special_flight_ticket(
         cls,
+        pre_order_id: str, # 预售订单id
         departure_city: str,  # 离开城市
         arrive_city: str,  # 抵达城市
         departure_time: str,  # 起飞时间
-        lowest_price: Decimal,  # 最低票价
+        pre_sale_amount: Decimal,  # 预售金额
         flight: str,  # 航班编号
         passenger: str,  # 乘客
         age_stage: str,  # 乘客年龄阶段，儿童/成人
@@ -68,8 +69,8 @@ class BookingFlightService(object):
             app.select_filter_airline_company(ac)
             app.touch_filter_submit_button()
         app.select_special_flight(flight=flight)
-        special_flight_price = app.get_special_flight_price()
-        if special_flight_price <= lowest_price:
+        special_flight_amount = app.get_special_flight_amount()
+        if special_flight_amount <= pre_sale_amount:
             is_direct_booking = app.is_direct_booking()
             if is_direct_booking is True:
                 app.touch_direct_booking_button()
@@ -100,7 +101,7 @@ class BookingFlightService(object):
                 tickect_actual_amount = app.get_tickect_actual_amount()
                 tickect_deduction_amount = app.get_tickect_deduction_amount()
                 do_validator = FlightTicketValidator.validator_payment_with_deduction(
-                    pre_sale_amount=lowest_price,
+                    pre_sale_amount=pre_sale_amount,
                     actual_amount=tickect_actual_amount,
                     deduction_amount=tickect_deduction_amount,
                 )
@@ -113,10 +114,27 @@ class BookingFlightService(object):
                     app.close_important_trip_guidelines()
                     order_id = app.get_flight_ticket_with_order_id()
                     itinerary_id = app.get_flight_ticket_with_itinerary_id()
+                    message = dict(
+                        pre_order_id=pre_order_id,
+                        departure_city=departure_city,
+                        arrive_city=arrive_city,
+                        departure_time=departure_time,
+                        pre_sale_amount=pre_sale_amount,
+                        flight=flight,
+                        passenger=passenger,
+                        age_stage=age_stage,
+                        card_id=card_id,
+                        phone=phone,
+                        order_id=order_id,
+                        payment_amount=payment_amount,
+                        payment_method=payment_method,
+                        itinerary_id=itinerary_id,
+                    )
+                    app.push_flight_ticket_order(message=message)
         else:
             logger.warning(
                 "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(
-                    special_flight_price, lowest_price
+                    special_flight_amount, pre_sale_amount
                 )
             )
 

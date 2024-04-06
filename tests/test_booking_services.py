@@ -22,7 +22,7 @@ def test_booking_ctrip_app_special_flight_ticket():
         age_stage="成人",
         card_id="420684198710130016",
         phone="18569520328",
-        lowest_price=647.00,
+        pre_sale_amount=647.00,
         payment_pass="901127",
     )
 

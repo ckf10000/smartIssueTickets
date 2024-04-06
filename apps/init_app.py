@@ -29,7 +29,7 @@ __all__ = ["flask_app"]
 
 
 def create_app():
-    os.environ["APP_NAME"] = APP_NAME = "startIssueTickets"
+    os.environ["APP_NAME"] = APP_NAME = "smartIssueTickets"
     os.environ["ENV_TYPE"] = get_env()
     os.environ["FLASK_ENV"] = get_env()
     os.environ["PROJECT_HOME"] = get_project_path()
