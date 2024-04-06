@@ -19,9 +19,9 @@ __all__ = ["flight_ticket_order_ser"]
 class FlightTicketOrderService(object):
 
     @classmethod
-    def get_crtip_pending_trip_order(cls, departure_time: str,  flight: str) -> t.Dict:
-        """根据起飞时间，航班获取携程未出行订单"""
-        logger.info("本次要查询的航班为：{}，起飞时间在: {}".format(flight, departure_time))
+    def get_crtip_pending_trip_order(cls) -> t.Dict:
+        """获取携程未出行订单"""
+        logger.info("开始获取携程未出行的订单.")
         app = CtripAppService()
         app.device.wake()
         app.restart()

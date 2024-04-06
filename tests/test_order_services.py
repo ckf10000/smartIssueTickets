@@ -12,10 +12,7 @@
 from apps.application.services.order_services import flight_ticket_order_ser
 
 def test_get_crtip_pending_trip_order():
-    flight_ticket_order_ser.get_crtip_pending_trip_order(
-        departure_time="2024-04-08 19:20",
-        flight="G54489"
-    )
+    flight_ticket_order_ser.get_crtip_pending_trip_order()
 
 
 if __name__ == "__main__":
