@@ -715,13 +715,22 @@ class CtripAppService(PlatformService):
     @SleepWait(wait_time=1)
     def touch_payment_method(self) -> None:
         """点击【付款方式】"""
-        payment_method = self.device.get_po(
-            type="android.widget.TextView",
-            name="android.widget.TextView",
-            text="付款方式"
-        )
-        payment_method.click()
-        logger.info("点击选择【付款方式】")
+        try:
+            payment_method = self.device.get_po(
+                type="android.widget.TextView",
+                name="android.widget.TextView",
+                text="付款方式"
+            )
+            payment_method.click()
+            logger.info("在支付弹窗界面，点击选择【付款方式】")
+        except (PocoNoSuchNodeException, Exception):
+            payment_method = self.device.get_po(
+                type="android.widget.TextView",
+                name="android.widget.TextView",
+                text="换卡支付，支持境外卡"
+            )
+            payment_method.click()
+            logger.info("在安全收银台界面，点击选择【换卡支付，支持境外卡】")
 
     @SleepWait(wait_time=1)
     def select_payment_method(self, payment_method: str="浦发银行储蓄卡(7397)") -> None:
@@ -739,12 +748,11 @@ class CtripAppService(PlatformService):
         """
         当【同意并支付】后，特殊情况下，会出现支付小弹框，这个时候需要先判断是否存在小框，如果存在，则切换到通用支付选择界面
         """
-        more_payment = self.device.get_po_extend(
-            type="android.view.ViewGroup", name="android.view.ViewGroup", global_num=0, local_num=15, touchable=True
-        )
-        if len(more_payment) > 0:
-            more_payment[0].click()
-        else:
+        try:
+            more_payment = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView", text="更多付款方式")
+            more_payment.click()
+            logger.info("小弹框选择【更多付款方式】.")
+        except (PocoNoSuchNodeException, Exception):
             logger.info("没有出现支付小弹框，请在通用支付选择界面操作.")
 
     @SleepWait(wait_time=1)
@@ -814,11 +822,12 @@ class CtripAppService(PlatformService):
         """
         请输入支付密码
         """
+        device = PlatformService.minicap_device()
         for char in payment_pass:
             file_name = join_path([get_images_dir(), "支付_{}.png".format(char)])
             if is_exists(file_name):
-                temp = self.device.get_cv_template(file_name=file_name)
-                self.device.touch(v=temp)
+                temp = device.get_cv_template(file_name=file_name)
+                device.touch(v=temp)
             else:
                 raise ValueError("文件<{}>缺失...",format(file_name))
 

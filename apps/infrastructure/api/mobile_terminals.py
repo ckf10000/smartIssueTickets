@@ -551,6 +551,7 @@ class Phone(object):
         end_y = screen_height // 4  # 终止点纵坐标为屏幕顶部 1/4 处
         # 执行滑动操作
         self.swipe((start_x, start_y), (end_x, end_y), duration=duration)
+        
 
 class Pad(object):
     pass

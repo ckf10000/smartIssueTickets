@@ -28,7 +28,7 @@ def test_booking_ctrip_app_special_flight_ticket():
         payment_pass="901129",
         phone="18569520328",
         age_stage="成人",
-        pre_order_id="2887983",
+        pre_order_id="2887983"
     )
 
 

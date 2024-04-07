@@ -22,3 +22,10 @@ default_andriod_device = {
     "platform": "Android",
     "enable_debug": True
 }
+
+default_minicap_device = {
+    "device_id": "66J5T19312004724",  # 华为 mate 20
+    "device_conn": "android://127.0.0.1:5037/66J5T19312004724?cap_method={}&touch_method={}".format(CAP_METHOD.MINICAP, TOUCH_METHOD.ADBTOUCH),
+    "platform": "Android",
+    "enable_debug": True
+}

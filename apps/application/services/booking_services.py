@@ -38,7 +38,7 @@ class BookingFlightService(object):
         age_stage: str,  # 乘客年龄阶段，儿童/成人
         card_id: str,  # 身份证号
         phone: str,  # 手机号码
-        payment_pass: str,
+        payment_pass: str
     ) -> None:
         ac = airline_map.get(flight[:2].upper())
         logger.info("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))

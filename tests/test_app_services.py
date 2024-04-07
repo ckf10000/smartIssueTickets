@@ -61,7 +61,7 @@ def test_select_more_payment():
 def test_enter_payment_pass():
     app = CtripAppService()
     app.start()
-    app.enter_payment_pass(payment_pass="9033333")
+    app.enter_payment_pass(payment_pass="0123456789")
 
 def test_select_search_result_first_city():
     app = CtripAppService()
@@ -78,5 +78,5 @@ if __name__ == "__main__":
     # test_get_flight_ticket_with_order_id()
     # test_get_flight_ticket_with_itinerary_id()
     # test_select_more_payment()
-    # test_enter_payment_pass()
-    test_select_search_result_first_city()
+    test_enter_payment_pass()
+    # test_select_search_result_first_city()
