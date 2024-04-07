@@ -101,7 +101,9 @@ class CtripAppService(PlatformService):
             local_num=2,
             touchable=False
         )[0]
+        value = search_result.get_text().strip()
         search_result.click()
+        logger.info("从搜索结果中，选择<{}>这条数据.".format(value))
 
     @SleepWait(wait_time=3)
     def sumbit_search_result(self):
