@@ -710,6 +710,28 @@ class CtripAppService(PlatformService):
         agree.click()
 
     @SleepWait(wait_time=1)
+    def touch_payment_method(self) -> None:
+        """点击【付款方式】"""
+        payment_method = self.device.get_po(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            text="付款方式"
+        )
+        payment_method.click()
+        logger.info("点击选择【付款方式】")
+
+    @SleepWait(wait_time=1)
+    def select_payment_method(self, payment_method: str="浦发银行储蓄卡(7397)") -> None:
+        """选择【xxxy银行储蓄卡(xxxx)】"""
+        method = self.device.get_po(
+            type="android.widget.TextView",
+            name="android.widget.TextView",
+            text=payment_method
+        )
+        method.click()
+        logger.info("点击选择【{}】".format(payment_method))
+
+    @SleepWait(wait_time=1)
     def select_more_payment(self) -> None:
         """
         当【同意并支付】后，特殊情况下，会出现支付小弹框，这个时候需要先判断是否存在小框，如果存在，则切换到通用支付选择界面

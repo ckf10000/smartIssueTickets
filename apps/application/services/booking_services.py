@@ -96,6 +96,8 @@ class BookingFlightService(object):
                 app.touch_to_payment()
                 app.touch_insure_no()
                 app.touch_read_agree()
+                app.touch_payment_method()
+                app.select_payment_method(payment_method="浦发银行储蓄卡(7397)")
                 app.select_more_payment()
                 app.select_point_deduction()
                 tickect_actual_amount = app.get_tickect_actual_amount()
