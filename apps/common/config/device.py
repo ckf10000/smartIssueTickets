@@ -20,5 +20,5 @@ default_andriod_device = {
     # "device_conn": "android://127.0.0.1:5037/192.168.3.232:5555?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
     # "device_conn": "android://127.0.0.1:5037/192.168.3.189:5555?cap_method={}&touch_method={}".format(CAP_METHOD.JAVACAP, TOUCH_METHOD.ADBTOUCH),
     "platform": "Android",
-    "enable_debug": True,
+    "enable_debug": True
 }
