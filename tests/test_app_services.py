@@ -68,6 +68,11 @@ def test_select_search_result_first_city():
     app.start()
     app.select_search_result_first_city(select_value="PEK")
 
+def test_check_user_login():
+    app = CtripAppService()
+    app.start()
+    app.check_user_login(username="18600440822", password="ca161022")
+
 if __name__ == "__main__":
     # test_select_special_flight()
     # test_select_insecure()  
@@ -78,5 +83,6 @@ if __name__ == "__main__":
     # test_get_flight_ticket_with_order_id()
     # test_get_flight_ticket_with_itinerary_id()
     # test_select_more_payment()
-    test_enter_payment_pass()
+    # test_enter_payment_pass()
     # test_select_search_result_first_city()
+    test_check_user_login()

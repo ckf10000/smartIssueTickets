@@ -80,6 +80,7 @@ class BookingFlightService(object):
             else:
                 app.touch_booking_the_second_button()
                 app.touch_ordinary_booking_button()
+            app.check_user_login(username="18600440822", password="ca161022")
             app.touch_more_passengers_button()
             app.touch_add_passengers_button()
             app.enter_passenger_username(passenger=passenger)

@@ -441,6 +441,33 @@ class CtripAppService(PlatformService):
         )[0]
         ordinary_booking_button.click()
 
+    @SleepWait(wait_time=2)
+    def check_user_login(self, username: str, password: str) -> None:
+        try:
+            login_page_poco = self.device.get_po(type="android.widget.TextView", name="ctrip.android.view:id/a", text="账号密码登录")
+            if login_page_poco.exists():
+                logger.warning("系统用户<{}>已经退出，需要重新登录".format(username))
+                username_poco = self.device.get_po_extend(
+                    type="android.widget.EditText", name="android.widget.EditText", textMatches_inner="^\d+.*",
+                    global_num=0, local_num=2, touchable=True
+                )[0]
+                # username_poco.click()
+                username_poco.set_text(username)
+                password_poco = self.device.get_po(
+                    type="android.widget.EditText", name="android.widget.EditText", text="登录密码"
+                )
+                # password_poco.click()
+                password_poco.set_text(password)
+                # 勾选隐私保护
+                privacy_protection = self.device.get_po(
+                    type="android.widget.ImageView", name="ctrip.android.view:id/a", desc="勾选服务协议和个人信息保护指引"
+                )
+                privacy_protection.click()
+                login_poco = self.device.get_po(type="android.widget.TextView", name="ctrip.android.view:id/a", text="登录")
+                login_poco.click()
+        except (PocoNoSuchNodeException, Exception) as e:
+            logger.error(str(e))
+
     @LoopFindElement(loop=5)
     # @SleepWait(wait_time=3)
     def touch_more_passengers_button(self) -> None:
