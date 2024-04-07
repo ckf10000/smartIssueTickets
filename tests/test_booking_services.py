@@ -19,7 +19,7 @@ def test_booking_ctrip_app_special_flight_ticket():
         departure_city="SZX",
         departure_time="2024-04-09 11:35",
         flight="EU2218",
-        pre_sale_amount=600.00,
+        pre_sale_amount="600.00",
         passenger="曹文全",
         payment_pass="901127",
         phone="18569520328",

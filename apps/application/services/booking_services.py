@@ -29,7 +29,7 @@ class BookingFlightService(object):
         departure_city: str,  # 离开城市
         arrive_city: str,  # 抵达城市
         departure_time: str,  # 起飞时间
-        pre_sale_amount: Decimal,  # 预售金额
+        pre_sale_amount: str,  # 预售金额
         flight: str,  # 航班编号
         passenger: str,  # 乘客
         age_stage: str,  # 乘客年龄阶段，儿童/成人
@@ -70,7 +70,7 @@ class BookingFlightService(object):
             app.touch_filter_submit_button()
         app.select_special_flight(flight=flight)
         special_flight_amount = app.get_special_flight_amount()
-        if special_flight_amount <= pre_sale_amount:
+        if special_flight_amount <= Decimal(pre_sale_amount):
             is_direct_booking = app.is_direct_booking()
             if is_direct_booking is True:
                 app.touch_direct_booking_button()
@@ -128,7 +128,7 @@ class BookingFlightService(object):
                         card_id=card_id,
                         phone=phone,
                         order_id=order_id,
-                        payment_amount=payment_amount,
+                        payment_amount=str(payment_amount),
                         payment_method=payment_method,
                         itinerary_id=itinerary_id,
                     )

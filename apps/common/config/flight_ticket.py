@@ -9,6 +9,7 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
+from decimal import Decimal
 
 airline_map = {
     "3U": "四川航空",
@@ -50,6 +51,6 @@ airline_map = {
 }
 
 ticket_fee = {
-    "fuel_fee": 70.00,  # 燃油费
-    "airport_fee": 50.00 # 机建费
+    "fuel_fee": Decimal("70.00"),  # 燃油费
+    "airport_fee": Decimal("50.00") # 机建费
 }
