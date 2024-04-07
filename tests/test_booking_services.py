@@ -14,16 +14,17 @@ from apps.application.services.booking_services import booking_flight_ser
 
 def test_booking_ctrip_app_special_flight_ticket():
     booking_flight_ser.booking_ctrip_app_special_flight_ticket(
-        departure_time="2024-04-07 12:10",
-        flight="MF8358",
-        departure_city="WUH",
-        arrive_city="XMN",
-        passenger="罗杨",
-        age_stage="成人",
-        card_id="420684198710130016",
-        phone="18569520328",
-        pre_sale_amount=647.00,
+        arrive_city="CTU",
+        card_id="412924196807203155",
+        departure_city="SZX",
+        departure_time="2024-04-09 11:35",
+        flight="EU2218",
+        pre_sale_amount=600.00,
+        passenger="曹文全",
         payment_pass="901127",
+        phone="18569520328",
+        age_stage="成人",
+        pre_order_id="2885578",
     )
 
 

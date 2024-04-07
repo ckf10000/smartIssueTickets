@@ -364,7 +364,7 @@ class CtripAppService(PlatformService):
         if special_flight.exists():
             abs_position = self.device.get_abs_position(element=special_flight)
             # special_flight.click()
-            logger.info("选择：", desc)
+            logger.info("选择：{}".format(desc))
             self.device.touch((abs_position[0], abs_position[1] - 200))
         else:
             raise ValueError("当前页面没有找到", desc)
@@ -379,7 +379,7 @@ class CtripAppService(PlatformService):
         )[0]
         ui_object_proxy_attr = get_ui_object_proxy_attr(ui_object_proxy=lowerest_amount_po)
         text = ui_object_proxy_attr.get("text")
-        logger.info("获取到的机票最低价为：", text)
+        logger.info("获取到的机票最低价为：{}".format(text))
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
         return Decimal(text) if isinstance(text, str) and text.isdigit() else 9999999999.9999999999
 

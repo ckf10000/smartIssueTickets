@@ -53,6 +53,10 @@ def test_get_flight_ticket_with_itinerary_id():
     app.start()
     print(app.get_flight_ticket_with_itinerary_id())
 
+def test_select_more_payment():
+    app = CtripAppService()
+    app.start()
+    app.select_more_payment()
 
 if __name__ == "__main__":
     # test_select_special_flight()
@@ -60,6 +64,7 @@ if __name__ == "__main__":
     # test_get_tickect_actual_amount()
     # test_get_tickect_deduction_amount()
     # test_get_pending_trip_order()
-    test_close_important_trip_guidelines()
-    test_get_flight_ticket_with_order_id()
-    test_get_flight_ticket_with_itinerary_id()
+    # test_close_important_trip_guidelines()    
+    # test_get_flight_ticket_with_order_id()
+    # test_get_flight_ticket_with_itinerary_id()
+    test_select_more_payment()
