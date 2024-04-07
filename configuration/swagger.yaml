@@ -269,18 +269,31 @@ requestModels:
         description: "起飞时间"
         required: true
         format: "date"
+      arrive_time:
+        type: "string"
+        description: "抵达时间"
+        required: false
+        format: "date"
       flight:
         type: "string"
         description: "航班"
         required: true
       departure_city:
         type: "string"
-        description: "起飞城市"
+        description: "起飞城市编号"
         required: true
+      departure_city_name:
+        type: "string"
+        description: "起飞城市名"
+        required: false
       arrive_city:
         type: "string"
-        description: "抵达城市"
+        description: "抵达城市编号"
         required: true
+      arrive_city_name:
+        type: "string"
+        description: "抵达城市名"
+        required: false
       passenger:
         type: "string"
         description: "乘客姓名"

@@ -58,6 +58,16 @@ def test_select_more_payment():
     app.start()
     app.select_more_payment()
 
+def test_enter_payment_pass():
+    app = CtripAppService()
+    app.start()
+    app.enter_payment_pass(payment_pass="9033333")
+
+def test_select_search_result_first_city():
+    app = CtripAppService()
+    app.start()
+    app.select_search_result_first_city(select_value="PEK")
+
 if __name__ == "__main__":
     # test_select_special_flight()
     # test_select_insecure()  
@@ -67,4 +77,6 @@ if __name__ == "__main__":
     # test_close_important_trip_guidelines()    
     # test_get_flight_ticket_with_order_id()
     # test_get_flight_ticket_with_itinerary_id()
-    test_select_more_payment()
+    # test_select_more_payment()
+    # test_enter_payment_pass()
+    test_select_search_result_first_city()

@@ -26,9 +26,12 @@ class BookingFlightService(object):
     def booking_ctrip_app_special_flight_ticket(
         cls,
         pre_order_id: str, # 预售订单id
-        departure_city: str,  # 离开城市
-        arrive_city: str,  # 抵达城市
+        departure_city: str,  # 离开城市编号
+        departure_city_name: str, # 离开城市名
+        arrive_city: str,  # 抵达城市编号
+        arrive_city_name: str, # 抵达城市名
         departure_time: str,  # 起飞时间
+        arrive_time: str, # 抵达时间
         pre_sale_amount: str,  # 预售金额
         flight: str,  # 航班编号
         passenger: str,  # 乘客
@@ -48,11 +51,11 @@ class BookingFlightService(object):
         app.touch_special_flight_ticket()
         app.select_departure_city()
         app.enter_search_value(search_value=departure_city)
-        app.select_search_result_first_city()
+        app.select_search_result_first_city(select_value=departure_city)
         app.sumbit_search_result()
         app.select_arrive_city()
         app.enter_search_value(search_value=arrive_city)
-        app.select_search_result_first_city()
+        app.select_search_result_first_city(select_value=arrive_city)
         app.sumbit_search_result()
         app.select_trip_date()
         app.select_trip_expect_month(date_str=departure_time)
@@ -131,6 +134,9 @@ class BookingFlightService(object):
                         payment_amount=str(payment_amount),
                         payment_method=payment_method,
                         itinerary_id=itinerary_id,
+                        departure_city_name=departure_city_name,
+                        arrive_city_name=arrive_city_name,
+                        arrive_time=arrive_time
                     )
                     app.push_flight_ticket_order(message=message)
         else:

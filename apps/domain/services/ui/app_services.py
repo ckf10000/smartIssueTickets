@@ -92,15 +92,16 @@ class CtripAppService(PlatformService):
         search_box.set_text(search_value)
 
     @SleepWait(wait_time=5)
-    def select_search_result_first_city(self):
-        search_result = self.__get_search_first_city()
+    def select_search_result_first_city(self, select_value: str):
+        search_result = self.device.get_po_extend(
+            type="android.widget.TextView",
+            name="ctrip.android.view:id/a",
+            textMatches_inner=".* {} .*".format(select_value),
+            global_num=0,
+            local_num=2,
+            touchable=False
+        )[0]
         search_result.click()
-
-    def __get_search_first_city(self):
-        po = self.device.get_po(
-            type="android.view.ViewGroup", name="城市页第1条搜索结果"
-        )
-        return po[0].children()[1]
 
     @SleepWait(wait_time=3)
     def sumbit_search_result(self):
