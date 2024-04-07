@@ -19,6 +19,8 @@ class BookingCtripAppSpecialFlightController(BaseArgumentController):
 
     def post(self):
         # location表示获取args中的关键字段进行校验，required表示必填不传报错，type表示字段类型
+        self.parse.add_argument("pre_order_id", type=str, help="预售单参数<pre_order_id>校验错误",required=True, 
+                                location='json', trim=True)
         self.parse.add_argument("departure_time", type=str, help="起飞时间参数<departure_time>校验错误，参数格式为：2024-04-07 12:10",required=True, 
                                 location='json', trim=True)
         self.parse.add_argument("flight", type=str, help="航班参数<flight>校验错误", required=True, location='json', trim=True)
@@ -34,7 +36,7 @@ class BookingCtripAppSpecialFlightController(BaseArgumentController):
                                 location='json', trim=True)
         self.parse.add_argument("phone", type=str, help="手机号参数<phone>校验错误", required=True, 
                                 location='json', trim=True, default="18569520328")
-        self.parse.add_argument("lowest_price", type=float, help="最低售价参数<lowest_price>校验错误", required=True, 
+        self.parse.add_argument("pre_sale_amount", type=float, help="预售金额参数<pre_sale_amount>校验错误", required=True, 
                                 location='json', trim=True)
         self.parse.add_argument("payment_pass", type=str, help="支付密码参数<payment_pass>校验错误", required=True, 
                                 location='json', trim=True)
