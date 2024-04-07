@@ -17,7 +17,7 @@ rabbitmq_default_config = {
     "username": "ticket",
     "password": "Admin@123",
     "virtual_host": "smartIssueTickets",
-    # "queue": "order.flight.ctrip",
+    "queue": "order.flight.ctrip",
     "exchange": "amq.fanout",
     "exchange_type": "fanout",
     "routing_key": ''
