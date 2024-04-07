@@ -103,7 +103,7 @@ class BookingFlightService(object):
                 tickect_actual_amount = app.get_tickect_actual_amount()
                 tickect_deduction_amount = app.get_tickect_deduction_amount()
                 do_validator = FlightTicketValidator.validator_payment_with_deduction(
-                    pre_sale_amount=pre_sale_amount,
+                    pre_sale_amount=Decimal(pre_sale_amount),
                     actual_amount=tickect_actual_amount,
                     deduction_amount=tickect_deduction_amount,
                 )
