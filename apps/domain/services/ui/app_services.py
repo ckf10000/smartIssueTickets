@@ -844,7 +844,7 @@ class CtripAppService(PlatformService):
         deduction_amount = Decimal(deduction_amount[2:]) if isinstance(deduction_amount, str) else -9999999999.9999999999
         return deduction_amount
 
-    @SleepWait(wait_time=5)
+    @SleepWait(wait_time=10)
     def enter_payment_pass(self, payment_pass: str) -> None:
         """
         请输入支付密码
@@ -894,7 +894,7 @@ class CtripAppService(PlatformService):
             last_four_digits=payment_method_slice[1:-1] # 银行卡末四位数字
         )
 
-    @SleepWait(wait_time=5)
+    @SleepWait(wait_time=8)
     def touch_payment_complete(self) -> None:
         """在支付成功界面，点击【完成】"""
         payment_complete_button = self.device.get_po_extend(
@@ -907,6 +907,34 @@ class CtripAppService(PlatformService):
         )[0]
         payment_complete_button.click()
         logger.info("点击支付成功界面的【完成】按钮.")
+
+    @SleepWait(wait_time=1)
+    def close_coupon_dialog(self) -> None:
+        """支付完成后，会有一个优惠卷弹框，需要关闭"""
+        try:
+            coupon_dialog = self.device.get_po(type="android.view.ViewGroup", name="领券弹窗关闭按钮")
+            if coupon_dialog.exists():
+                coupon_dialog.click()
+        except (PocoNoSuchNodeException, Exception):
+            logger.warning("没有出现领券弹窗关闭按钮.")
+    
+    @SleepWait(wait_time=1)
+    def expand_order_detail(self) -> None:
+        """展开【详情/首页】"""
+        file_name = join_path([get_images_dir(), "完成后的订单详情.png"])
+        if is_exists(file_name):
+            temp = self.device.get_cv_template(file_name=file_name)
+        else:
+            temp = (902, 202)  # LG g7手机上对应的坐标位置，其他型号手机可能不是这个值
+        self.device.touch(v=temp)
+        logger.info("展开【详情/首页】，接下来可以点击【查订单/开发票】")
+
+    @SleepWait(wait_time=5)
+    def touch_order_detail(self) -> None:
+        """点击【查订单/开发票】，进入订单详情界面"""
+        order_detail = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView", text="查订单/开发票")
+        order_detail.click()
+        logger.info("点击【查订单/开发票】，进入订单详情界面")
 
     @SleepWait(wait_time=1)
     def close_important_trip_guidelines(self) -> None:
@@ -922,8 +950,9 @@ class CtripAppService(PlatformService):
             )
             if poco.exists() is True:
                 poco.click()
+                logger.info("【出行前必读】出行前必读小窗口，已关闭.")
         except (PocoNoSuchNodeException, Exception):
-            pass
+            logger.warning("没有检测到【出现前必读】小窗口弹出，可以直接进行下面的操作.")
 
     @SleepWait(wait_time=1)
     def touch_order_with_finish_button(self) -> None:

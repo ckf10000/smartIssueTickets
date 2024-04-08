@@ -73,6 +73,21 @@ def test_check_user_login():
     app.start()
     app.check_user_login(username="18600440822", password="ca161022")
 
+def test_close_coupon_dialog():
+    app = CtripAppService()
+    app.start()
+    app.close_coupon_dialog()
+
+def test_expand_order_detail():
+    app = CtripAppService()
+    app.start()
+    app.expand_order_detail()
+
+def test_touch_order_detail():
+    app = CtripAppService()
+    app.start()
+    app.touch_order_detail()
+
 if __name__ == "__main__":
     # test_select_special_flight()
     # test_select_insecure()  
@@ -85,4 +100,7 @@ if __name__ == "__main__":
     # test_select_more_payment()
     # test_enter_payment_pass()
     # test_select_search_result_first_city()
-    test_check_user_login()
+    # test_check_user_login()
+    # test_close_coupon_dialog()
+    # test_expand_order_detail()
+    test_touch_order_detail()
