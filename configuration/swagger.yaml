@@ -256,9 +256,12 @@ requestModels:
       - "passenger"
       - "age_stage"
       - "card_id"
-      - "phone"
+      - "internal_phone"
       - "pre_sale_amount"
       - "payment_pass"
+      - "ctrip_username"
+      - "user_pass"
+      - "arrive_time"
     properties:
       pre_order_id:
         type: "string"
@@ -272,7 +275,7 @@ requestModels:
       arrive_time:
         type: "string"
         description: "抵达时间"
-        required: false
+        required: true
         format: "date"
       flight:
         type: "string"
@@ -310,9 +313,9 @@ requestModels:
         type: "string"
         description: "乘客身份证号"
         required: true
-      phone:
+      internal_phone:
         type: "string"
-        description: "手机号码"
+        description: "内部手机号码"
         required: true
       pre_sale_amount:
         type: "string"
@@ -322,6 +325,18 @@ requestModels:
         type: "string"
         description: "支付密码"
         required: true
+      ctrip_username:
+        type: "string"
+        description: "携程账号"
+        required: true
+      user_pass:
+        type: "string"
+        description: "携程账号密码"
+        required: true
+      passenger_phone:
+        type: "string"
+        description: "乘客手机号"
+        required: false
 responseModels:
   listData:
     type: "array"

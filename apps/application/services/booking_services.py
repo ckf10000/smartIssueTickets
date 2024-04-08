@@ -25,20 +25,23 @@ class BookingFlightService(object):
     @classmethod
     def booking_ctrip_app_special_flight_ticket(
         cls,
-        pre_order_id: str, # 预售订单id
+        pre_order_id: str,  # 预售订单id
         departure_city: str,  # 离开城市编号
-        departure_city_name: str, # 离开城市名
         arrive_city: str,  # 抵达城市编号
-        arrive_city_name: str, # 抵达城市名
         departure_time: str,  # 起飞时间
-        arrive_time: str, # 抵达时间
+        arrive_time: str,  # 抵达时间
         pre_sale_amount: str,  # 预售金额
         flight: str,  # 航班编号
         passenger: str,  # 乘客
         age_stage: str,  # 乘客年龄阶段，儿童/成人
         card_id: str,  # 身份证号
-        phone: str,  # 手机号码
-        payment_pass: str
+        internal_phone: str,  # 内部手机号码
+        payment_pass: str,  # 支付密码
+        ctrip_username: str,  # 携程账号
+        user_pass: str,  # 携程账号密码
+        departure_city_name: str = "",  # 离开城市名
+        arrive_city_name: str = "",  # 抵达城市名
+        passenger_phone: str = ""  # 乘客手机号码
     ) -> None:
         ac = airline_map.get(flight[:2].upper())
         logger.info("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))
@@ -80,12 +83,12 @@ class BookingFlightService(object):
             else:
                 app.touch_booking_the_second_button()
                 app.touch_ordinary_booking_button()
-            app.check_user_login(username="18600440822", password="ca161022")
+            app.check_user_login(username=ctrip_username, password=user_pass)
             app.touch_more_passengers_button()
             app.touch_add_passengers_button()
             app.enter_passenger_username(passenger=passenger)
             app.enter_passenger_card_id(card_id=card_id)
-            app.enter_passenger_phone_number(phone=phone)
+            app.enter_passenger_phone_number(phone=internal_phone)
             app.submit_passenger_info()
             app.submit_passenger_info_confirm()
             app.add_passenger(passenger=passenger)
@@ -133,14 +136,16 @@ class BookingFlightService(object):
                         passenger=passenger,
                         age_stage=age_stage,
                         card_id=card_id,
-                        phone=phone,
+                        internal_phone=internal_phone,
+                        passenger_phone=passenger_phone,
                         order_id=order_id,
                         payment_amount=str(payment_amount),
                         payment_method=payment_method,
                         itinerary_id=itinerary_id,
                         departure_city_name=departure_city_name,
                         arrive_city_name=arrive_city_name,
-                        arrive_time=arrive_time
+                        arrive_time=arrive_time,
+                        ctrip_username=ctrip_username
                     )
                     app.push_flight_ticket_order(message=message)
         else:

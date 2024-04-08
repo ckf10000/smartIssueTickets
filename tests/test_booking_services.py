@@ -25,9 +25,12 @@ def test_booking_ctrip_app_special_flight_ticket():
         card_id="321284199803018015",
         pre_sale_amount="240.00",
         payment_pass="901127",
-        phone="18569520328",
+        internal_phone="18569520328",
+        passenger_phone="18261063386",
         age_stage="成人",
-        pre_order_id="2891160"
+        pre_order_id="2891160",
+        ctrip_username="18600440822",
+        user_pass="ca161022"
     )
 
 
