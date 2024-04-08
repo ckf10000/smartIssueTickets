@@ -18,4 +18,4 @@ from apps.common.config.parameters import rabbitmq_default_config as cfg
 def push_message_to_mq(message: t.Any) -> None:
     producer = Producer(**cfg)
     producer.publish(message=message)
-    logger.info("消息：<{}>已发送至MQ.".format(message))
+    logger.info("消息已发送至MQ队列.")

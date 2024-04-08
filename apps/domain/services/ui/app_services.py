@@ -1012,7 +1012,7 @@ class CtripAppService(PlatformService):
 
     @classmethod
     def push_flight_ticket_order(cls, message: t.Dict) -> None:
-        logger.info("开始往MQ推送携程机票订单信息.")
+        logger.info("开始往MQ推送携程机票订单信息：<{}>".format(message))
         push_message_to_mq(message=message)
 
     @SleepWait(wait_time=5)
