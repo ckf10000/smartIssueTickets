@@ -14,21 +14,21 @@ from apps.application.services.booking_services import booking_flight_ser
 
 def test_booking_ctrip_app_special_flight_ticket():
     booking_flight_ser.booking_ctrip_app_special_flight_ticket(
-        departure_time="2024-04-22 12:30",
-        departure_city="LZO",
-        departure_city_name="泸州",
-        arrive_time="2024-04-22 14:55",
-        arrive_city="TNA",
-        arrive_city_name="济南",
-        flight="8L9649",
-        passenger="蒲湘岚",
-        card_id="510502200206277045",
-        pre_sale_amount="420.00",
-        # payment_pass="901127",
-        payment_pass="901129",
+        departure_time="2024-04-12 18:45",
+        departure_city="XNN",
+        departure_city_name="西宁",
+        arrive_time="2024-04-12 21:15",
+        arrive_city="CSX",
+        arrive_city_name="长沙",
+        flight="A67254",
+        passenger="舒钦",
+        card_id="431281200002111617",
+        pre_sale_amount="640.00",
+        payment_pass="901127",
+        # payment_pass="901129",
         phone="18569520328",
         age_stage="成人",
-        pre_order_id="2890007"
+        pre_order_id="2888452"
     )
 
 
