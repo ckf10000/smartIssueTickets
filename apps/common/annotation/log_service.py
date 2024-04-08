@@ -12,7 +12,7 @@
 import traceback
 import logging.config
 from functools import wraps
-import airtest.utils.logger as __logger__
+import airtest.utils.logger
 
 from apps.common.libs.parse_yaml import ProjectConfig
 
@@ -35,20 +35,9 @@ def auto_log(func):
         except Exception as e:
             logger.error(traceback.format_exc())
             raise Exception(e)
-        
+
     return _deco
 
-
-# 源码中的logger配置，写死为debug级别，需要重置源码配置，让配置文件接管，
-def init_logging():
-    # logger = logging.root
-    # use 'airtest' as root logger name to prevent changing other modules' logger
-    logger = logging.getLogger("airtest")
-    # logger.setLevel(logging.INFO)
-    # handler = logging.StreamHandler()
-    # formatter = logging.Formatter(fmt='[%(asctime)s][%(levelname)s]<%(name)s> %(message)s', datefmt='%H:%M:%S')
-    # handler.setFormatter(formatter)
-    # logger.addHandler(handler)
-
-__logger__.init_logging = init_logging
-__logger__.init_logging()
+# 源码中的logger配置，写死为debug级别，需要重置源码配置，让配置文件接管
+airtest.utils.logger.init_logging = lambda: logging.getLogger("airtest")
+airtest.utils.logger.init_logging()
