@@ -177,17 +177,17 @@ class OrderService(object):
         :params user_id str: 劲旅系统认证用户id
         :params order_id str: 劲旅系统订单号
         :params oper str: 操作人,机器人名称
-        :params pay_time str: 支付时间
-        :params out_pf str: 出票平台
-        :params out_ticket_account str: 出票账号
-        :params pay_account_type str: 支付账号类型
-        :params pay_account str: 支付账号
-        :params money str: 金额
-        :params serial_number str: 流水号
-        :params air_co_order_id str: 官网订单号
-        :params pnames str: 乘机人姓名
+        :params pay_time str: 支付时间，对应前端页面的【采购日期】
+        :params out_pf str: 出票平台，对应前端页面的【出票平台】
+        :params out_ticket_account str: 出票账号，对应前端页面的【出票账号】
+        :params pay_account_type str: 支付账号类型，对应前端页面的【采购账号类型】
+        :params pay_account str: 支付账号，对应前端页面的【采购账号】
+        :params money str: 金额，对应前端页面的【采购金额】
+        :params serial_number str: 流水号，对应前端页面的【对账标识】
+        :params air_co_order_id str: 官网订单号，对应前端页面的【官网订单号】
+        :params pnames str: 乘机人姓名，对应前端页面的【采购乘客】
         :params d_type int: 类型，1支付单程,2支付往返,3支付多程
-        :params remark str: 备注说明
+        :params remark str: 备注说明，对应前端页面的【备注】
         return t.Dict
         """
         requestData = {
