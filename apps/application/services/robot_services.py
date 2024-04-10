@@ -12,6 +12,7 @@
 from apps.common.libs.parse_yaml import ProjectConfig
 from apps.domain.services.qlv_request_services import OrderService
 
+
 class CtripTicketService(object):
     qlv_config = ProjectConfig.get_object()
     interfaces = getattr(qlv_config, "interfaces")
@@ -33,4 +34,5 @@ class CtripTicketService(object):
             "order_pk": "",
             "order_src_cat": "国内"
         }
-        OrderService(domain=getattr(cls.qlv_config, "domain"), protocol=getattr(cls.qlv_config, "protocol")).lock_order(**kwargs)
+        OrderService(domain=getattr(cls.qlv_config, "domain"), protocol=getattr(cls.qlv_config, "protocol")).lock_order(
+            **kwargs)
