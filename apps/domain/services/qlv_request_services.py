@@ -14,6 +14,7 @@ import typing as t
 from apps.common.libs.utils import encryp_md5
 from apps.infrastructure.api.http_client import HttpService
 
+
 class OrderService(object):
 
     def __init__(self, domain: str, protocol: str) -> None:
@@ -36,16 +37,16 @@ class OrderService(object):
         return encryp_md5(concatenated_string)
 
     def lock_order(
-        self,
-        path: str,
-        method: str,
-        user_key: str,
-        user_id: int,
-        policy_name: str,
-        oper: str,
-        air_cos: str = None,
-        order_pk: str = None,
-        order_src_cat: str = None
+            self,
+            path: str,
+            method: str,
+            user_key: str,
+            user_id: int,
+            policy_name: str,
+            oper: str,
+            air_cos: str = None,
+            order_pk: str = None,
+            order_src_cat: str = None
     ) -> t.Dict:
         """
         订单锁定
@@ -60,32 +61,32 @@ class OrderService(object):
         :params order_src_cat str: 订单类别，国内/国际
         return t.Dict
         """
-        requestData = {
-                "policyName": policy_name,
-                "airCos": air_cos or "",
-                "orderPK": order_pk or "",
-                "orderSrcCat": order_src_cat or "",
-                "oper": oper
+        request_data = {
+            "policyName": policy_name,
+            "airCos": air_cos or "",
+            "orderPK": order_pk or "",
+            "orderSrcCat": order_src_cat or "",
+            "oper": oper
         }
-        sign_key = self.__gen_sign_key(user_key=user_key, request_data=requestData)
+        sign_key = self.__gen_sign_key(user_key=user_key, request_data=request_data)
         json = {
             "UserId": user_id,
             "SignKey": sign_key,
-            "requestData": requestData,
+            "requestData": request_data,
         }
         return self.__http_client.send_request(method=method, path=path, json=json)
 
     def unlock_order(
-        self,
-        path: str,
-        method: str,
-        user_key: str,
-        user_id: int,
-        order_id: int,
-        oper: str,
-        order_state: str,
-        order_lose_type: str,
-        remark: str = None
+            self,
+            path: str,
+            method: str,
+            user_key: str,
+            user_id: int,
+            order_id: int,
+            oper: str,
+            order_state: str,
+            order_lose_type: str,
+            remark: str = None
     ) -> t.Dict:
         """
         订单解锁
@@ -100,30 +101,30 @@ class OrderService(object):
         :params remark str: 备注，例如：价格不符
         return t.Dict
         """
-        requestData = {
+        request_data = {
             "orderID": order_id,
             "oper": oper,
             "remark": remark or "",
             "orderState": order_state,
             "orderLoseType": order_lose_type,
         }
-        sign_key = self.__gen_sign_key(user_key=user_key, request_data=requestData)
+        sign_key = self.__gen_sign_key(user_key=user_key, request_data=request_data)
         json = {
             "UserId": user_id,
             "SignKey": sign_key,
-            "requestData": requestData,
+            "requestData": request_data,
         }
         return self.__http_client.send_request(method=method, path=path, json=json)
 
     def write_order_log_new(
-        self,
-        path: str,
-        method: str,
-        user_key: str,
-        user_id: int,
-        order_id: int,
-        oper: str,
-        logs: str
+            self,
+            path: str,
+            method: str,
+            user_key: str,
+            user_id: int,
+            order_id: int,
+            oper: str,
+            logs: str
     ) -> t.Dict:
         """
         订单日志回写
@@ -136,38 +137,38 @@ class OrderService(object):
         :params logs str: 日志内容
         return t.Dict
         """
-        requestData = {
+        request_data = {
             "orderID": order_id,
             "oper": oper,
             "logs": logs
         }
-        sign_key = self.__gen_sign_key(user_key=user_key, request_data=requestData)
+        sign_key = self.__gen_sign_key(user_key=user_key, request_data=request_data)
         json = {
             "UserId": user_id,
             "SignKey": sign_key,
-            "requestData": requestData,
+            "requestData": request_data,
         }
         return self.__http_client.send_request(method=method, path=path, json=json)
 
     def save_order_pay_info(
-        self,
-        path: str,
-        method: str,
-        user_key: str,
-        user_id: int,
-        order_id: int,
-        oper: str,
-        pay_time: str,
-        out_pf: str,
-        out_ticket_account: str,
-        pay_account_type: str,
-        pay_account: str,
-        money: str,
-        serial_number: str,
-        air_co_order_id: str,
-        pnames: str,
-        d_type: int,
-        remark: str = None
+            self,
+            path: str,
+            method: str,
+            user_key: str,
+            user_id: int,
+            order_id: int,
+            oper: str,
+            pay_time: str,
+            out_pf: str,
+            out_ticket_account: str,
+            pay_account_type: str,
+            pay_account: str,
+            money: str,
+            serial_number: str,
+            air_co_order_id: str,
+            pnames: str,
+            d_type: int,
+            remark: str = None
     ) -> t.Dict:
         """
         采购信息回填
@@ -190,11 +191,11 @@ class OrderService(object):
         :params remark str: 备注说明，对应前端页面的【备注】
         return t.Dict
         """
-        requestData = {
+        request_data = {
             "orderID": order_id,
             "payTime": pay_time,
             "outPF": out_pf,
-            "outTicketAccount":out_ticket_account,
+            "outTicketAccount": out_ticket_account,
             "payAccountType": pay_account_type,
             "payAccount": pay_account,
             "money": money,
@@ -205,23 +206,23 @@ class OrderService(object):
             "remark": remark,
             "type": d_type,
         }
-        sign_key = self.__gen_sign_key(user_key=user_key, request_data=requestData)
+        sign_key = self.__gen_sign_key(user_key=user_key, request_data=request_data)
         json = {
             "UserId": user_id,
             "SignKey": sign_key,
-            "requestData": requestData,
+            "requestData": request_data,
         }
         return self.__http_client.send_request(method=method, path=path, json=json)
-    
+
     def fill_order_itinerary_info(
-        self,
-        path: str,
-        method: str,
-        user_key: str,
-        user_id: int,
-        order_id: int,
-        oper: str,
-        ticket_infos: str
+            self,
+            path: str,
+            method: str,
+            user_key: str,
+            user_id: int,
+            order_id: int,
+            oper: str,
+            ticket_infos: str
     ) -> t.Dict:
         """
         订单票号回填
@@ -234,15 +235,15 @@ class OrderService(object):
         :params ticket_infos str: 乘机人票号信息，格式如：乘机人1#证件号1#票号1#起飞#到达;乘机人2#证件号2#票号2#起飞#到达
         return t.Dict
         """
-        requestData = {
+        request_data = {
             "orderID": order_id,
             "oper": oper,
             "ticketInfos": ticket_infos
         }
-        sign_key = self.__gen_sign_key(user_key=user_key, request_data=requestData)
+        sign_key = self.__gen_sign_key(user_key=user_key, request_data=request_data)
         json = {
             "UserId": user_id,
             "SignKey": sign_key,
-            "requestData": requestData,
+            "requestData": request_data,
         }
         return self.__http_client.send_request(method=method, path=path, json=json)

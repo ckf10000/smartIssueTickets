@@ -20,6 +20,7 @@ logging_plus = getattr(ProjectConfig.get_object(), "logging")
 logging.config.dictConfig(logging_plus)
 logger = logging.getLogger("root")
 
+
 def auto_log(func):
     """
     自动打印日志
@@ -37,6 +38,7 @@ def auto_log(func):
             raise Exception(e)
 
     return _deco
+
 
 # 源码中的logger配置，写死为debug级别，需要重置源码配置，让配置文件接管
 airtest.utils.logger.init_logging = lambda: logging.getLogger("airtest")

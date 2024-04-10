@@ -11,8 +11,9 @@
 """
 from apps.domain.services.qlv_request_services import OrderService
 
-protocol="http"
-domain="outsideapi.qlv88.com"
+protocol = "http"
+domain = "outsideapi.qlv88.com"
+
 
 def test_lock_order():
     kwargs = {
@@ -28,6 +29,7 @@ def test_lock_order():
     }
     OrderService(domain=domain, protocol=protocol).lock_order(**kwargs)
 
+
 def test_unlock_order():
     kwargs = {
         "path": "/OrderUnlock.ashx",
@@ -42,6 +44,7 @@ def test_unlock_order():
     }
     OrderService(domain=domain, protocol=protocol).unlock_order(**kwargs)
 
+
 def test_write_order_log_new():
     kwargs = {
         "path": "/OrderLogWriteNew.ashx",
@@ -53,6 +56,7 @@ def test_write_order_log_new():
         "logs": "这是一条测试日志"
     }
     OrderService(domain=domain, protocol=protocol).write_order_log_new(**kwargs)
+
 
 def test_save_order_pay_info():
     kwargs = {
@@ -76,6 +80,7 @@ def test_save_order_pay_info():
     }
     OrderService(domain=domain, protocol=protocol).save_order_pay_info(**kwargs)
 
+
 def test_fill_order_itinerary_info():
     kwargs = {
         "path": "/BackfillTicketNumberNew.ashx",
@@ -87,6 +92,7 @@ def test_fill_order_itinerary_info():
         "ticket_infos": "徐婷婷#320922199010249022#100-1010101010#TSN#HAK;顾欣桐#320982201701200021#200-1010101010#TSN#HAK"
     }
     OrderService(domain=domain, protocol=protocol).fill_order_itinerary_info(**kwargs)
+
 
 if __name__ == "__main__":
     # test_lock_order()
