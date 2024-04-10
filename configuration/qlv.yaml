@@ -1,0 +1,22 @@
+user_id: 186
+user_key: 9a68295ec90b1fc10ab94331c882bab9
+domain: outsideapi.qlv88.com
+protocol: http
+lock_order_args:
+  - {"policy_name": "测试-XC", "oper": "robot-XC", "air_cos": "", "order_pk": "", "order_src_cat": "国内"}
+interfaces:
+  lock_order:
+    path: /LockOrder.ashx
+    method: post
+  unlock_order:
+    path: /OrderUnlock.ashx
+    method: post
+  write_order_log_new:
+    path: /OrderLogWriteNew.ashx
+    method: post
+  save_order_pay_info:
+    path: /OrderPayInfoSave.ashx
+    method: post
+  fill_order_itinerary_info:
+    path: /BackfillTicketNumberNew.ashx
+    method: post
