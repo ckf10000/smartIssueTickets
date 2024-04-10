@@ -29,9 +29,10 @@ DEFAULT_PLATFORM = "Android"  # Android、Windows、iOS
 WINDOWS_PLATFORM = "Windows"
 iOS_PLATFORM = "iOS"
 
+
 def stop_app(app_name, timeout=5):
     # 构造ADB命令
-    adb_cmd = f"adb.exe shell am force-stop {app_name}"
+    adb_cmd = "adb.exe shell am force-stop {}".format(app_name)
     # 将命令字符串分割成列表
     cmd_list = shlex.split(adb_cmd)
     try:
@@ -44,6 +45,7 @@ def stop_app(app_name, timeout=5):
         logger.error("Failed to stop the app.")
     except Exception as e:
         logger.error("An error occurred: {}".format(e))
+
 
 def get_screen_size_via_adb():
     # 使用ADB命令获取设备屏幕大小
@@ -58,14 +60,15 @@ def get_screen_size_via_adb():
         logger.error("Error: ADB command failed: {}".format(e))
     return None
 
+
 class Phone(object):
 
     def __init__(
-        self,
-        device_id: str,
-        device_conn: str,
-        platform: str = "Android",
-        enable_debug: bool = False,
+            self,
+            device_id: str,
+            device_conn: str,
+            platform: str = "Android",
+            enable_debug: bool = False,
     ) -> None:
         self.platform = platform
         self.device_id = device_id
@@ -149,14 +152,14 @@ class Phone(object):
 
     @staticmethod
     def get_cv_template(
-        file_name: str,
-        threshold: float = None,
-        target_pos: int = TargetPos.MID,
-        record_pos: tuple = None,
-        resolution: tuple = (),
-        rgb: bool = False,
-        scale_max: int = 800,
-        scale_step: float = 0.005,
+            file_name: str,
+            threshold: float = None,
+            target_pos: int = TargetPos.MID,
+            record_pos: tuple = None,
+            resolution: tuple = (),
+            rgb: bool = False,
+            scale_max: int = 800,
+            scale_step: float = 0.005,
     ) -> Template:
         """
         图片为触摸/滑动/等待/存在目标和图像识别需要的额外信息
@@ -183,7 +186,7 @@ class Phone(object):
 
     @airtest_exception_format
     def snapshot(
-        self, filename: str, msg: str = "", quality: int = None, max_size: int = None
+            self, filename: str, msg: str = "", quality: int = None, max_size: int = None
     ) -> t.Dict:
         """
         对目标设备进行一次截图，并且保存到文件中
@@ -253,7 +256,7 @@ class Phone(object):
             result = touch(v=v, times=times, **kwargs)
         return result or None
 
-    def adb_touch(self, v: tuple, timeout: int=10) -> None:
+    def adb_touch(self, v: tuple, timeout: int = 10) -> None:
         """
         adb 模拟操作点击，规避有些UI上无法直接点击
         """
@@ -274,7 +277,7 @@ class Phone(object):
         # touch_proxy.touch(v)
 
     @airtest_exception_format
-    def swipe(self, v1, v2: tuple = None, duration: float=None, **kwargs) -> None:
+    def swipe(self, v1, v2: tuple = None, duration: float = None, **kwargs) -> None:
         """
         在当前设备画面上进行一次滑动操作
         v1 tuple or Template: 滑动的起点，可以是一个Template图片实例，或是绝对坐标 (x, y)
@@ -344,11 +347,11 @@ class Phone(object):
 
     @airtest_exception_format
     def wait(
-        self,
-        v: Template,
-        timeout: int = None,
-        interval: float = 0.5,
-        intervalfunc: t.Callable = None,
+            self,
+            v: Template,
+            timeout: int = None,
+            interval: float = 0.5,
+            intervalfunc: t.Callable = None,
     ) -> t.Tuple:
         """
         等待当前画面上出现某个匹配的Template图片
@@ -452,7 +455,7 @@ class Phone(object):
             result = self.device.paste(*args, **kwargs)
         return result or None
 
-    def get_po(self, type: str, name: str='', text:str='', desc: str='') -> AndroidUiautomationPoco:
+    def get_po(self, type: str, name: str = '', text: str = '', desc: str = '') -> AndroidUiautomationPoco:
         kwargs = dict()
         if type:
             kwargs["type"] = type
@@ -465,19 +468,19 @@ class Phone(object):
         return self.poco(**kwargs)
 
     def get_po_extend(
-        self,
-        type: str = "",
-        name: str = "",
-        text: str = "",
-        desc: str = "",
-        typeMatches_inner: str = "",
-        nameMatches_inner: str = "",
-        nameMatches_outer: str = "",
-        textMatches_inner: str = "",
-        textMatches_outer: str = "",
-        global_num: int = None,
-        local_num: int = None,
-        touchable: bool = True,
+            self,
+            type: str = "",
+            name: str = "",
+            text: str = "",
+            desc: str = "",
+            typeMatches_inner: str = "",
+            nameMatches_inner: str = "",
+            nameMatches_outer: str = "",
+            textMatches_inner: str = "",
+            textMatches_outer: str = "",
+            global_num: int = None,
+            local_num: int = None,
+            touchable: bool = True,
     ) -> t.List:
         kwargs = dict()
         if type:
@@ -541,7 +544,7 @@ class Phone(object):
         return absolute_x, absolute_y
 
     # 快捷滑屏
-    def quick_slide_screen(self, duration: float=0.5):
+    def quick_slide_screen(self, duration: float = 0.5):
         # 获取屏幕尺寸
         screen_width, screen_height = get_screen_size_via_adb()
         # 定义起始点和终止点坐标
@@ -551,7 +554,7 @@ class Phone(object):
         end_y = screen_height // 4  # 终止点纵坐标为屏幕顶部 1/4 处
         # 执行滑动操作
         self.swipe((start_x, start_y), (end_x, end_y), duration=duration)
-        
+
 
 class Pad(object):
     pass

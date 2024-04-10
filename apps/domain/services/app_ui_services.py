@@ -14,13 +14,12 @@ from decimal import Decimal
 from poco.exceptions import PocoNoSuchNodeException
 
 from apps.common.annotation.log_service import logger
+from apps.common.libs.utils import get_ui_object_proxy_attr
 from apps.infrastructure.api.platforms import PlatformService
 from apps.infrastructure.api.mobile_terminals import stop_app
 from apps.infrastructure.middleware.mq import push_message_to_mq
 from apps.common.libs.dir import get_images_dir, is_exists, join_path
 from apps.common.annotation.delay_wait import SleepWait, LoopFindElement
-from apps.domain.converter.order_converter import CtripAppOrderElementConverter
-from apps.common.libs.utils import get_ui_object_proxy_attr, update_nested_dict
 from apps.common.libs.date_extend import get_trip_year_month_day, get_datetime_area, is_public_holiday
 
 
@@ -30,7 +29,8 @@ class CtripAppService(PlatformService):
     """
     IMAGE_DIR = get_images_dir()
 
-    def __init__(self, device=None, app_name: str = None) -> None:
+    def __init__(self, device=None, app_name: str = None, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.app_name = app_name or "ctrip.android.view"
         self.device = device or PlatformService().device
 
@@ -177,7 +177,8 @@ class CtripAppService(PlatformService):
                 sorted_list = sorted(find_results, key=lambda x: (x['result'][1], x['result'][0]))
                 temp = sorted_list[0].get("result")
             else:
-                raise ValueError("According to the image file <{}>, no corresponding element was found".format(file_name))
+                raise ValueError(
+                    "According to the image file <{}>, no corresponding element was found".format(file_name))
         else:
             raise ValueError("<{}> file does not exist".format(file_name))
         self.device.touch(v=temp)
@@ -444,7 +445,8 @@ class CtripAppService(PlatformService):
     @SleepWait(wait_time=2)
     def check_user_login(self, username: str, password: str) -> None:
         try:
-            login_page_poco = self.device.get_po(type="android.widget.TextView", name="ctrip.android.view:id/a", text="账号密码登录")
+            login_page_poco = self.device.get_po(type="android.widget.TextView", name="ctrip.android.view:id/a",
+                                                 text="账号密码登录")
             if login_page_poco.exists():
                 logger.warning("系统用户<{}>已经退出，需要重新登录".format(username))
                 username_poco = self.device.get_po_extend(
@@ -463,7 +465,8 @@ class CtripAppService(PlatformService):
                     type="android.widget.ImageView", name="ctrip.android.view:id/a", desc="勾选服务协议和个人信息保护指引"
                 )
                 privacy_protection.click()
-                login_poco = self.device.get_po(type="android.widget.TextView", name="ctrip.android.view:id/a", text="登录")
+                login_poco = self.device.get_po(type="android.widget.TextView", name="ctrip.android.view:id/a",
+                                                text="登录")
                 login_poco.click()
         except (PocoNoSuchNodeException, Exception) as e:
             logger.error(str(e))
@@ -582,7 +585,7 @@ class CtripAppService(PlatformService):
         if is_exists(file_name):
             temp = self.device.get_cv_template(file_name=file_name)
         else:
-            temp = (723, 1413) # LG g7手机上对应的坐标位置，其他型号手机可能不是这个值
+            temp = (723, 1413)  # LG g7手机上对应的坐标位置，其他型号手机可能不是这个值
         self.device.touch(v=temp)
 
     @LoopFindElement(loop=5)
@@ -640,9 +643,10 @@ class CtripAppService(PlatformService):
         """
         如果用户已经下单，系统会有弹框提示，下单重复了
         """
-        duplicate_order_1 = self.device.get_po(type="android.widget.TextView",text="我知道了")
-        duplicate_order_2 = self.device.get_po(type="android.widget.TextView",name="android.widget.TextView", text="继续预订当前航班")
-        duplicate_order_3 = self.device.get_po(type="android.widget.TextView",name="重复订单标题", text="行程冲突提示")
+        duplicate_order_1 = self.device.get_po(type="android.widget.TextView", text="我知道了")
+        duplicate_order_2 = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView",
+                                               text="继续预订当前航班")
+        duplicate_order_3 = self.device.get_po(type="android.widget.TextView", name="重复订单标题", text="行程冲突提示")
         if duplicate_order_1.exists():
             conflict_prompt = self.device.get_po_extend(
                 type="android.widget.TextView",
@@ -674,7 +678,7 @@ class CtripAppService(PlatformService):
                 touchable=False,
             )[0]
             conflict_prompt_str = get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
-            self.device.touch((400, 500)) # 点击一个随机坐标，尽量靠近上半屏，相当于点击空白处，隐藏掉提示框
+            self.device.touch((400, 500))  # 点击一个随机坐标，尽量靠近上半屏，相当于点击空白处，隐藏掉提示框
             return conflict_prompt_str
         else:
             return ""
@@ -760,7 +764,7 @@ class CtripAppService(PlatformService):
             logger.info("在安全收银台界面，点击选择【换卡支付，支持境外卡】")
 
     @SleepWait(wait_time=1)
-    def select_payment_method(self, payment_method: str="浦发银行储蓄卡(7397)") -> None:
+    def select_payment_method(self, payment_method: str = "浦发银行储蓄卡(7397)") -> None:
         """选择【xxxy银行储蓄卡(xxxx)】"""
         method = self.device.get_po(
             type="android.widget.TextView",
@@ -776,7 +780,8 @@ class CtripAppService(PlatformService):
         当【同意并支付】后，特殊情况下，会出现支付小弹框，这个时候需要先判断是否存在小框，如果存在，则切换到通用支付选择界面
         """
         try:
-            more_payment = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView", text="更多付款方式")
+            more_payment = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView",
+                                              text="更多付款方式")
             more_payment.click()
             logger.info("小弹框选择【更多付款方式】.")
         except (PocoNoSuchNodeException, Exception):
@@ -841,7 +846,8 @@ class CtripAppService(PlatformService):
             touchable=False,
         )[0]
         deduction_amount = tickect_deduction_amount.get_text()
-        deduction_amount = Decimal(deduction_amount[2:]) if isinstance(deduction_amount, str) else -9999999999.9999999999
+        deduction_amount = Decimal(deduction_amount[2:]) if isinstance(deduction_amount,
+                                                                       str) else -9999999999.9999999999
         return deduction_amount
 
     @SleepWait(wait_time=10)
@@ -856,7 +862,7 @@ class CtripAppService(PlatformService):
                 temp = device.get_cv_template(file_name=file_name)
                 device.touch(v=temp)
             else:
-                raise ValueError("文件<{}>缺失...",format(file_name))
+                raise ValueError("文件<{}>缺失...", format(file_name))
 
     @SleepWait(wait_time=1)
     def get_order_with_payment_amount(self) -> Decimal:
@@ -891,7 +897,7 @@ class CtripAppService(PlatformService):
         return dict(
             bank_name=payment_method_slice[0],  # 银行名称
             card_type=payment_method_slice[1],  # 银行卡类型，这里支持储蓄卡，信用卡
-            last_four_digits=payment_method_slice[1:-1] # 银行卡末四位数字
+            last_four_digits=payment_method_slice[1:-1]  # 银行卡末四位数字
         )
 
     @SleepWait(wait_time=8)
@@ -917,7 +923,7 @@ class CtripAppService(PlatformService):
                 coupon_dialog.click()
         except (PocoNoSuchNodeException, Exception):
             logger.warning("没有出现领券弹窗关闭按钮.")
-    
+
     @SleepWait(wait_time=1)
     def expand_order_detail(self) -> None:
         """展开【详情/首页】"""
@@ -932,7 +938,8 @@ class CtripAppService(PlatformService):
     @SleepWait(wait_time=5)
     def touch_order_detail(self) -> None:
         """点击【查订单/开发票】，进入订单详情界面"""
-        order_detail = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView", text="查订单/开发票")
+        order_detail = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView",
+                                          text="查订单/开发票")
         order_detail.click()
         logger.info("点击【查订单/开发票】，进入订单详情界面")
 
@@ -942,11 +949,11 @@ class CtripAppService(PlatformService):
         try:
             poco = (
                 self.device.poco("android.widget.FrameLayout")
-                .child("android.view.ViewGroup")
-                .offspring("@FlyInModal")
-                .child("android.view.ViewGroup")
-                .child("android.view.ViewGroup")[1]
-                .child("android.widget.TextView")
+                    .child("android.view.ViewGroup")
+                    .offspring("@FlyInModal")
+                    .child("android.view.ViewGroup")
+                    .child("android.view.ViewGroup")[1]
+                    .child("android.widget.TextView")
             )
             if poco.exists() is True:
                 poco.click()
@@ -988,21 +995,21 @@ class CtripAppService(PlatformService):
             self.device.quick_slide_screen()
         poco = (
             self.device.poco("android.widget.FrameLayout")
-            .offspring("android:id/content")
-            .child("ctrip.android.view:id/a")
-            .child("ctrip.android.view:id/a")
-            .offspring("android.widget.LinearLayout")
-            .offspring("android.widget.FrameLayout")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")[1]
-            .offspring("PullRefreshScrollView_ScrollView")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")
-            .offspring("@contactInfo")
-            .offspring("contactInfo_Text_票号")[0]
+                .offspring("android:id/content")
+                .child("ctrip.android.view:id/a")
+                .child("ctrip.android.view:id/a")
+                .offspring("android.widget.LinearLayout")
+                .offspring("android.widget.FrameLayout")
+                .child("android.view.ViewGroup")
+                .child("android.view.ViewGroup")
+                .child("android.view.ViewGroup")
+                .child("android.view.ViewGroup")
+                .child("android.view.ViewGroup")[1]
+                .offspring("PullRefreshScrollView_ScrollView")
+                .child("android.view.ViewGroup")
+                .child("android.view.ViewGroup")
+                .offspring("@contactInfo")
+                .offspring("contactInfo_Text_票号")[0]
         )
         if poco.exists() is True:
             itinerary_id = poco.get_text().split("：")[-1].strip()
@@ -1015,70 +1022,8 @@ class CtripAppService(PlatformService):
         logger.info("开始往MQ推送携程机票订单信息：<{}>".format(message))
         push_message_to_mq(message=message)
 
-    @SleepWait(wait_time=5)
-    def touch_my(self) -> None:
-        """进入app后，点击【我的】"""
-        my = self.device.get_po_extend(
-            type="android.widget.TextView",
-            name="android.widget.TextView",
-            text="我的",
-            global_num=0,
-            local_num=2,
-            touchable=False,
-        )[0]
-        logger.info("点击【我的】按钮, 进入我的主页.")
-        my.click()
-
-    @SleepWait(wait_time=3)
-    def touch_pending_trip_order(self) -> None:
-        """进入【我的】主页后，点击【待出行】订单"""
-        pending_trip_order = self.device.get_po_extend(
-            type="android.widget.TextView",
-            name="ctrip.android.view:id/a",
-            text="待出行",
-            global_num=0,
-            local_num=2,
-            touchable=False,
-        )[0]
-        logger.info("点击【待出行】按钮, 进入待出行订单列表.")
-        pending_trip_order.click()
-
-    @SleepWait(wait_time=1)
-    def get_pending_trip_order(self) -> t.Dict:
-        """获取待出行的订单"""
-        order_page_poco = (
-            self.device.poco("android.widget.FrameLayout")
-            .offspring("android:id/content")
-            .child("ctrip.android.view:id/a")
-            .child("ctrip.android.view:id/a")
-            .offspring("android.widget.LinearLayout")
-            .offspring("android.widget.FrameLayout")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")
-            .child("android.view.ViewGroup")[1]
-            .child("android.view.ViewGroup")[1]
-            .child("android.view.ViewGroup")
-            .child("android.widget.ScrollView")
-            .child("android.view.ViewGroup")
-        )
-        pending_trip_order = dict()
-        while True:
-            current = len(pending_trip_order)
-            trip_order_list = CtripAppOrderElementConverter.extract_ctrip_order_page_poco_as_list(poco=order_page_poco)
-            page_order = CtripAppOrderElementConverter.ctrip_order_element_as_dict(poco_list=trip_order_list)
-            update_nested_dict(original_dict=pending_trip_order, update_dict=page_order)
-            next = len(pending_trip_order)
-            if current == next:
-                break
-            self.device.quick_slide_screen()
-        return pending_trip_order
-
-    """
     def __del__(self) -> None:
-        self.stop_app()
-    """
+        self.stop()
 
 
 if __name__ == "__main__":

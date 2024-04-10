@@ -12,17 +12,17 @@
 from time import sleep
 from traceback import print_exc
 from apps.common.annotation.log_service import logger
-from apps.application.services.out_ticket_services import CTripTicketService
+from apps.application.services.order_services import out_ticket_ser
 
 
-def xc_app_out_ticket() -> None:
+def xc_app_auto_out_ticket() -> None:
     while True:
         try:
-            CTripTicketService.app_auto_out_ticket()
+            out_ticket_ser.xc_app_auto_out_ticket(lock_rule="xc")
             sleep(10)  # 休眠10秒
         except (Exception,):
             logger.error(print_exc())
 
 
 if __name__ == "__main__":
-    xc_app_out_ticket()
+    xc_app_auto_out_ticket()

@@ -19,17 +19,19 @@ class HttpService(object):
     __time_out = 10
     __domain = None
     __url = None
-    __protocol: None
-    __headers: t.Dict = {
+    __protocol = None
+    __headers = t.Dict = {
         "Content-Type": "application/json; charset=UTF-8",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                      "Chrome/123.0.0.0 Safari/537.36"
     }
 
     def __init__(self, domain: str, protocol: str) -> None:
         self.__domain = domain
         self.__protocol = protocol
 
-    def send_request(self, method: str, path:str, params: t.Dict=None, data: t.Dict=None, json: t.Dict=None, headers: t.Dict=None) -> t.Dict:
+    def send_request(self, method: str, path: str, params: t.Dict = None, data: t.Dict = None, json: t.Dict = None,
+                     headers: t.Dict = None) -> t.Dict:
         if isinstance(headers, t.Dict):
             self.__headers = headers
         self.__url = "{}://{}{}".format(self.__protocol, self.__domain, path)
@@ -46,16 +48,19 @@ class HttpService(object):
         )
         return self.__send_http_request(method=method, params=params, data=data, json=json)
 
-    def __send_http_request(self, method: str, params: t.Dict=None, data: t.Dict=None, json: t.Dict=None) -> t.Dict:
+    def __send_http_request(self, method: str, params: t.Dict = None, data: t.Dict = None,
+                            json: t.Dict = None) -> t.Dict:
         # 实际发送HTTP请求的内部方法
         # 使用 requests 库发送请求
         method = method.lower().strip()
         if method in ("get", "post"):
             try:
                 if method == "get":
-                    response = requests.get(self.__url, params=params, verify=False, timeout=self.__time_out, headers=self.__headers)
+                    response = requests.get(self.__url, params=params, verify=False, timeout=self.__time_out,
+                                            headers=self.__headers)
                 else:
-                    response = requests.post(self.__url, params=params, json=json, data=data, verify=False, timeout=self.__time_out, headers=self.__headers)
+                    response = requests.post(self.__url, params=params, json=json, data=data, verify=False,
+                                             timeout=self.__time_out, headers=self.__headers)
                 result = self.__parse_data_response(response=response)
             except Exception as e:
                 logger.error("调用url<{}>异常，原因：{}".format(self.__url, str(e)))

@@ -12,6 +12,7 @@
 from apps.common.config.device import default_andriod_device, default_minicap_device
 from apps.infrastructure.api.mobile_terminals import Phone, DEFAULT_PLATFORM, WINDOWS_PLATFORM
 
+
 class PlatformService(object):
 
     def __init__(self, device_config: dict = None) -> None:

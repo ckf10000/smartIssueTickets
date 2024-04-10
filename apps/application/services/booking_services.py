@@ -10,6 +10,7 @@
 # -----------------------------------------------------------------------------------------------------------------------
 """
 import time
+import typing as t
 from decimal import Decimal
 from apps.common.annotation.log_service import logger
 from apps.common.config.flight_ticket import airline_map
@@ -24,25 +25,26 @@ class BookingFlightService(object):
 
     @classmethod
     def booking_ctrip_app_special_flight_ticket(
-        cls,
-        pre_order_id: str,  # 预售订单id
-        departure_city: str,  # 离开城市编号
-        arrive_city: str,  # 抵达城市编号
-        departure_time: str,  # 起飞时间
-        arrive_time: str,  # 抵达时间
-        pre_sale_amount: str,  # 预售金额
-        flight: str,  # 航班编号
-        passenger: str,  # 乘客
-        age_stage: str,  # 乘客年龄阶段，儿童/成人
-        card_id: str,  # 身份证号
-        internal_phone: str,  # 内部手机号码
-        payment_pass: str,  # 支付密码
-        ctrip_username: str,  # 携程账号
-        user_pass: str,  # 携程账号密码
-        departure_city_name: str = "",  # 离开城市名
-        arrive_city_name: str = "",  # 抵达城市名
-        passenger_phone: str = ""  # 乘客手机号码
-    ) -> None:
+            cls,
+            pre_order_id: str,  # 预售订单id
+            departure_city: str,  # 离开城市编号
+            arrive_city: str,  # 抵达城市编号
+            departure_time: str,  # 起飞时间
+            arrive_time: str,  # 抵达时间
+            pre_sale_amount: str,  # 预售金额
+            flight: str,  # 航班编号
+            passenger: str,  # 乘客
+            age_stage: str,  # 乘客年龄阶段，儿童/成人
+            card_id: str,  # 身份证号
+            internal_phone: str,  # 内部手机号码
+            payment_pass: str,  # 支付密码
+            ctrip_username: str,  # 携程账号
+            user_pass: str,  # 携程账号密码
+            departure_city_name: str = "",  # 离开城市名
+            arrive_city_name: str = "",  # 抵达城市名
+            passenger_phone: str = ""  # 乘客手机号码
+    ) -> t.Dict:
+        result = dict()
         ac = airline_map.get(flight[:2].upper())
         logger.info("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))
         app = CtripAppService()
@@ -114,7 +116,7 @@ class BookingFlightService(object):
                     actual_amount=tickect_actual_amount,
                     deduction_amount=tickect_deduction_amount,
                 )
-                if  do_validator is True:
+                if do_validator is True:
                     app.touch_bank_card_payment()
                     app.enter_payment_pass(payment_pass=payment_pass)
                     payment_amount = app.get_order_with_payment_amount()
@@ -126,7 +128,7 @@ class BookingFlightService(object):
                     app.close_important_trip_guidelines()
                     order_id = app.get_flight_ticket_with_order_id()
                     itinerary_id = app.get_flight_ticket_with_itinerary_id()
-                    message = dict(
+                    result = dict(
                         pre_order_id=pre_order_id,
                         departure_city=departure_city,
                         arrive_city=arrive_city,
@@ -147,17 +149,19 @@ class BookingFlightService(object):
                         arrive_time=arrive_time,
                         ctrip_username=ctrip_username
                     )
-                    app.push_flight_ticket_order(message=message)
+                    app.push_flight_ticket_order(message=result)
         else:
             logger.warning(
                 "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(
                     special_flight_amount, pre_sale_amount
                 )
             )
+        return result
 
     @classmethod
     @async_threading
     def asymc_booking_ctrip_app_special_flight_ticket(cls, **kwargs) -> None:
         cls.booking_ctrip_app_special_flight_ticket(**kwargs)
+
 
 booking_flight_ser = BookingFlightService()
