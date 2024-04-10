@@ -2,7 +2,7 @@
 """
 # ---------------------------------------------------------------------------------------------------------
 # ProjectName:  smartIssueTickets
-# FileName:     robot.py.py
+# FileName:     robot.py
 # Description:  TODO
 # Author:       mfkifhss2023
 # CreateDate:   2024/04/10
