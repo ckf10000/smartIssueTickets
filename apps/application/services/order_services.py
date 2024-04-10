@@ -12,7 +12,7 @@
 import time
 import typing as t
 from apps.common.annotation.log_service import logger
-from apps.domain.services.ui.app_services import CtripAppService
+from apps.domain.services.app_ui_services import CtripAppService
 
 __all__ = ["flight_ticket_order_ser"]
 

@@ -14,7 +14,7 @@ from decimal import Decimal
 from apps.common.annotation.log_service import logger
 from apps.common.config.flight_ticket import airline_map
 from apps.common.annotation.asynchronous import async_threading
-from apps.domain.services.ui.app_services import CtripAppService
+from apps.domain.services.app_ui_services import CtripAppService
 from apps.application.validators.booking_validators import FlightTicketValidator
 
 __all__ = ["booking_flight_ser"]

@@ -9,6 +9,8 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
+import re
+import hashlib
 import typing as t
 from collections import OrderedDict
 from poco.drivers.android.uiautomation import AndroidUiautomationPoco
@@ -161,3 +163,32 @@ def update_nested_dict(original_dict: t.Dict, update_dict: t.Dict) -> t.Dict:
         elif key not in original_dict:
             # 如果当前键不存在于原始字典中，则将键值对添加到原始字典中
             original_dict[key] = value
+
+
+def encryp_md5(data: str) -> str:
+    # 创建一个 hashlib.md5 对象
+    md5_hash = hashlib.md5()
+    # 将输入的字符串转换为 bytes，并更新 MD5 哈希对象
+    md5_hash.update(data.encode())
+    # 获取 MD5 值的十六进制表示形式（32 位小写）
+    md5_hex_digest = md5_hash.hexdigest()
+    return md5_hex_digest
+
+
+def covert_dict_key_to_lower(d: t.Dict) -> t.Dict:
+    result = dict()
+    for key,value in d.items():
+        if isinstance(key, str):
+            key_new = key.lower()
+            result[key_new] = value
+    return result
+
+def get_html_title(html: str) -> str:
+    # 使用正则表达式提取目标字符串
+    pattern = '<title>(.*?)</title>'
+    match = re.search(pattern, html)
+    if match:
+        title = match.group(1)
+    else:
+        title = "Abnormal HTML document structure"
+    return title

@@ -9,7 +9,7 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-from apps.domain.services.ui.app_services import CtripAppService
+from apps.domain.services.app_ui_services import CtripAppService
 
 def test_select_special_flight():
     app = CtripAppService()
