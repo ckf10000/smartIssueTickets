@@ -527,7 +527,8 @@ class Phone(object):
                 logger.info("目前检测到HW键盘已经打开，需要隐藏键盘，再做后续操作...")
                 hw_keyword.click()
             else:
-                lg_keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey", name="完成")
+                lg_keyword = self.poco(type="com.lge.ime.humaninterface.inputview.layout.HIGColoredEnterKey",
+                                       name="完成")
                 if lg_keyword.exists():
                     logger.info("目前检测到LG键盘已经打开，需要隐藏键盘，再做后续操作...")
                     lg_keyword.click()

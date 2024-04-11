@@ -20,3 +20,4 @@ class MQMessageService(object):
     def push_flight_ticket_order(cls, message: t.Dict) -> None:
         logger.info("开始往MQ推送携程机票订单信息：<{}>".format(message))
         push_message_to_mq(message=message)
+        logger.info("消息已发送至MQ队列.")

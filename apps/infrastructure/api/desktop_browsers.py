@@ -13,8 +13,8 @@ import os
 import typing as t
 from selenium import webdriver
 from abc import abstractmethod
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chromium.options import ChromiumOptions
 from selenium.webdriver.chrome.webdriver import WebDriver as Chrome
 from selenium.webdriver.firefox.webdriver import WebDriver as Firefox
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -23,6 +23,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 from apps.common.libs.dir import get_project_path
 
+
 class Browser(object):
     TIMEOUT = 10
     LOG_LEVEL = "DEBUG"
@@ -30,23 +31,23 @@ class Browser(object):
     PROECT_PATH = get_project_path()
 
     @abstractmethod
-    def get_browser():
+    def get_browser(self):
+        pass
+
+    @classmethod
+    def get_options(cls):
         pass
 
     @abstractmethod
-    def get_options():
-        pass
-
-    @abstractmethod
-    def get_service():
+    def get_service(self):
         pass
 
 
 class ChromeBrowser(Browser):
     BROWSER_NAME = "Chrome"
 
-    @staticmethod
-    def get_options() -> ChromiumOptions:
+    @classmethod
+    def get_options(cls) -> Options:
         # 支持的浏览器有: Firefox, Chrome, Ie, Edge, Opera, Safari, BlackBerry, Android, PhantomJS等
         chrome_options = webdriver.ChromeOptions()
         # 谷歌浏览器后台运行模式
@@ -83,25 +84,6 @@ class ChromeBrowser(Browser):
         # 关闭devtools工具
         chrome_options.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
         return chrome_options
-    
-    @staticmethod
-    def get_proxy(proxy_url: str = None)-> dict:
-        if proxy_url:
-            # 添加代理
-            # 域\用户:密码@代理主机或者域名:端口号
-            # proxy_url = r"CHINA\zwx400423:password123@172.16.30.161:8080"
-            desired_capabilities['proxy'] = {
-                "httpProxy": proxy_url,
-                "ftpProxy": proxy_url,
-                "sslProxy": proxy_url,
-                "noProxy": None,
-                "proxyType": "MANUAL",
-                "class": "org.openqa.selenium.Proxy",
-                "autodetect": False
-            }
-        else:
-            desired_capabilities = dict()
-        return desired_capabilities
 
     @classmethod
     def get_service(cls) -> ChromeService:
@@ -112,13 +94,13 @@ class ChromeBrowser(Browser):
         # 如果selenium的版本高于4.6，则不需要配置executable_path参数
         service = ChromeService(
             # executable_path=chrome_driver,
-            service_args=['--log-level={}'.format(cls.LOG_LEVEL),'--append-log', '--readable-timestamp'], 
+            service_args=['--log-level={}'.format(cls.LOG_LEVEL), '--append-log', '--readable-timestamp'],
             log_output=log_file
         )
         return service
 
     @classmethod
-    def get_browser(cls) -> t.Tuple: 
+    def get_browser(cls) -> t.Tuple:
         options = cls.get_options()
         service = cls.get_service()
         browser = Chrome(service=service, options=options)
@@ -129,8 +111,8 @@ class ChromeBrowser(Browser):
 class FirefoxBrowser(Browser):
     BROWSER_NAME = "FireFfox"
 
-    @staticmethod
-    def get_options() -> FirefoxOptions:
+    @classmethod
+    def get_options(cls) -> FirefoxOptions:
         options = FirefoxOptions()
         # 在无头模式下运行 Firefox
         # options.headless = True  
@@ -138,7 +120,7 @@ class FirefoxBrowser(Browser):
         # options.add_argument('--proxy-server=http://proxy.example.com:8080') 
         options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"
         return options
-    
+
     @classmethod
     def get_service(cls) -> FirefoxService:
         # geckodriver 驱动路径
@@ -148,13 +130,13 @@ class FirefoxBrowser(Browser):
         # 如果selenium的版本高于4.6，则不需要配置executable_path参数
         service = FirefoxService(
             # executable_path=gecko_driver_path,
-            service_args=['--log={}'.format(cls.LOG_LEVEL.lower())], 
+            service_args=['--log={}'.format(cls.LOG_LEVEL.lower())],
             log_output=log_file
         )
         return service
 
     @classmethod
-    def get_browser(cls) -> t.Tuple: 
+    def get_browser(cls) -> t.Tuple:
         options = cls.get_options()
         service = cls.get_service()
         browser = Firefox(service=service, options=options)

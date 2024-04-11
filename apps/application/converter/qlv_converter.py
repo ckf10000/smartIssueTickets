@@ -29,5 +29,3 @@ class QlvRequestParamsConverter(object):
             pre_sale_amount=str(Decimal(flights.get("PriceStd")))
         )
         return flight_info
-
-    def ctrip_order_info_to_ticket_infos() -> str: pass

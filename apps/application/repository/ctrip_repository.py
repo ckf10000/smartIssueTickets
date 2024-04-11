@@ -30,8 +30,7 @@ class CTripConfigRepository(object):
     @classmethod
     def get_payment_group_config(cls, group_name: str) -> t.Tuple:
         group_config = getattr(cls.payment_config, group_name)
-        binding_ctrip = getattr(
-            getattr(group_config, "pay_account"), "binding_ctrip")
+        binding_ctrip = getattr(getattr(group_config, "pay_account"), "binding_ctrip")
         return binding_ctrip, dict(
             out_pf=getattr(group_config, "out_pf"),
             out_ticket_account=getattr(group_config, "out_ticket_account"),
