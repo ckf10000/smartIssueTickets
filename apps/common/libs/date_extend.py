@@ -39,17 +39,20 @@ public_holiday_2024 = [
     "2024-10-07",
 ]
 
+
 def get_trip_year_month_day(date_str: str) -> t.Tuple:
     """携程日历界面头部上的选择区域"""
     trip_dt = datetime.strptime(date_str, flight_standard_date_format)
     current_dt = datetime.now()
-    if  trip_dt >= current_dt + timedelta(minutes=60):
+    if trip_dt >= current_dt + timedelta(minutes=60):
         year = "{}年".format(trip_dt.year)
         month = "{}月".format(trip_dt.month)
         day = "{}".format(trip_dt.day)
         return year, month, day
     else:
-        raise ValueError("航班时间: {} 已失效或接近当前时间: {}".format(date_str, current_dt.strftime(flight_standard_date_format)))
+        raise ValueError("航班时间: {} 已失效或接近当前时间: {}".format(
+            date_str, current_dt.strftime(flight_standard_date_format)))
+
 
 def get_datetime_area(date_str: str) -> str:
     dt = datetime.strptime(date_str, flight_standard_date_format)
@@ -68,12 +71,17 @@ def get_datetime_area(date_str: str) -> str:
     else:
         return "18:00 - 24:00"
 
+
 def is_public_holiday(date_str: str) -> bool:
     """判断是不是中国的法定节假日"""
     if date_str.split(" ")[0] in public_holiday_2024:
         return True
     else:
         return False
+
+
+def current_datetime_str() -> str:
+    return datetime.now().strftime(standard_date_format)
 
 
 if __name__ == "__main__":

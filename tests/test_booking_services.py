@@ -30,7 +30,8 @@ def test_booking_ctrip_app_special_flight_ticket():
         age_stage="成人",
         pre_order_id="2891160",
         ctrip_username="18600440822",
-        user_pass="ca161022"
+        user_pass="ca161022",
+        payment_method="浦发银行储蓄卡(7397)"
     )
 
 

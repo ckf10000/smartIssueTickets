@@ -166,15 +166,18 @@ class CtripAppService(PlatformService):
     @SleepWait(wait_time=2)
     def select_trip_expect_day(self, date_str: str) -> None:
         _, _, trip_day = get_trip_year_month_day(date_str=date_str)
-        day_str = "{}_red".format(trip_day) if is_public_holiday(date_str=date_str) else "{}_blue".format(trip_day)
+        day_str = "{}_red".format(trip_day) if is_public_holiday(
+            date_str=date_str) else "{}_blue".format(trip_day)
         file_name = join_path([get_images_dir(), "{}.png".format(day_str)])
         logger.info("需要识别日历中的日期文件是：{}".format(file_name))
         if is_exists(file_name):
             # threshold 提高识别灵敏度，灵敏度太低，容易将相似的结果匹配出来
-            temp = self.device.get_cv_template(file_name=file_name, threshold=0.9)
+            temp = self.device.get_cv_template(
+                file_name=file_name, threshold=0.9)
             find_results = self.device.find_all(v=temp)
             if isinstance(find_results, t.List) and len(find_results) > 0:
-                sorted_list = sorted(find_results, key=lambda x: (x['result'][1], x['result'][0]))
+                sorted_list = sorted(find_results, key=lambda x: (
+                    x['result'][1], x['result'][0]))
                 temp = sorted_list[0].get("result")
             else:
                 raise ValueError(
@@ -217,7 +220,8 @@ class CtripAppService(PlatformService):
         检索需要购买的航班是否出现在初始的屏幕中
         """
         logger.info("判断航班<{}>机票信息是否在初始列表当中...".format(flight))
-        in_screen = self.device.get_po(type="android.widget.TextView", name="第{}航班航司信息".format(flight))
+        in_screen = self.device.get_po(
+            type="android.widget.TextView", name="第{}航班航司信息".format(flight))
         if in_screen.exists():
             return True
         else:
@@ -240,7 +244,8 @@ class CtripAppService(PlatformService):
         clear_button = self.device.get_po(
             type="android.view.ViewGroup", name="筛选清空按钮"
         )[0]
-        clear_button_attr = get_ui_object_proxy_attr(ui_object_proxy=clear_button)
+        clear_button_attr = get_ui_object_proxy_attr(
+            ui_object_proxy=clear_button)
         is_enabled = clear_button_attr.get("enabled")
         if is_enabled is True:
             clear_text = self.device.get_po_extend(
@@ -364,7 +369,8 @@ class CtripAppService(PlatformService):
         从特价机票列表中选择本次订单的航班
         """
         desc = "第{}航班航司信息".format(flight)
-        special_flight = self.device.get_po(type="android.widget.TextView", name=desc)
+        special_flight = self.device.get_po(
+            type="android.widget.TextView", name=desc)
         if special_flight.exists():
             abs_position = self.device.get_abs_position(element=special_flight)
             # special_flight.click()
@@ -381,7 +387,8 @@ class CtripAppService(PlatformService):
         lowerest_amount_po = self.device.get_po(
             type="android.widget.TextView", name="第2个政策成人价格金额"
         )[0]
-        ui_object_proxy_attr = get_ui_object_proxy_attr(ui_object_proxy=lowerest_amount_po)
+        ui_object_proxy_attr = get_ui_object_proxy_attr(
+            ui_object_proxy=lowerest_amount_po)
         text = ui_object_proxy_attr.get("text")
         logger.info("获取到的机票最低价为：{}".format(text))
         # 9999999999.9999999999 表示金额无限大，仅限于作为后续的比较逻辑默认值
@@ -391,7 +398,8 @@ class CtripAppService(PlatformService):
         """
         在经济舱航班列表中，存在某些航班，没有【选购】按钮，点击【订】直接进入下单界面，相当于少了一次点击
         """
-        booking = self.device.get_po(type="android.widget.TextView", name="btn_book_2预订按钮", text="订")
+        booking = self.device.get_po(
+            type="android.widget.TextView", name="btn_book_2预订按钮", text="订")
         if booking.exists():
             return True
         else:
@@ -591,7 +599,6 @@ class CtripAppService(PlatformService):
     @LoopFindElement(loop=5)
     # @SleepWait(wait_time=1)
     def add_passenger(self, passenger: str) -> None:
-
         """
         点击【确定】按钮，添加乘客
         """
@@ -643,10 +650,12 @@ class CtripAppService(PlatformService):
         """
         如果用户已经下单，系统会有弹框提示，下单重复了
         """
-        duplicate_order_1 = self.device.get_po(type="android.widget.TextView", text="我知道了")
+        duplicate_order_1 = self.device.get_po(
+            type="android.widget.TextView", text="我知道了")
         duplicate_order_2 = self.device.get_po(type="android.widget.TextView", name="android.widget.TextView",
                                                text="继续预订当前航班")
-        duplicate_order_3 = self.device.get_po(type="android.widget.TextView", name="重复订单标题", text="行程冲突提示")
+        duplicate_order_3 = self.device.get_po(
+            type="android.widget.TextView", name="重复订单标题", text="行程冲突提示")
         if duplicate_order_1.exists():
             conflict_prompt = self.device.get_po_extend(
                 type="android.widget.TextView",
@@ -655,7 +664,8 @@ class CtripAppService(PlatformService):
                 local_num=2,
                 touchable=False,
             )[0]
-            conflict_prompt_str = get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
+            conflict_prompt_str = get_ui_object_proxy_attr(
+                ui_object_proxy=conflict_prompt).get("text")
             duplicate_order_1.click()
             return conflict_prompt_str
         elif duplicate_order_2.exists():
@@ -666,7 +676,8 @@ class CtripAppService(PlatformService):
                 local_num=1,
                 touchable=False,
             )[0]
-            conflict_prompt_str = get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
+            conflict_prompt_str = get_ui_object_proxy_attr(
+                ui_object_proxy=conflict_prompt).get("text")
             duplicate_order_2.click()
             return conflict_prompt_str
         elif duplicate_order_3.exists():
@@ -677,7 +688,8 @@ class CtripAppService(PlatformService):
                 local_num=3,
                 touchable=False,
             )[0]
-            conflict_prompt_str = get_ui_object_proxy_attr(ui_object_proxy=conflict_prompt).get("text")
+            conflict_prompt_str = get_ui_object_proxy_attr(
+                ui_object_proxy=conflict_prompt).get("text")
             self.device.touch((400, 500))  # 点击一个随机坐标，尽量靠近上半屏，相当于点击空白处，隐藏掉提示框
             return conflict_prompt_str
         else:
@@ -830,7 +842,8 @@ class CtripAppService(PlatformService):
             touchable=False,
         )[0]
         actual_amount = tickect_actual_amount.get_text()
-        actual_amount = Decimal(actual_amount[1:]) if isinstance(actual_amount, str) else 9999999999.9999999999
+        actual_amount = Decimal(actual_amount[1:]) if isinstance(
+            actual_amount, str) else 9999999999.9999999999
         return actual_amount
 
     def get_tickect_deduction_amount(self) -> Decimal:
@@ -877,7 +890,8 @@ class CtripAppService(PlatformService):
         )[0]
         payment_amount = payment_amount.get_text()
         logger.info("从支付成功界面获取到的实际支付金额是: {}".format(payment_amount))
-        payment_amount = Decimal(payment_amount) if isinstance(payment_amount, str) else -9999999999.9999999999
+        payment_amount = Decimal(payment_amount) if isinstance(
+            payment_amount, str) else -9999999999.9999999999
         return payment_amount
 
     @SleepWait(wait_time=1)
@@ -918,7 +932,8 @@ class CtripAppService(PlatformService):
     def close_coupon_dialog(self) -> None:
         """支付完成后，会有一个优惠卷弹框，需要关闭"""
         try:
-            coupon_dialog = self.device.get_po(type="android.view.ViewGroup", name="领券弹窗关闭按钮")
+            coupon_dialog = self.device.get_po(
+                type="android.view.ViewGroup", name="领券弹窗关闭按钮")
             if coupon_dialog.exists():
                 coupon_dialog.click()
         except (PocoNoSuchNodeException, Exception):
@@ -1016,11 +1031,6 @@ class CtripAppService(PlatformService):
         else:
             itinerary_id = None
         return itinerary_id
-
-    @classmethod
-    def push_flight_ticket_order(cls, message: t.Dict) -> None:
-        logger.info("开始往MQ推送携程机票订单信息：<{}>".format(message))
-        push_message_to_mq(message=message)
 
     def __del__(self) -> None:
         self.stop()

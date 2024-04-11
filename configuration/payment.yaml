@@ -1,0 +1,7 @@
+group_1:
+  out_pf: XCAPP
+  out_ticket_account: K王总信用卡
+  pay_account_type: K王总信用卡
+  pay_account:
+    qlv: 浦发7397
+    binding_ctrip: 浦发银行储蓄卡(7397)

@@ -18,7 +18,7 @@ from flask import Flask, g, request
 from flask.logging import default_handler
 
 from apps.common.libs.environ import get_env
-from apps.common.libs.extensions import swagger
+from apps.common.libs.context import swagger
 from apps.common.http.flask_plus import FlaskPlus
 from apps.common.libs.dir import get_project_path
 from apps.common.libs.service_environ import config
@@ -55,7 +55,7 @@ def register_env(app: Flask, config_name: str):
 
 
 def register_extensions(app: Flask):
-    if get_env() not in ["production","pre"]:
+    if get_env() not in ["production", "pre"]:
         swagger.init_app(app=app)
     # supports_credentials 是否允许请求发送cookie
     CORS(app=app, supports_credentials=True, max_age=600)
@@ -72,14 +72,15 @@ def register_request_handlers(app: Flask):
 
     @app.before_request
     def http_request():
-        start_time=datetime.now()
+        start_time = datetime.now()
         request_method = request.headers.environ.get("REQUEST_METHOD")
         req_kwargs = dict()
         if request.args:
             req_kwargs.update(dict(request.args))
         elif request.get_json(silent=True):
             req_kwargs.update(request.json)
-        setattr(g,"request",dict(url=request.url,method=request_method,start_time=start_time,req_kwargs=req_kwargs))
+        setattr(g, "request", dict(url=request.url, method=request_method,
+                start_time=start_time, req_kwargs=req_kwargs))
         remote_port = request.headers.environ.get("REMOTE_PORT")
         # 前端调用服务端
         origin = (

@@ -40,13 +40,15 @@ class BookingFlightService(object):
             payment_pass: str,  # 支付密码
             ctrip_username: str,  # 携程账号
             user_pass: str,  # 携程账号密码
+            payment_method: str,  # 携程支付方式
             departure_city_name: str = "",  # 离开城市名
             arrive_city_name: str = "",  # 抵达城市名
             passenger_phone: str = ""  # 乘客手机号码
     ) -> t.Dict:
         result = dict()
         ac = airline_map.get(flight[:2].upper())
-        logger.info("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(flight, ac, departure_time))
+        logger.info("本次要预定的航班：{}，为<{}>的航班，起飞时间为：{}".format(
+            flight, ac, departure_time))
         app = CtripAppService()
         app.device.wake()
         app.restart()
@@ -106,7 +108,7 @@ class BookingFlightService(object):
                 app.touch_insure_no()
                 app.touch_read_agree()
                 app.touch_payment_method()
-                app.select_payment_method(payment_method="浦发银行储蓄卡(7397)")
+                app.select_payment_method(payment_method=payment_method)
                 app.select_more_payment()
                 app.select_point_deduction()
                 tickect_actual_amount = app.get_tickect_actual_amount()
@@ -140,7 +142,7 @@ class BookingFlightService(object):
                         card_id=card_id,
                         internal_phone=internal_phone,
                         passenger_phone=passenger_phone,
-                        order_id=order_id,
+                        ctrip_order_id=order_id,
                         payment_amount=str(payment_amount),
                         payment_method=payment_method,
                         itinerary_id=itinerary_id,
@@ -149,7 +151,7 @@ class BookingFlightService(object):
                         arrive_time=arrive_time,
                         ctrip_username=ctrip_username
                     )
-                    app.push_flight_ticket_order(message=result)
+                    return result
         else:
             logger.warning(
                 "当前查询最低票价为：{}，高于航班订单票价：{}，本次预定即将结束。".format(
