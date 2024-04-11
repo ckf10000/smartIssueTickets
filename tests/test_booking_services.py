@@ -23,6 +23,7 @@ def test_booking_ctrip_app_special_flight_ticket():
         flight="MF8036",
         passenger="李成浩",
         card_id="321284199803018015",
+        card_type="身份证",
         pre_sale_amount="240.00",
         payment_pass="901127",
         internal_phone="18569520328",

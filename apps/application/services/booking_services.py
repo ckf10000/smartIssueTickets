@@ -36,6 +36,7 @@ class BookingFlightService(object):
             passenger: str,  # 乘客
             age_stage: str,  # 乘客年龄阶段，儿童/成人
             card_id: str,  # 身份证号
+            card_type: str,  # 证件类型
             internal_phone: str,  # 内部手机号码
             payment_pass: str,  # 支付密码
             ctrip_username: str,  # 携程账号
@@ -91,6 +92,8 @@ class BookingFlightService(object):
             app.touch_more_passengers_button()
             app.touch_add_passengers_button()
             app.enter_passenger_username(passenger=passenger)
+            app.touch_passenger_card_type()
+            app.select_passenger_card_type(card_type=card_type)
             app.enter_passenger_card_id(card_id=card_id)
             app.enter_passenger_phone_number(phone=internal_phone)
             app.submit_passenger_info()

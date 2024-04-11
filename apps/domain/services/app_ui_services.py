@@ -527,6 +527,26 @@ class CtripAppService(PlatformService):
         passenger_username.set_text(passenger)
 
     @SleepWait(wait_time=1)
+    def touch_passenger_card_type(self) -> None:
+        """
+        点击【证件类型】
+        """
+        passenger_card_type = self.device.get_po(
+            type="android.widget.TextView", name="新增乘机人证件类型文案")
+        passenger_card_type.click()
+        logger.info("点击【证件类型】")
+
+    @SleepWait(wait_time=1)
+    def select_passenger_card_type(self, card_type: str) -> None:
+        """
+        选择合适的证件类型
+        """
+        passenger_card_type = self.device.get_po(
+            type="android.widget.TextView", text=card_type)
+        passenger_card_type.click()
+        logger.info("选择【{}】".format(card_type))
+
+    @SleepWait(wait_time=1)
     def enter_passenger_card_id(self, card_id: str) -> None:
         """
         录入乘客证件号码
@@ -1032,8 +1052,11 @@ class CtripAppService(PlatformService):
             itinerary_id = None
         return itinerary_id
 
+    # 为了调式方便，暂时注释
+    """
     def __del__(self) -> None:
         self.stop()
+    """
 
 
 if __name__ == "__main__":

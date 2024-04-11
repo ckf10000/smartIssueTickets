@@ -51,6 +51,7 @@ class QlvService(object):
         order_ser = OrderService(**QlvConfigRepository.get_host_params())
         result = order_ser.unlock_order(**kwargs)
         if result.get("code") == 1:
+            logger.info("劲旅平台订单<{}>解锁成功.".format(order_id))
             return True
         else:
             logger.error("劲旅平台订单<{}>解锁失败...".format(order_id))
