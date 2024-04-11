@@ -18,7 +18,7 @@ from flask import Flask, g, request
 from flask.logging import default_handler
 
 from apps.common.libs.environ import get_env
-from apps.common.libs.context import swagger
+from apps.common.libs.swagger import swagger
 from apps.common.http.flask_plus import FlaskPlus
 from apps.common.libs.dir import get_project_path
 from apps.common.libs.service_environ import config

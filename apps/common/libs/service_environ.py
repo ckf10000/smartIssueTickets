@@ -15,16 +15,9 @@ from flask import current_app
 from apps.common.libs.environ import get_env
 from apps.common.libs.dir import get_project_path
 from apps.common.libs.context import is_current_app
-from apps.common.libs.parse_yaml import DictObject, ProjectConfig
+from apps.common.libs.parse_yaml import ProjectConfig
 
-__all__ = ["config", "get_config", "BaseConfig"]
-
-def get_config() -> DictObject:
-    if is_current_app():
-        configuration = current_app.config["CONFIG"]
-    else:
-        configuration = config[get_env()].CONFIG
-    return configuration
+__all__ = ["config", "configuration", "BaseConfig"]
 
 
 class BaseConfig(object):
@@ -110,3 +103,8 @@ config = {
     "uat": UatConfig("uat"),
     "pre": PreConfig("pre"),
 }
+
+if is_current_app():
+    configuration = current_app.config["CONFIG"]
+else:
+    configuration = config[get_env()].CONFIG

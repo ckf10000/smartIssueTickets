@@ -10,14 +10,12 @@
 # -----------------------------------------------------------------------------------------------------------------------
 """
 import typing as t
-from apps.common.libs.service_environ import get_config
-
-config = get_config()
+from apps.common.libs.service_environ import configuration
 
 
 class CTripConfigRepository(object):
-    ctrip_config = getattr(config, "ctrip")
-    payment_config = getattr(config, "payment")
+    ctrip_config = getattr(configuration, "ctrip")
+    payment_config = getattr(configuration, "payment")
 
     @classmethod
     def get_ctrip_group_config(cls, group_name: str) -> t.Dict:

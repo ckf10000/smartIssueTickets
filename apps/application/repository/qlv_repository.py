@@ -11,14 +11,12 @@
 """
 import typing as t
 from apps.common.libs.parse_yaml import DictObject
-from apps.common.libs.service_environ import get_config
+from apps.common.libs.service_environ import configuration
 from apps.common.libs.date_extend import current_datetime_str
-
-config = get_config()
 
 
 class QlvConfigRepository(object):
-    qlv_config = getattr(config, "qlv")
+    qlv_config = getattr(configuration, "qlv")
     interfaces = getattr(qlv_config, "interfaces")
 
     @classmethod
