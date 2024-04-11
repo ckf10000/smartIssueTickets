@@ -5,7 +5,7 @@ protocol: http
 lock_order_args:
   xc:
     {
-      "policy_name": "测试-XC",
+      "policy_name": "当天#优享#单选",
       "oper": "robot-XC",
       "air_cos": "",
       "order_pk": "",

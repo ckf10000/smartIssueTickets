@@ -35,10 +35,9 @@ class QlvService(object):
         kwargs.update(policy_args)
         order_ser = OrderService(**QlvConfigRepository.get_host_params())
         result = order_ser.lock_order(**kwargs)
-        return dict(
-            policy_args=policy_args,
-            data_info=result.get("DataInfoJson")
-        ) if isinstance(result.get("DataInfoJson"), dict) else dict()
+        result["policy_args"] = policy_args
+        result["data_info"] = result.pop("datainfojson", None)
+        return result
 
     @classmethod
     def set_unlock_order(cls, order_id: int, oper: str, order_state: str, order_lose_type: str, remark: str) -> bool:
@@ -131,7 +130,7 @@ class OutTicketService(object):
         # 1. 锁单
         lock_order_info = QlvService.get_lock_order(lock_rule=lock_rule)
         # 说明单已锁定，往下执行，如果未锁定，直接跳过
-        if lock_order_info:
+        if isinstance(lock_order_info.get("data_info"), dict):
             order_info = lock_order_info.get("data_info")
             oper = lock_order_info.get("policy_args").get("oper")
             order_id = order_info.get("ID")
@@ -170,6 +169,8 @@ class OutTicketService(object):
                     logger.error(format_exc())
                     QlvService.loop_unlock_reason_with_flag(
                         flag=False, order_id=order_id, oper=oper)
+        else:
+            logger.error(lock_order_info.get("message"))
 
 
 out_ticket_ser = OutTicketService()
