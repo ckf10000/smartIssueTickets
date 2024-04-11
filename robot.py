@@ -31,6 +31,7 @@ def xc_app_auto_out_ticket() -> None:
             logger.error(str(e))
             logger.error(print_exc())
             dt_complete = datetime.now()
+            st = dt_complete - dt_start
             # 空闲或者异常时平均间隔1分钟(60秒)
             delta = 60 - st.total_seconds()
             if delta > 0:
