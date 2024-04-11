@@ -48,14 +48,14 @@ class QlvConfigRepository(object):
         }
 
     @ classmethod
-    def get_unlock_reason_params(cls, flag: bool, order_id: int, oper: str) -> t.Dict:
+    def get_unlock_reason_params(cls, flag: bool, order_id: int, oper: str, remark: str) -> t.Dict:
         """flag 为 true时，出票成功，反之出票失败"""
         return dict(
             order_id=order_id,
             oper=oper,
             order_state="1" if flag is True else "0",
-            order_lose_type="系统",
-            remark="" if flag is True else "机器人运行过程中出现异常"
+            order_lose_type="解锁订单",
+            remark=remark
         )
 
     @ classmethod

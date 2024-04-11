@@ -57,22 +57,22 @@ class QlvService(object):
             return False
 
     @classmethod
-    def unlock_reason_with_flag(cls, flag: bool, order_id: int, oper: str) -> bool:
+    def unlock_reason_with_flag(cls, flag: bool, order_id: int, oper: str, remark: str) -> bool:
         unlock_reason_params = QlvConfigRepository.get_unlock_reason_params(
-            flag=flag, order_id=order_id, oper=oper)
+            flag=flag, order_id=order_id, oper=oper, remark=remark)
         return cls.set_unlock_order(**unlock_reason_params)
 
     @classmethod
-    def loop_unlock_reason_with_flag(cls,  flag: bool, order_id: int, oper: str, attempts: int = 3):
+    def loop_unlock_reason_with_flag(cls,  flag: bool, order_id: int, oper: str, remark: str, attempts: int = 3):
         # 尝试3次解锁
         for i in range(attempts):
-            is_succeed = QlvService.set_unlock_order(
-                flag=flag, order_id=order_id, oper=oper)
+            is_succeed = QlvService.unlock_reason_with_flag(
+                flag=flag, order_id=order_id, oper=oper, remark=remark)
             if is_succeed is True:
                 break
 
     @classmethod
-    def save_pay_info(cls, booking_info: t.Dict) -> None:
+    def save_pay_info(cls, booking_info: t.Dict) -> bool:
         logger.info("开始向劲旅系统回填采购信息...")
         kwargs = QlvConfigRepository.get_request_base_params(
             inter_name="save_order_pay_info")
@@ -83,23 +83,25 @@ class QlvService(object):
         result = order_ser.save_order_pay_info(**kwargs)
         if result.get("code") == 0:
             logger.error("向劲旅系统回填采购信息失败...")
+            return False
+        else:
+            return True
 
     @classmethod
-    def save_itinerary_info(cls, booking_info: t.Dict) -> None:
+    def save_itinerary_info(cls, booking_info: t.Dict) -> bool:
         logger.info("开始向劲旅系统回填乘客票单信息...")
-        if booking_info.get("itinerary_id"):
-            kwargs = QlvConfigRepository.get_request_base_params(
-                inter_name="fill_order_itinerary_info")
-            order_itinerary_info = QlvConfigRepository.get_order_itinerary_info(
-                booking_info=booking_info)
-            kwargs.update(order_itinerary_info)
-            order_ser = OrderService(**QlvConfigRepository.get_host_params())
-            result = order_ser.fill_order_itinerary_info(**kwargs)
-            if result.get("code") == 0:
-                logger.error("向劲旅系统回填乘客票单信息失败...")
+        kwargs = QlvConfigRepository.get_request_base_params(
+            inter_name="fill_order_itinerary_info")
+        order_itinerary_info = QlvConfigRepository.get_order_itinerary_info(
+            booking_info=booking_info)
+        kwargs.update(order_itinerary_info)
+        order_ser = OrderService(**QlvConfigRepository.get_host_params())
+        result = order_ser.fill_order_itinerary_info(**kwargs)
+        if result.get("code") == 0:
+            logger.error("向劲旅系统回填乘客票单信息失败...")
+            return False
         else:
-            logger.warning("劲旅平台订单<{}>预计还在出票中，暂时需要人工回填乘客的票单信息...".format(
-                booking_info.get("pre_order_id")))
+            return True
 
 
 class CTripService(object):
@@ -131,15 +133,19 @@ class OutTicketService(object):
         lock_order_info = QlvService.get_lock_order(lock_rule=lock_rule)
         # 说明单已锁定，往下执行，如果未锁定，直接跳过
         if isinstance(lock_order_info.get("data_info"), dict):
+            flag = False
+            remark = "出票失败"
             order_info = lock_order_info.get("data_info")
             oper = lock_order_info.get("policy_args").get("oper")
             order_id = order_info.get("ID")
             flights = order_info.get("Flights")
             passengers = order_info.get("Peoples")
-            if len(flights) > 1 or len(passengers) > 1:
-                logger.warning("当前不支持多航班或者多乘客下单...")
-                QlvService.loop_unlock_reason_with_flag(
-                    flag=False, order_id=order_id, oper=oper)
+            if len(flights) > 1:
+                logger.warning("当前不支持多航班下单...")
+                remark = "{}，多航程".format(remark)
+            elif len(passengers) > 1:
+                logger.warning("当前不支持多乘客下单...")
+                remark = "{}，多人".format(remark)
             else:
                 logger.info(
                     "劲旅平台的订单<{}>已锁定，开启登录携程APP，进行下单操作...".format(order_id))
@@ -157,18 +163,26 @@ class OutTicketService(object):
                             message=booking_info)
                         # 3. 回填采购信息与票号
                         QlvService.save_pay_info(booking_info=booking_info)
-                        QlvService.save_itinerary_info(
-                            booking_info=booking_info)
-                        # 4. 给订单解锁
-                        QlvService.loop_unlock_reason_with_flag(
-                            flag=True, order_id=order_id, oper=oper)
+                        if booking_info.get("itinerary_id"):
+                            is_succeed = QlvService.save_itinerary_info(
+                                booking_info=booking_info)
+                            if is_succeed is True:
+                                flag = True
+                                remark = "出票成功"
+                            else:
+                                remark = "获取票号"
+                        else:
+                            remark = "获取票号"
+                            logger.warning("劲旅平台订单<{}>预计还在出票中，暂时需要人工回填乘客的票单信息...".format(
+                                booking_info.get("pre_order_id")))
                     else:
-                        QlvService.loop_unlock_reason_with_flag(
-                            flag=False, order_id=order_id, oper=oper)
+                        remark = "{}，携程APP下单失败".format(remark)
                 except (Exception,):
                     logger.error(format_exc())
-                    QlvService.loop_unlock_reason_with_flag(
-                        flag=False, order_id=order_id, oper=oper)
+                    remark = "{}，运行异常".format(remark)
+            # 4. 给订单解锁
+            QlvService.loop_unlock_reason_with_flag(
+                flag=flag, order_id=order_id, oper=oper, remark=remark)
         else:
             logger.error(lock_order_info.get("message"))
 
