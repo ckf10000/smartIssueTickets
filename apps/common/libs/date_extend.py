@@ -62,7 +62,7 @@ def get_datetime_area(date_str: str) -> str:
     twelve_time = datetime(dt.year, dt.month, dt.day, 12, 0, 0)
     eighteen_time = datetime(dt.year, dt.month, dt.day, 18, 0, 0)
     # end_time = datetime(dt.year, dt.month, dt.day, 23, 59, 59)
-    if first_time <= dt and dt < six_time:
+    if first_time <= dt < six_time:
         return "00:00 - 06:00"
     elif six_time <= dt < twelve_time:
         return "06:00 - 12:00"

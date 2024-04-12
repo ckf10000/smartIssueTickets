@@ -11,6 +11,7 @@
 """
 from apps.infrastructure.middleware.mq import push_message_to_mq
 
+
 def test_push_message_to_mq():
     message = dict(code=200, message="这是第一个消息", data=dict())
     push_message_to_mq(message=message)

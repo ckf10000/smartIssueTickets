@@ -9,7 +9,6 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-
 import os
 import typing as t
 
@@ -22,7 +21,7 @@ def get_images_dir():
     return os.path.join(get_project_path(), "static", "images")
 
 
-def is_exists(file_name: str) -> bool:
+def is_exists(file_name: t.LiteralString | str | bytes) -> bool:
     if os.path.exists(file_name):
         return True
     else:

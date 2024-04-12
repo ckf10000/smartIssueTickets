@@ -9,14 +9,6 @@
 # Copyright ©2011-2024. Hunan xyz Company limited. All rights reserved.
 # -----------------------------------------------------------------------------------------------------------------------
 """
-
-
-
-
-
-
-
-
 rabbitmq_default_config = {
     "port": 5672,
     "app_id": "smartIssueTickets",

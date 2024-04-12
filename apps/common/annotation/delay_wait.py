@@ -27,7 +27,8 @@ class SleepWait(object):
             return result
 
         return wrapper
-    
+
+
 class LoopFindElement(object):
 
     def __init__(self, loop: int = 1) -> None:

@@ -14,16 +14,17 @@ from functools import wraps
 from traceback import print_exc
 from apps.common.libs.extensions import executor
 
-def async_threading(func):
+
+def async_threading(func: t.Callable):
     """
     多线程异步执行
     :param func:
     :return:
     """
 
-    def call_func(func: t.Callable, *args, **kwargs):
+    def call_func(func_inner: t.Callable, *args, **kwargs):
         try:
-            return func(*args, **kwargs)
+            return func_inner(*args, **kwargs)
         except Exception as e:
             print_exc()
             return e
@@ -31,6 +32,6 @@ def async_threading(func):
     @wraps(func)
     def _deco(*args, **kwargs):
         executor.submit(call_func, func, *args, **kwargs)
-        return 
-        
+        return
+
     return _deco

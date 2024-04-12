@@ -52,5 +52,5 @@ airline_map = {
 
 ticket_fee = {
     "fuel_fee": Decimal("70.00"),  # 燃油费
-    "airport_fee": Decimal("50.00") # 机建费
+    "airport_fee": Decimal("50.00")  # 机建费
 }

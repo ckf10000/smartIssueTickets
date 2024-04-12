@@ -177,11 +177,12 @@ def encryp_md5(data: str) -> str:
 
 def covert_dict_key_to_lower(d: t.Dict) -> t.Dict:
     result = dict()
-    for key,value in d.items():
+    for key, value in d.items():
         if isinstance(key, str):
             key_new = key.lower()
             result[key_new] = value
     return result
+
 
 def get_html_title(html: str) -> str:
     # 使用正则表达式提取目标字符串

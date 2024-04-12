@@ -14,9 +14,10 @@ import shlex
 import airtest
 import subprocess
 import typing as t
-from airtest.core.error import *
 from airtest.cli.parser import cli_setup
 from airtest.utils.transform import TargetPos
+from poco.proxy import UIObjectProxy
+
 from apps.common.libs.dir import get_project_path
 from poco.drivers.android.uiautomation import AndroidUiautomationPoco
 from airtest.core.api import auto_setup, device, Template, touch, find_all, connect_device
@@ -75,7 +76,7 @@ class Phone(object):
         self.device_conn = device_conn
         self.enable_debug = enable_debug
         self.__init_device()
-        self.device = device()
+        self.dev = device()
         self.poco = AndroidUiautomationPoco(
             use_airtest_input=True, screenshot_each_action=False
         )
@@ -88,21 +89,6 @@ class Phone(object):
             airtest.core.settings.Settings.LOG_FILE = "{}.log".format(self.device_id)
             if self.device_conn.find(":5555") != -1:
                 if self.platform == DEFAULT_PLATFORM:
-                    """
-                    device_conn_slice = self.device_conn.split("/")
-                    print(device_conn_slice)
-                    host_ip_slice = device_conn_slice[3].split(":")
-                    # 连接到 Android 设备
-                    device = Android(
-                        serialno=self.device_id,
-                        host=host_ip_slice,
-                        cap_method=CAP_METHOD.JAVACAP,
-                        touch_method=TOUCH_METHOD.ADBTOUCH,
-                    )
-                    device.adb_server.stop()
-                    device.adb_server.start()
-                    device.adb_cmd.connect(device_conn_slice[3])
-                    """
                     connect_device(self.device_conn)
                 else:
                     raise ValueError("暂时还不支持非android平台的手机初始化...")
@@ -124,7 +110,7 @@ class Phone(object):
         """
         result = None
         if self.platform == DEFAULT_PLATFORM:
-            result = self.device.shell(cmd)
+            result = self.dev.shell(cmd)
             result = result.decode() if isinstance(result, bytes) else result
         return result or None
 
@@ -136,7 +122,7 @@ class Phone(object):
         """
         result = None
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM):
-            result = self.device.start_app(app_name)
+            result = self.dev.start_app(app_name)
         return result or None
 
     @airtest_exception_format
@@ -147,12 +133,12 @@ class Phone(object):
         """
         result = None
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM):
-            result = self.device.stop_app(app_name)
+            result = self.dev.stop_app(app_name)
         return result or None
 
     @staticmethod
     def get_cv_template(
-            file_name: str,
+            file_name: t.LiteralString | str | bytes,
             threshold: float = None,
             target_pos: int = TargetPos.MID,
             record_pos: tuple = None,
@@ -166,12 +152,14 @@ class Phone(object):
         file_name str: 这是要匹配的图像文件的路径
         threshold: 表示匹配程度的阈值。阈值越低，匹配的相似度要求就越高。默认值为0.7
         target_pos: ret图片中的哪个位置，是一个二元组(10,10)
-        record_pos: 指定在屏幕的哪个区域进行图像匹配。它是一个四元组 (left, top, width, height)，表示左上角坐标和宽高。如果不指定，默认为整个屏幕, ((61, 2795), (61, 2962), (247, 2962), (247, 2795))
+        record_pos: 指定在屏幕的哪个区域进行图像匹配。它是一个四元组 (left, top, width, height)，表示左上角坐标和宽高。
+                    如果不指定，默认为整个屏幕, ((61, 2795), (61, 2962), (247, 2962), (247, 2795))
         resolution: 用于在图像匹配前对图像进行缩放。它是一个 (width, height) 的二元组，表示图像的缩放比例。默认值为 (1.0, 1.0)，即不缩放,
         rgb: 识别结果是否使用rgb三通道进行校验, 指定是否将 RGB 图像转换为灰度图像进行匹配。默认为 false，表示转换为灰度图像.
         scale_max: 多尺度模板匹配最大范围.
         scale_step: 多尺度模板匹配搜索步长.
-        return: Template对象, [{'result': (517, 592), 'rectangle': ((377, 540), (377, 644), (658, 644), (658, 540)), 'confidence': 0.9967431426048279}]
+        return: Template对象, [{'result': (517, 592), 'rectangle': ((377, 540), (377, 644), (658, 644), (658, 540)),
+                'confidence': 0.9967431426048279}]
         """
         return Template(
             filename=file_name,
@@ -210,9 +198,7 @@ class Phone(object):
             # self.device.snapshot(filename="test.png", msg="test", quality=90)
             # The quality of the screenshot is 90, and the size does not exceed 1200*1200
             # self.device.snapshot(filename="test2.png", msg="test", quality=90, max_size=1200)
-            result = self.device.snapshot(
-                filename=filename, msg=msg, quality=quality, max_size=max_size
-            )
+            result = self.dev.snapshot(filename=filename, msg=msg, quality=quality, max_size=max_size)
         return result or None
 
     @airtest_exception_format
@@ -223,7 +209,7 @@ class Phone(object):
         """
         result = None
         if self.platform == DEFAULT_PLATFORM:
-            result = self.device.wake()
+            result = self.dev.wake()
         return result or None
 
     @airtest_exception_format
@@ -234,11 +220,11 @@ class Phone(object):
         """
         result = None
         if self.platform in (DEFAULT_PLATFORM, iOS_PLATFORM):
-            result = self.device.home()
+            result = self.dev.home()
         return result or None
 
     @airtest_exception_format
-    def touch(self, v: tuple, times: int = 1, **kwargs) -> None:
+    def touch(self, v: tuple | Template, times: int = 1, **kwargs) -> None:
         """
         在当前设备画面上进行一次点击
         v tuple: 点击位置，可以是一个 Template 图片实例，或是一个绝对坐标 (x, y)
@@ -292,7 +278,7 @@ class Phone(object):
             # self.device.swipe((100, 100), (200, 200))
             # self.device.swipe((100, 100), (200, 200), duration=1, steps=6)
             # result = self.device.swipe(v1=v1, v2=v2, vector=vector, duration=duration,**kwargs)
-            result = self.device.swipe(p1=v1, p2=v2, duration=duration, **kwargs)
+            result = self.dev.swipe(p1=v1, p2=v2, duration=duration, **kwargs)
         return result or None
 
     @airtest_exception_format
@@ -310,7 +296,7 @@ class Phone(object):
             # self.device.keyevent("3")  # same as keyevent("HOME")
             # self.device.keyevent("BACK")
             # self.device.keyevent("KEYCODE_DEL")
-            result = self.device.keyevent(keyname=keyname, **kwargs)
+            result = self.dev.keyevent(keyname=keyname, **kwargs)
         return result or None
 
     @airtest_exception_format
@@ -329,7 +315,7 @@ class Phone(object):
             # self.device.text("test", search=True)
             # 如果希望输入其他按键，可以用这个接口
             # self.device().yosemite_ime.code("3")  # 3 = IME_ACTION_SEARCH
-            result = self.device.text(text=text, enter=enter, **kwargs)
+            result = self.dev.text(text=text, enter=enter, **kwargs)
         return result or None
 
     @airtest_exception_format
@@ -342,7 +328,7 @@ class Phone(object):
         result = None
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
             # self.device.sleep(1)
-            result = self.device.sleep(secs=secs)
+            result = self.dev.sleep(secs=secs)
         return result or None
 
     @airtest_exception_format
@@ -371,9 +357,7 @@ class Phone(object):
             # def notfound():
             #     print("No target found")
             # self.device.wait(Template(r"tpl1607510661400.png"), intervalfunc=notfound)
-            result = self.device.wait(
-                v=v, timeout=timeout, interval=interval, intervalfunc=intervalfunc
-            )
+            result = self.dev.wait(v=v, timeout=timeout, interval=interval, intervalfunc=intervalfunc)
         return result or None
 
     @airtest_exception_format
@@ -392,7 +376,7 @@ class Phone(object):
             # pos = self.device.exists(Template(r"tpl1606822430589.png"))
             # if pos:
             #    self.device.touch(pos)
-            result = self.device.exists(v=v)
+            result = self.dev.exists(v=v)
         return result or None
 
     @airtest_exception_format
@@ -400,12 +384,13 @@ class Phone(object):
         """
         在设备屏幕上查找所有出现的目标并返回其坐标列表
         v Template: 寻找目标
-        return list:  [{‘result’: (x, y), ‘rectangle’: ( (left_top, left_bottom, right_bottom, right_top) ), ‘confidence’: 0.9}, …]
+        return list:  [{‘result’: (x, y), ‘rectangle’: ( (left_top, left_bottom, right_bottom, right_top) ),
+                        ‘confidence’: 0.9}, …]
         platform: Android, iOS, Windows
         """
+        result = list()
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
             # self.device.find_all(Template(r"tpl1607511235111.png"))
-            # >> [{'result': (218, 468), 'rectangle': ((149, 440), (149, 496), (288, 496), (288, 440)),'confidence': 0.9999996423721313}]
             result = find_all(v=v)
         return result if result else list()
 
@@ -420,7 +405,7 @@ class Phone(object):
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
             # text = self.device.get_clipboard(wda_bundle_id="com.WebDriverAgentRunner.xctrunner")
             # print(text)
-            result = self.device.get_clipboard()
+            result = self.dev.get_clipboard()
         return result or None
 
     @airtest_exception_format
@@ -436,7 +421,7 @@ class Phone(object):
         if self.platform in (DEFAULT_PLATFORM, WINDOWS_PLATFORM, iOS_PLATFORM):
             # self.device.set_clipboard(content="content", wda_bundle_id="com.WebDriverAgentRunner.xctrunner")
             # print(self.device.get_clipboard())
-            result = self.device.set_clipboard(content=content, *args, **kwargs)
+            result = self.dev.set_clipboard(content=content, *args, **kwargs)
         return result or None
 
     @airtest_exception_format
@@ -452,10 +437,10 @@ class Phone(object):
             # self.device.set_clipboard("content")
             # will paste "content" to the device
             # self.device.paste()
-            result = self.device.paste(*args, **kwargs)
+            result = self.dev.paste(*args, **kwargs)
         return result or None
 
-    def get_po(self, type: str, name: str = '', text: str = '', desc: str = '') -> AndroidUiautomationPoco:
+    def get_po(self, type: str, name: str = '', text: str = '', desc: str = '') -> UIObjectProxy:
         kwargs = dict()
         if type:
             kwargs["type"] = type

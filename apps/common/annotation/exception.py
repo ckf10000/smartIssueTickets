@@ -13,7 +13,6 @@ from functools import wraps
 from airtest.core.error import *
 
 
-
 def airtest_exception_format(func):
     """
     airtest测试框架异常捕获格式化

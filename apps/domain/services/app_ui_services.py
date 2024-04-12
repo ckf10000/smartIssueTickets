@@ -17,7 +17,6 @@ from apps.common.annotation.log_service import logger
 from apps.common.libs.utils import get_ui_object_proxy_attr
 from apps.infrastructure.api.platforms import PlatformService
 from apps.infrastructure.api.mobile_terminals import stop_app
-from apps.infrastructure.middleware.mq import push_message_to_mq
 from apps.common.libs.dir import get_images_dir, is_exists, join_path
 from apps.common.annotation.delay_wait import SleepWait, LoopFindElement
 from apps.common.libs.date_extend import get_trip_year_month_day, get_datetime_area, is_public_holiday
@@ -79,7 +78,7 @@ class CtripAppService(PlatformService):
         departure_city = self.device.get_po_extend(
             type="android.widget.TextView",
             name="ctrip.android.view:id/a",
-            textMatches_inner="\S+",
+            textMatches_inner=r"\S+",
             global_num=0,
             local_num=2,
         )[0]
@@ -133,7 +132,7 @@ class CtripAppService(PlatformService):
         arrive_city = self.device.get_po_extend(
             type="android.widget.TextView",
             name="ctrip.android.view:id/a",
-            textMatches_inner="\S+",
+            textMatches_inner=r"\S+",
             global_num=0,
             local_num=4,
         )[0]
@@ -263,7 +262,7 @@ class CtripAppService(PlatformService):
         """
         航线特价机票查询列表，点击顶部的【筛选】
         """
-        filter = self.device.get_po_extend(
+        filter1 = self.device.get_po_extend(
             type="android.widget.TextView",
             name="android.widget.TextView",
             text="筛选",
@@ -271,14 +270,14 @@ class CtripAppService(PlatformService):
             local_num=1,
             touchable=False,
         )[0]
-        filter.click()
+        filter1.click()
 
     @SleepWait(wait_time=1)
     def __touch_flight_inland_single_list_bottom_filter(self) -> None:
         """
         航线特价机票查询列表，点击底部的【筛选】
         """
-        filter = self.device.get_po_extend(
+        filter1 = self.device.get_po_extend(
             type="android.widget.TextView",
             name="筛选",
             text="筛选",
@@ -286,7 +285,7 @@ class CtripAppService(PlatformService):
             local_num=2,
             touchable=False,
         )[0]
-        filter.click()
+        filter1.click()
 
     @SleepWait(wait_time=1)
     def touch_filter_departure_time(self) -> None:
@@ -458,7 +457,7 @@ class CtripAppService(PlatformService):
             if login_page_poco.exists():
                 logger.warning("系统用户<{}>已经退出，需要重新登录".format(username))
                 username_poco = self.device.get_po_extend(
-                    type="android.widget.EditText", name="android.widget.EditText", textMatches_inner="^\d+.*",
+                    type="android.widget.EditText", name="android.widget.EditText", textMatches_inner=r"^\d+.*",
                     global_num=0, local_num=2, touchable=True
                 )[0]
                 # username_poco.click()
@@ -856,7 +855,7 @@ class CtripAppService(PlatformService):
         tickect_actual_amount = self.device.get_po_extend(
             type="android.widget.TextView",
             name="android.widget.TextView",
-            textMatches_inner="^¥\d+.\d*",
+            textMatches_inner=r"^¥\d+.\d*",
             global_num=0,
             local_num=2,
             touchable=False,
@@ -873,7 +872,7 @@ class CtripAppService(PlatformService):
         tickect_deduction_amount = self.device.get_po_extend(
             type="android.widget.TextView",
             name="android.widget.TextView",
-            textMatches_inner="^-¥\d+.\d*",
+            textMatches_inner=r"^-¥\d+.\d*",
             global_num=0,
             local_num=4,
             touchable=False,
@@ -903,7 +902,7 @@ class CtripAppService(PlatformService):
         payment_amount = self.device.get_po_extend(
             type="android.widget.TextView",
             name="android.widget.TextView",
-            textMatches_inner="^\d+.\d*",
+            textMatches_inner=r"^\d+.\d*",
             global_num=0,
             local_num=5,
             touchable=False,
@@ -984,11 +983,11 @@ class CtripAppService(PlatformService):
         try:
             poco = (
                 self.device.poco("android.widget.FrameLayout")
-                    .child("android.view.ViewGroup")
-                    .offspring("@FlyInModal")
-                    .child("android.view.ViewGroup")
-                    .child("android.view.ViewGroup")[1]
-                    .child("android.widget.TextView")
+                .child("android.view.ViewGroup")
+                .offspring("@FlyInModal")
+                .child("android.view.ViewGroup")
+                .child("android.view.ViewGroup")[1]
+                .child("android.widget.TextView")
             )
             if poco.exists() is True:
                 poco.click()
@@ -1030,21 +1029,21 @@ class CtripAppService(PlatformService):
             self.device.quick_slide_screen()
         poco = (
             self.device.poco("android.widget.FrameLayout")
-                .offspring("android:id/content")
-                .child("ctrip.android.view:id/a")
-                .child("ctrip.android.view:id/a")
-                .offspring("android.widget.LinearLayout")
-                .offspring("android.widget.FrameLayout")
-                .child("android.view.ViewGroup")
-                .child("android.view.ViewGroup")
-                .child("android.view.ViewGroup")
-                .child("android.view.ViewGroup")
-                .child("android.view.ViewGroup")[1]
-                .offspring("PullRefreshScrollView_ScrollView")
-                .child("android.view.ViewGroup")
-                .child("android.view.ViewGroup")
-                .offspring("@contactInfo")
-                .offspring("contactInfo_Text_票号")[0]
+            .offspring("android:id/content")
+            .child("ctrip.android.view:id/a")
+            .child("ctrip.android.view:id/a")
+            .offspring("android.widget.LinearLayout")
+            .offspring("android.widget.FrameLayout")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")[1]
+            .offspring("PullRefreshScrollView_ScrollView")
+            .child("android.view.ViewGroup")
+            .child("android.view.ViewGroup")
+            .offspring("@contactInfo")
+            .offspring("contactInfo_Text_票号")[0]
         )
         if poco.exists() is True:
             itinerary_id = poco.get_text().split("：")[-1].strip()
