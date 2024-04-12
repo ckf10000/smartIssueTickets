@@ -1,5 +1,5 @@
 group_1:
   account: 18600440822
   sec_key: ca161022
-  pay_key: 901127
+  pay_key: "901127"
   internal_phone: 18569520328
