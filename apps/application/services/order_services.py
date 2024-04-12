@@ -190,8 +190,7 @@ class OutTicketService(object):
                 remark = "出票失败，多航程"
                 flag = False
             else:
-                logger.info(
-                    "劲旅平台的订单<{}>已锁定，开启登录携程APP，进行下单操作...".format(order_id))
+                logger.info("劲旅平台的订单<{}>已锁定，开启登录携程APP，进行下单操作...".format(order_id))
                 flag, remark = cls.xc_app_booking_passengers(order_id=order_id, oper=oper, passengers=passengers)
             # 4. 给订单解锁
             QlvService.loop_unlock_reason_with_flag(flag=flag, order_id=order_id, oper=oper, remark=remark)
