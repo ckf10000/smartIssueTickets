@@ -888,6 +888,7 @@ class CtripAppService(PlatformService):
         请输入支付密码
         """
         device = PlatformService.minicap_device()
+        payment_pass = payment_pass if isinstance(payment_pass, str) else str(payment_pass)
         for char in payment_pass:
             file_name = join_path([get_images_dir(), "支付_{}.png".format(char)])
             if is_exists(file_name):
