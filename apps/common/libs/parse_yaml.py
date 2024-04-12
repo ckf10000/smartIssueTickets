@@ -15,7 +15,7 @@ import importlib
 import typing as t
 from pathlib import Path
 
-from apps.common.libs.dir import get_project_path, is_file
+from apps.common.libs.dir import get_project_path
 from apps.common.libs.environ import ENV_TYPE, DEFAULT_ENV_TYPE
 
 __all__ = ["DictObject", "ProjectConfig"]
@@ -25,7 +25,7 @@ class ParseYaml(object):
 
     def __init__(self, file_path):
         self.path = Path(file_path)
-        if not is_file(file_path=self.path):
+        if self.path.is_file() is False:
             raise ValueError("<{}>文件不存在，或者它不是一个文件.".format(self.path))
 
     @property
@@ -49,9 +49,7 @@ class DictObject(dict):
 class ProjectConfig(object):
 
     @classmethod
-    def create_class(
-        cls, class_name: str, class_attr: dict = None, class_parents: tuple = None
-    ) -> type:
+    def create_class(cls, class_name: str, class_attr: dict = None, class_parents: tuple = None) -> type:
         # 遍历属性字典，把不是__开头的属性名字变为大写
         new_attr = dict()
         class_name = class_name.title()
@@ -96,7 +94,7 @@ class ProjectConfig(object):
     def iterator(cls, value: dict) -> iter:
         if isinstance(value, dict):
             for key, val in value.items():
-                yield (key, val)
+                yield key, val
 
     @classmethod
     def iterator_plus(cls, value: dict) -> iter:
@@ -104,9 +102,9 @@ class ProjectConfig(object):
             if isinstance(val, (dict, list)):
                 for k, v in cls.iterator_plus(val):
                     k = "{}.{}".format(key, k)
-                    yield (k, v)
+                    yield k, v
             else:
-                yield (key, val)
+                yield key, val
 
     @classmethod
     def get_attr_class(cls, conf: dict) -> dict:
@@ -124,10 +122,10 @@ class ProjectConfig(object):
     def convert_tuple(cls, prefix: str, value: str) -> tuple:
         obj = value.split(prefix)[-1].strip()
         if (
-            obj.startswith("[")
-            and obj.endswith("]")
-            or obj.startswith("(")
-            and obj.endswith(")")
+                obj.startswith("[")
+                and obj.endswith("]")
+                or obj.startswith("(")
+                and obj.endswith(")")
         ):
             if obj[1:-1].endswith(","):
                 obj = tuple(obj[1:-2].split(","))
@@ -150,9 +148,7 @@ class ProjectConfig(object):
         return getattr(metaclass, attr)
 
     @classmethod
-    def convert_abspath(
-        cls, yaml_name: str, prefix: str, relative_path: str, project_home: str
-    ) -> str:
+    def convert_abspath(cls, yaml_name: str, prefix: str, relative_path: str, project_home: str) -> Path:
         relative_path = relative_path.split(prefix)[-1].strip()
         if relative_path.startswith("./"):
             relative_path = relative_path.strip("./")
@@ -168,9 +164,7 @@ class ProjectConfig(object):
             raise ValueError("<{}>路径存在问题.".format(yaml_name))
 
     @classmethod
-    def convert(
-        cls, yaml_name: str, conf: t.Union[dict, DictObject], project_home: str
-    ):
+    def convert(cls, yaml_name: str, conf: t.Union[dict, DictObject], project_home: str):
         prefix_object = "~~object"
         prefix_tuple = "~~tuple"
         prefix_abspath = "~~abspath"
@@ -224,54 +218,29 @@ class ProjectConfig(object):
             if isinstance(value, list):
                 for file_dict in value:
                     for k, v in file_dict.items():
-                        file_config = ParseYaml(v).dict
-                        intersection = [i for i in file_config.keys() if i in ENV_TYPE]
-                        if intersection:
-                            if env_type:
-                                if env_type in ENV_TYPE:
-                                    file_config = file_config.get(env_type, dict())
-                                else:
-                                    raise ValueError(
-                                        "<{}>无效的环境类型.".format(env_type)
-                                    )
-                            else:
-                                if os.getenv("ENV_TYPE"):
-                                    file_config = file_config.get(
-                                        os.getenv("ENV_TYPE"), dict()
-                                    )
-                                else:
-                                    file_config = file_config.get(
-                                        DEFAULT_ENV_TYPE, dict()
-                                    )
-                        # 将文件转成字典对象
-                        file_config_object = DictObject(file_config)
-                        cls.convert(
-                            yaml_name=str(v),
-                            conf=file_config_object,
-                            project_home=get_project_path(),
-                        )
                         # 将字典对象放入目录列表
-                        file_object_dict[k] = file_config_object
+                        file_object_dict[k] = cls.__convert_object(value=v, env_type=env_type)
                 object_dict[key] = cls.create_class(key, file_object_dict)
             else:
-                file_config = ParseYaml(value).dict
-                intersection = [i for i in file_config.keys() if i in ENV_TYPE]
-                if intersection:
-                    if env_type:
-                        if env_type in ENV_TYPE:
-                            file_config = file_config.get(env_type, dict())
-                        else:
-                            raise ValueError("<{}>无效的环境类型.".format(env_type))
-                    else:
-                        if os.getenv("ENV_TYPE"):
-                            file_config = file_config.get(os.getenv("ENV_TYPE"), dict())
-                        else:
-                            file_config = file_config.get(DEFAULT_ENV_TYPE, dict())
-                file_config_object = DictObject(file_config)
-                cls.convert(
-                    yaml_name=str(value),
-                    conf=file_config_object,
-                    project_home=get_project_path(),
-                )
-                object_dict[key] = file_config_object
+                # 将字典对象放入目录列表
+                object_dict[key] = cls.__convert_object(value=value, env_type=env_type)
         return cls.create_class("configuration", object_dict)
+
+    @classmethod
+    def __convert_object(cls, value: Path, env_type: str) -> DictObject:
+        file_config = ParseYaml(value).dict
+        intersection = [i for i in file_config.keys() if i in ENV_TYPE]
+        if intersection:
+            if env_type:
+                if env_type in ENV_TYPE:
+                    file_config = file_config.get(env_type, dict())
+                else:
+                    raise ValueError("<{}>无效的环境类型.".format(env_type))
+            else:
+                if os.getenv("ENV_TYPE"):
+                    file_config = file_config.get(os.getenv("ENV_TYPE"), dict())
+                else:
+                    file_config = file_config.get(DEFAULT_ENV_TYPE, dict())
+        file_config_object = DictObject(file_config)
+        cls.convert(yaml_name=str(value), conf=file_config_object, project_home=get_project_path())
+        return file_config_object

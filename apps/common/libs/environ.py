@@ -11,10 +11,11 @@
 """
 import os
 
-__all__ = ["get_env"]
+__all__ = ["get_env", "DEFAULT_ENV_TYPE", "ENV_TYPE"]
 
 ENV_TYPE = ["production", "development", "sit", "pre", "uat"]
 DEFAULT_ENV_TYPE = "development"
+
 
 def get_env():
     # 操作系统需配置环境变量：ENV_TYPE，否则视为 development 环境
