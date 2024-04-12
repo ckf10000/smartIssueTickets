@@ -94,6 +94,8 @@ class BookingFlightService(object):
             app.touch_passenger_card_type()
             if card_type not in ["身份证"]:
                 raise ValueError("暂时还不支持证件类型为: <{}>的乘客预订机票".format(card_type))
+            if age_stage not in ["成人"]:
+                raise ValueError("暂时不支持儿童乘客预订机票")
             app.select_passenger_card_type(card_type=card_type)
             app.enter_passenger_card_id(card_id=card_id)
             app.enter_passenger_username(passenger=passenger)
