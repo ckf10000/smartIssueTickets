@@ -122,13 +122,64 @@ class CTripService(object):
 class OutTicketService(object):
 
     @classmethod
+    def xc_app_booking_and_save_flight_ticket(cls, order_id: int, oper: str, passenger: t.Dict) -> tuple:
+        flag = False
+        remark = "出票失败"
+        try:
+            flight_info = QlvRequestParamsConverter.covert_flight_info(order_id=order_id, flights=passenger)
+            # 1. 携程app下单
+            booking_info = CTripService.booking_passenger_flight_ticket(
+                flight_info=flight_info, passenger=passenger
+            )
+            if booking_info:
+                booking_info.update(dict(oper=oper))
+                logger.info("开始往MQ推送携程机票订单信息：<{}>".format(booking_info))
+                MQMessageService.push_flight_ticket_order(message=booking_info)
+                # 2. 回填采购信息与票号
+                QlvService.save_pay_info(booking_info=booking_info)
+                if booking_info.get("itinerary_id"):
+                    is_succeed = QlvService.save_itinerary_info(booking_info=booking_info)
+                    if is_succeed is True:
+                        flag = True
+                        remark = "出票成功"
+                    else:
+                        remark = "获取票号"
+                else:
+                    remark = "获取票号"
+                    logger.warning("劲旅平台订单<{}>预计还在出票中，暂时需要人工回填乘客的票单信息...".format(
+                        booking_info.get("pre_order_id"))
+                    )
+            else:
+                flag = False
+                remark = "{}，携程APP下单失败".format(remark)
+        except (Exception,):
+            logger.error(format_exc())
+            remark = "{}，运行异常".format(remark)
+        return flag, remark
+
+    @classmethod
+    def xc_app_booking_passengers(cls, order_id: int, oper: str, passengers: t.List) -> t.Tuple:
+        if len(passengers) == 1:
+            logger.info("当前订单<{}>为单人机票采购.")
+        else:
+            logger.info("当前订单<{}>为多人机票采购.")
+        unlock_flag = True
+        unlock_remark = "出票成功"
+        for passenger in passengers:
+            flag, remark = cls.xc_app_booking_and_save_flight_ticket(
+                order_id=order_id, oper=oper, passenger=passenger
+            )
+            if flag is False:
+                unlock_flag = flag
+                unlock_remark = remark
+        return unlock_flag, unlock_remark
+
+    @classmethod
     def xc_app_auto_out_ticket(cls, lock_rule: str) -> None:
         # 1. 锁单
         lock_order_info = QlvService.get_lock_order(lock_rule=lock_rule)
         # 说明单已锁定，往下执行，如果未锁定，直接跳过
         if isinstance(lock_order_info.get("data_info"), dict):
-            flag = False
-            remark = "出票失败"
             order_info = lock_order_info.get("data_info")
             oper = lock_order_info.get("policy_args").get("oper")
             order_id = order_info.get("ID")
@@ -136,42 +187,12 @@ class OutTicketService(object):
             passengers = order_info.get("Peoples")
             if len(flights) > 1:
                 logger.warning("当前不支持多航班下单...")
-                remark = "{}，多航程".format(remark)
-            elif len(passengers) > 1:
-                logger.warning("当前不支持多乘客下单...")
-                remark = "{}，多人".format(remark)
+                remark = "出票失败，多航程"
+                flag = False
             else:
                 logger.info(
                     "劲旅平台的订单<{}>已锁定，开启登录携程APP，进行下单操作...".format(order_id))
-                try:
-                    flight_info = QlvRequestParamsConverter.covert_flight_info(order_id=order_id, flights=flights[0])
-                    # 2. 携程app下单
-                    booking_info = CTripService.booking_passenger_flight_ticket(
-                        flight_info=flight_info, passenger=passengers[0]
-                    )
-                    if booking_info:
-                        booking_info.update(dict(oper=oper))
-                        logger.info("开始往MQ推送携程机票订单信息：<{}>".format(booking_info))
-                        MQMessageService.push_flight_ticket_order(message=booking_info)
-                        # 3. 回填采购信息与票号
-                        QlvService.save_pay_info(booking_info=booking_info)
-                        if booking_info.get("itinerary_id"):
-                            is_succeed = QlvService.save_itinerary_info(booking_info=booking_info)
-                            if is_succeed is True:
-                                flag = True
-                                remark = "出票成功"
-                            else:
-                                remark = "获取票号"
-                        else:
-                            remark = "获取票号"
-                            logger.warning("劲旅平台订单<{}>预计还在出票中，暂时需要人工回填乘客的票单信息...".format(
-                                booking_info.get("pre_order_id"))
-                            )
-                    else:
-                        remark = "{}，携程APP下单失败".format(remark)
-                except (Exception,):
-                    logger.error(format_exc())
-                    remark = "{}，运行异常".format(remark)
+                flag, remark = cls.xc_app_booking_passengers(order_id=order_id, oper=oper, passengers=passengers)
             # 4. 给订单解锁
             QlvService.loop_unlock_reason_with_flag(flag=flag, order_id=order_id, oper=oper, remark=remark)
         else:
