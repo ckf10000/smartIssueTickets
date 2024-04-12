@@ -11,6 +11,7 @@
 """
 
 import os
+import typing as t
 
 
 def get_project_path():
@@ -42,7 +43,7 @@ def is_dir(file_path: str):
         return False
 
 
-def join_path(path_slice: list) -> str:
+def join_path(path_slice: list) -> t.LiteralString | str | bytes:
     return os.path.join(*path_slice)
 
 
