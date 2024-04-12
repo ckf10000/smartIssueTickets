@@ -91,10 +91,12 @@ class BookingFlightService(object):
             app.check_user_login(username=ctrip_username, password=user_pass)
             app.touch_more_passengers_button()
             app.touch_add_passengers_button()
-            app.enter_passenger_username(passenger=passenger)
             app.touch_passenger_card_type()
+            if card_type not in ["身份证"]:
+                raise ValueError("暂时还不支持证件类型为: <{}>的乘客预订机票".format(card_type))
             app.select_passenger_card_type(card_type=card_type)
             app.enter_passenger_card_id(card_id=card_id)
+            app.enter_passenger_username(passenger=passenger)
             app.enter_passenger_phone_number(phone=internal_phone)
             app.submit_passenger_info()
             app.submit_passenger_info_confirm()

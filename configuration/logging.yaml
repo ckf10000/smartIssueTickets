@@ -18,7 +18,7 @@ development:
       class: distributed_logging.JSONFormatter
   handlers:
     stream:
-      level: DEBUG
+      level: INFO
       stream: ~~sys_module sys.stdout
       formatter: console
       filters: ["request_id"]
