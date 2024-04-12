@@ -11,6 +11,7 @@
 """
 import typing as t
 from decimal import Decimal
+from apps.common.libs.date_extend import iso_to_standard_datestr
 
 
 class QlvRequestParamsConverter(object):
@@ -19,7 +20,7 @@ class QlvRequestParamsConverter(object):
     def covert_flight_info(cls, order_id: int, flights: t.Dict) -> t.Dict:
         flight_info = dict(
             pre_order_id=order_id,
-            departure_time=flights.get("DatDep"),
+            departure_time=iso_to_standard_datestr(datestr=flights.get("DatDep")),
             departure_city=flights.get("CodeDep"),
             departure_city_name=flights.get("CityDep"),
             arrive_time=flights.get("DatArr"),
