@@ -122,11 +122,12 @@ class CTripService(object):
 class OutTicketService(object):
 
     @classmethod
-    def xc_app_booking_and_save_flight_ticket(cls, order_id: int, oper: str, passenger: t.Dict) -> tuple:
+    def xc_app_booking_and_save_flight_ticket(cls, order_id: int, oper: str, flights: t.Dict,
+                                              passenger: t.Dict) -> tuple:
         flag = False
         remark = "出票失败"
         try:
-            flight_info = QlvRequestParamsConverter.covert_flight_info(order_id=order_id, flights=passenger)
+            flight_info = QlvRequestParamsConverter.covert_flight_info(order_id=order_id, flights=flights)
             # 1. 携程app下单
             booking_info = CTripService.booking_passenger_flight_ticket(
                 flight_info=flight_info, passenger=passenger
@@ -158,16 +159,16 @@ class OutTicketService(object):
         return flag, remark
 
     @classmethod
-    def xc_app_booking_passengers(cls, order_id: int, oper: str, passengers: t.List) -> t.Tuple:
+    def xc_app_booking_passengers(cls, order_id: int, oper: str, flights: t.Dict, passengers: t.List) -> t.Tuple:
         if len(passengers) == 1:
-            logger.info("当前订单<{}>为单人机票采购.")
+            logger.info("当前订单<{}>为单人机票采购.".format(order_id))
         else:
-            logger.info("当前订单<{}>为多人机票采购.")
+            logger.info("当前订单<{}>为多人机票采购.".format(order_id))
         unlock_flag = True
         unlock_remark = "出票成功"
         for passenger in passengers:
             flag, remark = cls.xc_app_booking_and_save_flight_ticket(
-                order_id=order_id, oper=oper, passenger=passenger
+                order_id=order_id, oper=oper, passenger=passenger, flights=flights
             )
             if flag is False:
                 unlock_flag = flag
@@ -191,7 +192,9 @@ class OutTicketService(object):
                 flag = False
             else:
                 logger.info("劲旅平台的订单<{}>已锁定，开启登录携程APP，进行下单操作...".format(order_id))
-                flag, remark = cls.xc_app_booking_passengers(order_id=order_id, oper=oper, passengers=passengers)
+                flag, remark = cls.xc_app_booking_passengers(
+                    order_id=order_id, oper=oper, flights=flights[0], passengers=passengers
+                )
             # 4. 给订单解锁
             QlvService.loop_unlock_reason_with_flag(flag=flag, order_id=order_id, oper=oper, remark=remark)
         else:
