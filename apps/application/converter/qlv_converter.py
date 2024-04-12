@@ -20,10 +20,10 @@ class QlvRequestParamsConverter(object):
     def covert_flight_info(cls, order_id: int, flights: t.Dict) -> t.Dict:
         flight_info = dict(
             pre_order_id=order_id,
-            departure_time=iso_to_standard_datestr(datestr=flights.get("DatDep")),
+            departure_time=iso_to_standard_datestr(datestr=flights.get("DatDep"), time_zone_step=8),
             departure_city=flights.get("CodeDep"),
             departure_city_name=flights.get("CityDep"),
-            arrive_time=flights.get("DatArr"),
+            arrive_time=iso_to_standard_datestr(datestr=flights.get("DatArr"), time_zone_step=8),
             arrive_city=flights.get("CodeArr"),
             arrive_city_name=flights.get("CityArr"),
             flight=flights.get("FlightNo"),

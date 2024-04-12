@@ -79,9 +79,12 @@ def is_public_holiday(date_str: str) -> bool:
         return False
 
 
-def iso_to_standard_datestr(datestr: str) -> str:
+def iso_to_standard_datestr(datestr: str, time_zone_step: int) -> str:
     """iso(2024-04-21T04:20:00Z)格式转 标准的时间格式(2024-01-01 00:00:00)"""
-    return "{} {}".format(datestr[:10], datestr[11:-1])
+    dt_str = "{} {}".format(datestr[:10], datestr[11:-1])
+    dt = datetime.strptime(dt_str, standard_date_format)
+    dt_step = dt + timedelta(hours=time_zone_step)
+    return dt_step.strftime(standard_date_format)
 
 
 def current_datetime_str() -> str:
