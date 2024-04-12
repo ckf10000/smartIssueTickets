@@ -12,8 +12,7 @@
 import typing as t
 from datetime import datetime, timedelta
 
-flight_standard_date_format = "%Y-%m-%d %H:%M"
-standard_date_format = flight_standard_date_format + ":%S"
+standard_date_format = "%Y-%m-%d %H:%M:%S"
 
 public_holiday_2024 = [
     "2024-04-04",
@@ -42,7 +41,7 @@ public_holiday_2024 = [
 
 def get_trip_year_month_day(date_str: str) -> t.Tuple:
     """携程日历界面头部上的选择区域"""
-    trip_dt = datetime.strptime(date_str, flight_standard_date_format)
+    trip_dt = datetime.strptime(date_str, standard_date_format)
     current_dt = datetime.now()
     if trip_dt >= current_dt + timedelta(minutes=60):
         year = "{}年".format(trip_dt.year)
@@ -51,11 +50,11 @@ def get_trip_year_month_day(date_str: str) -> t.Tuple:
         return year, month, day
     else:
         raise ValueError("航班时间: {} 已失效或接近当前时间: {}".format(
-            date_str, current_dt.strftime(flight_standard_date_format)))
+            date_str, current_dt.strftime(standard_date_format)))
 
 
 def get_datetime_area(date_str: str) -> str:
-    dt = datetime.strptime(date_str, flight_standard_date_format)
+    dt = datetime.strptime(date_str, standard_date_format)
     # 获取当天的0点时间
     first_time = datetime(dt.year, dt.month, dt.day, 0, 0, 0)
     six_time = datetime(dt.year, dt.month, dt.day, 6, 0, 0)
